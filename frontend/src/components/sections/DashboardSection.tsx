@@ -2,6 +2,7 @@
 
 import Card from '@/components/ui/Card';
 import DataTable from '@/components/ui/DataTable';
+import MiniChart from '@/components/ui/MiniChart';
 import { Activity, BarChart3, DollarSign, ShoppingCart, Sparkles, Users } from 'lucide-react';
 
 const metrics = [
@@ -160,6 +161,21 @@ export default function DashboardSection() {
               <p className="text-sm text-slate-500 dark:text-slate-400">Returning users</p>
               <p className="mt-3 text-xl font-semibold text-slate-950 dark:text-white">1.8K</p>
             </div>
+          </div>
+        </Card>
+
+        <Card className="space-y-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Mini chart</p>
+              <h3 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">Weekly sales trend</h3>
+            </div>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              7 days
+            </span>
+          </div>
+          <div className="rounded-[2rem] border border-slate-200/80 bg-slate-50 p-4 dark:border-slate-800/80 dark:bg-slate-950">
+            <MiniChart />
           </div>
         </Card>
 
