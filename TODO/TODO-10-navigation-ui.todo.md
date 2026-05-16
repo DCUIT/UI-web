@@ -1,12 +1,12 @@
 # TODO 10 — Navigation UI
 
 ## Components
-- [ ] Navbar
-- [ ] Sidebar
-- [ ] Mobile Menu
-- [ ] Mega Menu
-- [ ] Command Menu
-- [ ] Search Bar
+- [x] Navbar
+- [x] Sidebar
+- [x] Mobile Menu
+- [x] Mega Menu
+- [x] Command Menu
+- [x] Search Bar
 - [ ] Topbar
 
 Notes:
