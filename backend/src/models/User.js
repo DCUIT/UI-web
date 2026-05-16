@@ -1,0 +1,3 @@
+// Placeholder model
+export default {};
+
