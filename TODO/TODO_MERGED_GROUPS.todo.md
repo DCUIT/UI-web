@@ -1,116 +1,48 @@
-# Gộp TODO theo nhóm tương tự
+# Master UI Platform - Consolidated Roadmap
 
-## Mục tiêu
-Giảm việc phải nhìn quá nhiều file TODO nhỏ bằng cách gom các hạng mục có cùng ngữ cảnh/loại công việc.
+## 1. Core UI & Data Display (Atoms & Molecules)
+*Tập trung vào các thành phần đơn lẻ và cách hiển thị dữ liệu.*
+- [x] **Buttons**
+- [x] **Inputs**
+- [x] **Cards**
+- [ ] **Modals**
+- [x] **Hero**
+- [x] **Pricing**
+- [x] **Footer**
+- [ ] **Dashboard UI**
+- [ ] **Ecommerce UI**
+- [x] **Skeleton**
+- [ ] **Progress Bar**
 
----
+- [x] **Modal**
+- [ ] **Drawer**
+- [ ] **Alert Dialog**
+- [ ] **Confirm Dialog**
 
-## 1) UI Primitives & States (UI nền tảng + trạng thái)
-Liên quan:
-- TODO-4: Build UI Components (Modals)
-- TODO-19: Empty States (No data / No search result / Empty cart / Error)
-- TODO-20: Loading UI (Progress Bar)
+- [ ] **Primitives & States:** Hoàn thiện Modal, Progress Bar và hệ thống trạng thái (Empty/Error/Loading).
+- [ ] **Card System:** Chuẩn hóa các biến thể Card (Product, User, Blog, Analytics) với slot metadata.
+- [ ] **Data & Overlays:** Xây dựng Table (sort/search/pagination) và các thành phần Overlay (Drawer, Alert Dialog).
+- [ ] **Forms:** Xây dựng bộ UI cho Form (Login, Register, Multi-step, Checkout).
 
-Gộp nội dung:
-- Modals (nếu chưa xong)
-- Loading: Progress Bar
-- Empty/Error states: reusable patterns (illustration + copy + CTA)
 
----
+## 2. Shell & Navigation (The Framework)
+*Tập trung vào khung sườn ứng dụng và trải nghiệm điều hướng.*
+- [ ] **Global Navigation:** Chuẩn hóa Navbar, Sidebar, Mega Menu và Command Menu (Ctrl+K).
+- [ ] **Mobile Experience:** Tối ưu Bottom Navbar và các biến thể Mobile UI/Cards.
+- [ ] **Theme & Accessibility:** Hoàn thiện Dark Mode, Keyboard support và Layout tổng thể.
 
-## 2) Landing pages & Templates polish (lắp ghép trang + polish)
-Liên quan:
-- TODO-3: Homepage
-- TODO-7: Templates & Polish UI (loading/empty states, spacing/typography, SEO/favicon)
-- TODO-13: Landing Page Sections (Hero/Features/Testimonials/Pricing/FAQ/CTA/Footer/Stats/Team/Newsletter)
+## 3. Page Templates & Verticals (Organisms)
+*Tập trung vào việc lắp ghép các thành phần thành các trang hoàn chỉnh.*
+- [ ] **Marketing Sections:** Hero, Features, Pricing, Testimonials, FAQ, Footer.
+- [ ] **Industry Templates:** Xây dựng Dashboard UI, Ecommerce, Portfolio và Auth pages.
+- [ ] **Product Polish:** Tinh chỉnh Typography, Spacing, SEO và Favicon cho các trang mẫu.
 
-Gộp nội dung:
-- Hoàn thiện/tiêu chuẩn hóa các section landing
-- Nâng cấp polish (spacing, typography, SEO, favicon)
+## 4. Platform Discovery UX (The Product Site)
+*Tập trung vào trải nghiệm của người dùng khi duyệt và copy component.*
+- [ ] **Component Preview:** Xây dựng trang `/components`, tab preview code và tính năng copy-to-clipboard.
+- [ ] **Search & Search UX:** Hệ thống Search/Filter linh hoạt kết hợp với Framer Motion và hiệu ứng hover.
 
----
-
-## 3) Navigation & Theme layout (desktop/mobile + theme)
-Liên quan:
-- TODO-2: Layout & Theme (Navbar/Footer/layout, responsive navbar, dark mode)
-- TODO-10: Navigation UI (Navbar/Sidebar/Mobile Menu/Mega Menu/Command Menu/Search Bar/Topbar)
-- TODO-22: Mobile UI (Bottom Navbar/Mobile Menu/Mobile Cards)
-
-Gộp nội dung:
-- Chuẩn hóa component navigation (desktop + mobile)
-- Hoàn thiện theme/layout & accessibility/keyboard support
-
----
-
-## 4) Components browsing & preview UX (UX khi duyệt component)
-Liên quan:
-- TODO-5: Component Preview System (/components page, preview/code tab, copy code, toast)
-- (tuỳ chọn mở rộng) TODO-6: Search UX (responsive + animation) nếu bạn muốn coi đây là một phần “browsing UX”
-
-Gộp nội dung:
-- Trải nghiệm duyệt component: search/filter/grid, preview/code, copy + toast
-
----
-
-## 5) Search UX (responsive + animation)
-Liên quan:
-- TODO-6: Search, Responsive & Animation
-
-Gộp nội dung:
-- Search + filter category + responsive + Framer Motion + hover/transition
-
----
-
-## 6) Vertical template UIs (Dashboard / Ecommerce / Portfolio / Auth)
-Liên quan:
-- TODO-14: Dashboard UI
-- TODO-15: Ecommerce UI
-- TODO-16: Portfolio UI
-- TODO-17: Authentication UI
-
-Gộp nội dung:
-- Bộ template theo vertical
-
----
-
-## 7) Card system variants (biến thể card theo domain)
-Liên quan:
-- TODO-11: Card UI (Product/User/Pricing/Blog/Dashboard/Analytics cards)
-
-Gộp nội dung:
-- Chuẩn hóa card variants, slot metadata/actions, hỗ trợ image
-
----
-
-## 8) Overlays & Data display (tables + popup/dialog)
-Liên quan:
-- TODO-18: Table UI (simple/data/sortable/searchable)
-- TODO-21: Popup UI (Drawer/Alert Dialog/Confirm Dialog)
-- (Modal đã có trong TODO-4 nhưng có thể nằm chung nhóm overlays)
-
-Gộp nội dung:
-- Tables: pagination/sorting/selectable rows
-- Dialog/Drawer: accessible interactions
-
----
-
-## 9) Project setup & release checklist
-Liên quan:
-- TODO-1: Setup Project & Structure
-- TODO-8: GitHub & Deploy
-- TODO-24: Priority Work (tổng hợp ưu tiên)
-
-Gộp nội dung:
-- Checklist setup + release
-
----
-
-## 10) (tuỳ chọn) Other UI surfaces
-- TODO-12: Form UI (Login/Register/Contact/Multi-step/Checkout)
-- TODO-22/21/18/19 đã nằm ở nhóm riêng phía trên
-
----
-
-## TODO-24 Priority Work
-Giữ nguyên như một file tổng hợp ưu tiên, hoặc dùng để “link” tới các nhóm trên.
-
+## 5. Ops & Infrastructure
+*Các công việc hậu cần và triển khai.*
+- [ ] **Project Setup:** Cấu trúc folder, GitHub setup và quy trình Deploy.
+- [ ] **Final Review:** Kiểm tra tổng thể trước khi release.
