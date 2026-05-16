@@ -1,5 +1,6 @@
 import Hero from '@/components/sections/Hero';
 import Features from '@/components/sections/Features';
+import DashboardSection from '@/components/sections/DashboardSection';
 import Pricing from '@/components/sections/Pricing';
 import Templates from '@/components/sections/Templates';
 import CTA from '@/components/sections/CTA';
@@ -12,6 +13,7 @@ export default function Page() {
       <Categories value="All" />
 
       <Features />
+      <DashboardSection />
 
       <Pricing />
       <Templates />
