@@ -11,11 +11,6 @@ const templates = [
     subtitle: 'Admin and analytics layout for modern web apps.',
     accent: 'Data-first UI',
   },
-  {
-    title: 'Ecommerce',
-    subtitle: 'Product cards, featured collections, and checkout flows.',
-    accent: 'Online store',
-  },
 ];
 
 export default function Templates() {
@@ -27,7 +22,7 @@ export default function Templates() {
           Ready-to-use template layouts for your next project.
         </h2>
       </div>
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-2">
         {templates.map((template) => (
           <Card key={template.title} className="space-y-5 p-8">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-500">{template.accent}</p>

@@ -2,11 +2,18 @@
 
 - [x] Tạo trang `/components`
 - [x] Tạo preview page
-- [x] Tabs:
-  - [x] Preview
-  - [x] Code
-- [x] Hiển thị source code
-- [x] Copy-to-clipboard
+
+## Components Page
+- [x] Search
+- [x] Filter category
+- [ ] Grid preview
+
+## Component Detail Page
+- [x] Preview tab
+- [x] Code tab
+- [x] Copy code button
 - [x] Toast notification
+
+- [x] Hiển thị source code
 
 
