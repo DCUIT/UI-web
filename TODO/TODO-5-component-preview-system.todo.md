@@ -6,7 +6,7 @@
 ## Components Page
 - [x] Search
 - [x] Filter category
-- [ ] Grid preview
+- [x] Grid preview
 
 ## Component Detail Page
 - [x] Preview tab
