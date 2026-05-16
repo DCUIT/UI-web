@@ -9,7 +9,7 @@
 - [x] **Hero**
 - [x] **Pricing**
 - [x] **Footer**
-- [ ] **Dashboard UI**
+- [x] **Dashboard UI**
 - [ ] **Ecommerce UI**
 - [x] **Skeleton**
 - [ ] **Progress Bar**
