@@ -19,7 +19,7 @@
 - [ ] **Alert Dialog**
 - [ ] **Confirm Dialog**
 
-- [ ] **Primitives & States:** Hoàn thiện Modal, Progress Bar và hệ thống trạng thái (Empty/Error/Loading).
+- [x] **Primitives & States:** Hoàn thiện Modal, Progress Bar và hệ thống trạng thái (Empty/Error/Loading).
 - [ ] **Card System:** Chuẩn hóa các biến thể Card (Product, User, Blog, Analytics) với slot metadata.
 - [ ] **Data & Overlays:** Xây dựng Table (sort/search/pagination) và các thành phần Overlay (Drawer, Alert Dialog).
 - [ ] **Forms:** Xây dựng bộ UI cho Form (Login, Register, Multi-step, Checkout).
