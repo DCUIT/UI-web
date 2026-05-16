@@ -7,7 +7,7 @@
 - [x] Mega Menu
 - [x] Command Menu
 - [x] Search Bar
-- [ ] Topbar
+- [x] Topbar
 
 Notes:
 - Group these under `components/navigation/`.

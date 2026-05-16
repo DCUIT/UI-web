@@ -5,6 +5,7 @@ import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import Sidebar from "@/components/navigation/Sidebar";
 import MobileMenu from "@/components/navigation/MobileMenu";
+import Topbar from "@/components/navigation/Topbar";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,7 +16,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="lg:flex lg:gap-8">
+          <Topbar />
+          <div className="mt-6 lg:flex lg:gap-8">
             <aside className="hidden lg:block lg:w-72">
               <Sidebar />
             </aside>
