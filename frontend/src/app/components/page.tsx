@@ -19,6 +19,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb';
 import Pagination from '@/components/ui/Pagination';
 import Skeleton from '@/components/ui/Skeleton';
 import Spinner from '@/components/ui/Spinner';
+import DataTable from '@/components/ui/DataTable';
 import Card from '@/components/ui/Card';
 import Toast from '@/components/ui/Toast';
 import { componentsData } from '@/data/components';
@@ -214,6 +215,27 @@ function renderPreview(component: UIComponent) {
         <div className="flex items-center gap-4">
           <Spinner />
           <span className="text-sm text-slate-500 dark:text-slate-400">Loading...</span>
+        </div>
+      );
+    case 19:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Simple data table</p>
+          <DataTable
+            columns={[
+              { key: 'id', label: 'ID', sortable: true },
+              { key: 'name', label: 'Name', sortable: true },
+              { key: 'email', label: 'Email' },
+            ]}
+            data={[
+              { id: 1, name: 'Alice', email: 'alice@example.com' },
+              { id: 2, name: 'Bob', email: 'bob@example.com' },
+              { id: 3, name: 'Carol', email: 'carol@example.com' },
+              { id: 4, name: 'Dan', email: 'dan@example.com' },
+              { id: 5, name: 'Eve', email: 'eve@example.com' },
+              { id: 6, name: 'Frank', email: 'frank@example.com' },
+            ]}
+          />
         </div>
       );
     default:

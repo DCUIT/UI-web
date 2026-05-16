@@ -127,4 +127,11 @@ export const componentsData: Component[] = [
     description: 'A spinner indicator for loading states.',
     source: '<Spinner />',
   },
+  {
+    id: 19,
+    name: 'Data Table',
+    category: 'Table',
+    description: 'Simple data table with sorting and pagination.',
+    source: '<DataTable columns={[{ key: "id", label: "ID", sortable: true }, { key: "name", label: "Name" }]} data={[{ id: 1, name: "Item" }]} />',
+  },
 ];
