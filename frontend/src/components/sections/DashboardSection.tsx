@@ -1,6 +1,7 @@
 'use client';
 
 import Card from '@/components/ui/Card';
+import DataTable from '@/components/ui/DataTable';
 import { Activity, BarChart3, DollarSign, ShoppingCart, Sparkles, Users } from 'lucide-react';
 
 const metrics = [
@@ -180,6 +181,36 @@ export default function DashboardSection() {
           </div>
         </Card>
       </div>
+
+      <Card className="mt-6 space-y-6">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Activity table</p>
+            <h3 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">Recent order activity</h3>
+          </div>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            Updated in real time
+          </span>
+        </div>
+
+        <DataTable
+          columns={[
+            { key: 'order', label: 'Order', sortable: true },
+            { key: 'customer', label: 'Customer', sortable: true },
+            { key: 'status', label: 'Status' },
+            { key: 'amount', label: 'Amount', sortable: true },
+          ]}
+          data={[
+            { order: '#1051', customer: 'Avery Collins', status: 'Completed', amount: '$1,240' },
+            { order: '#1050', customer: 'Jules Bennett', status: 'Pending', amount: '$420' },
+            { order: '#1049', customer: 'Mina Lee', status: 'Refunded', amount: '$180' },
+            { order: '#1048', customer: 'Noah Davis', status: 'Completed', amount: '$985' },
+            { order: '#1047', customer: 'Lina Chen', status: 'Processing', amount: '$620' },
+            { order: '#1046', customer: 'Eli Brooks', status: 'Completed', amount: '$1,780' },
+          ]}
+          pageSize={5}
+        />
+      </Card>
     </section>
   );
 }
