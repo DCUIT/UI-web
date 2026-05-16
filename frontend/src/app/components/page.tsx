@@ -22,10 +22,16 @@ import Spinner from '@/components/ui/Spinner';
 import DataTable from '@/components/ui/DataTable';
 import Card from '@/components/ui/Card';
 import Toast from '@/components/ui/Toast';
+import ProductCard from '@/components/cards/ProductCard';
+import UserCard from '@/components/cards/UserCard';
+import PricingCard from '@/components/cards/PricingCard';
+import BlogCard from '@/components/cards/BlogCard';
+import DashboardCard from '@/components/cards/DashboardCard';
+import AnalyticsCard from '@/components/cards/AnalyticsCard';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
 
-const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout'];
+const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
 function ModalExample() {
   const [open, setOpen] = useState(false);
@@ -236,6 +242,48 @@ function renderPreview(component: UIComponent) {
               { id: 6, name: 'Frank', email: 'frank@example.com' },
             ]}
           />
+        </div>
+      );
+    case 20:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Product card preview</p>
+          <ProductCard />
+        </div>
+      );
+    case 21:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">User profile card preview</p>
+          <UserCard />
+        </div>
+      );
+    case 22:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Pricing card preview</p>
+          <PricingCard />
+        </div>
+      );
+    case 23:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Blog card preview</p>
+          <BlogCard />
+        </div>
+      );
+    case 24:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Dashboard overview preview</p>
+          <DashboardCard />
+        </div>
+      );
+    case 25:
+      return (
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Analytics summary preview</p>
+          <AnalyticsCard />
         </div>
       );
     default:
