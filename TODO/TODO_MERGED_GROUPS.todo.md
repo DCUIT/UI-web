@@ -91,4 +91,4 @@
 
 ### 6.9 SEO & Discoverability
 - [x] **JSON-LD Integration:** Triển khai dữ liệu cấu trúc cho SoftwareApplication và CreativeWork.
-- [ ] **Dynamic Meta Tags:** Tối ưu tiêu đề và mô tả trang theo linh kiện đang chọn.
+- [x] **Dynamic Meta Tags:** Tối ưu tiêu đề và mô tả trang theo linh kiện đang chọn.

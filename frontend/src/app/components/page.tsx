@@ -315,6 +315,20 @@ export default function ComponentsPage() {
   
   const selectedComponent = componentsData.find((item) => item.id === selectedId) ?? componentsData[0];
 
+  // Dynamic Meta Tags & Page Title Update
+  useEffect(() => {
+    if (selectedComponent) {
+      // Cập nhật tiêu đề trình duyệt
+      document.title = `${selectedComponent.name} Component - Master UI Platform`;
+      
+      // Cập nhật thẻ meta description để hỗ trợ SEO khi chuyển đổi linh kiện
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', selectedComponent.description);
+      }
+    }
+  }, [selectedComponent]);
+
   const results = useMemo(() => {
     return componentsData.filter((component) => {
       const matchesCategory = category === 'All' || component.category === category;
