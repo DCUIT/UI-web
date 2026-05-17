@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Copy, Eye, Code as CodeIcon } from 'lucide-react';
+import { Check, Copy, Eye, Code as CodeIcon, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 type ComponentPreviewProps = {
   name: string;
@@ -13,6 +13,7 @@ type ComponentPreviewProps = {
 export default function ComponentPreview({ name, children, code }: ComponentPreviewProps) {
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [copied, setCopied] = useState(false);
+  const [zoom, setZoom] = useState(100);
 
   const prettyCode = useMemo(() => code ?? '', [code]);
 
@@ -31,6 +32,36 @@ export default function ComponentPreview({ name, children, code }: ComponentPrev
       <div className="flex items-center justify-between px-2">
         <h3 className="text-lg font-semibold text-slate-950 dark:text-white">{name}</h3>
         <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
+          {/* Zoom Controls - Only visible in Preview tab */}
+          {activeTab === 'preview' && (
+            <div className="flex items-center gap-1 border-r border-slate-200 pr-2 mr-1 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setZoom(Math.max(50, zoom - 10))}
+                className="p-1.5 text-slate-500 hover:text-indigo-600 transition-colors"
+                title="Zoom Out"
+              >
+                <ZoomOut size={14} />
+              </button>
+              <span className="text-[10px] font-bold tabular-nums text-slate-400 w-8 text-center">{zoom}%</span>
+              <button
+                type="button"
+                onClick={() => setZoom(Math.min(200, zoom + 10))}
+                className="p-1.5 text-slate-500 hover:text-indigo-600 transition-colors"
+                title="Zoom In"
+              >
+                <ZoomIn size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom(100)}
+                className="ml-1 p-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+                title="Reset Zoom"
+              >
+                <RotateCcw size={12} />
+              </button>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setActiveTab('preview')}
@@ -66,7 +97,12 @@ export default function ComponentPreview({ name, children, code }: ComponentPrev
               exit={{ opacity: 0, y: -10 }}
               className="flex h-full min-h-[350px] items-center justify-center p-8"
             >
-              {children}
+              <motion.div 
+                style={{ scale: zoom / 100 }} 
+                className="origin-center transition-transform duration-200"
+              >
+                {children}
+              </motion.div>
             </motion.div>
           ) : (
             <motion.div
@@ -93,4 +129,3 @@ export default function ComponentPreview({ name, children, code }: ComponentPrev
     </div>
   );
 }
-
