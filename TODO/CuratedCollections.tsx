@@ -26,6 +26,16 @@ const collections = [
     bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
     components: ['Sidebar Navigation', 'Global Navbar', 'Analytics Stats', 'Data Table', 'User Profile Card'],
     difficulty: 'Hard'
+  },
+  {
+    id: 'auth-kit',
+    title: 'Authentication Kit',
+    description: 'Beautifully crafted forms for login, registration, and password recovery workflows.',
+    icon: Rocket, // Or a Shield/Lock icon if available
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
+    components: ['Login Form', 'Registration Form', 'Forgot Password', 'Social Auth Buttons', 'OTP Input'],
+    difficulty: 'Easy'
   }
 ];
 
