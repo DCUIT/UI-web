@@ -44,3 +44,43 @@
 *Các công việc hậu cần và triển khai.*
 - [x] **Project Setup:** Cấu trúc folder, GitHub setup và quy trình Deploy.
 - [x] **Final Review:** Hoàn thiện Documentation (README) và kiểm tra tổng thể.
+
+## 6. Real Product Experience (The Premium Upgrade)
+*Nâng cấp từ một bộ sưu tập UI thành một sản phẩm Frontend thực thụ.*
+
+### 6.1 Component Preview Experience (Priority 1)
+- [ ] **Live Preview Frame:** Xây dựng container bao ngoài component hỗ trợ resize.
+- [ ] **Responsive Toggle:** Thêm các nút chuyển đổi Desktop/Mobile/Tablet preview.
+- [ ] **Theme Switcher:** Cho phép đổi theme (Light/Dark) riêng biệt cho vùng preview.
+- [ ] **Zoom Control:** Tính năng phóng to/thu nhỏ vùng xem trước UI.
+
+### 6.2 Advanced Search UX (Priority 2)
+- [ ] **Fuzzy Search:** Cải thiện thuật toán tìm kiếm (gần đúng) trong Command Menu.
+- [ ] **Search History:** Lưu và hiển thị các tìm kiếm gần đây.
+- [ ] **Keyboard Nav:** Tối ưu hóa việc dùng phím mũi tên để chọn kết quả search.
+- [ ] **Highlighted Results:** Làm nổi bật từ khóa trong danh sách kết quả.
+
+### 6.3 Developer-Focused Sidebar (Priority 3)
+- [ ] **Collapsible Groups:** Cho phép đóng/mở các nhóm category (UI, Sections, App UI).
+- [ ] **Practical Grouping:** Phân loại lại theo thực tế (Feedback, Marketing, App UI).
+- [ ] **Compact Mode:** Tối ưu spacing để hiển thị được nhiều mục hơn trên sidebar.
+
+### 6.4 Advanced Code Viewer (Priority 4)
+- [ ] **Multi-file Tabs:** Hiển thị code theo file (usage.tsx, component.tsx, styles.css).
+- [ ] **Syntax Highlighting:** Tích hợp Prism hoặc Shiki để code hiển thị chuyên nghiệp hơn.
+- [ ] **Expand/Collapse:** Tính năng thu gọn các khối mã nguồn dài.
+
+### 6.5 Mobile UX & Accessibility (Priority 5)
+- [ ] **Mobile Drawer:** Xây dựng sidebar dạng drawer chuyên dụng cho điện thoại.
+- [ ] **Horizontal Tabs:** Thay thế các menu dọc bằng tab ngang khi xem trên mobile.
+- [ ] **Sticky Header:** Cố định navbar mobile khi cuộn trang.
+
+### 6.6 Visual & Metadata System
+- [ ] **Metadata Schema:** Thêm thông tin `difficulty`, `tags`, `responsive-support` cho data.
+- [ ] **Typography Upgrade:** Áp dụng `tracking-tight` cho heading và `text-muted-foreground` cho mô tả.
+- [ ] **Visual Hierarchy:** Card đang chọn sẽ có hiệu ứng `glow` hoặc `accent border`.
+- [ ] **Animation Polish:** Thêm hiệu ứng `hover lift` và `smooth layout transitions` (Framer Motion).
+
+### 6.7 Bonus Features
+- [ ] **Open in Playground:** Tích hợp nút mở nhanh trên CodeSandbox hoặc StackBlitz.
+- [ ] **Curated Collections:** Tạo các bộ Landing Page Kit, Dashboard Kit sẵn sàng sử dụng.
