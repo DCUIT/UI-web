@@ -83,4 +83,4 @@
 
 ### 6.7 Bonus Features
 - [x] **Open in Playground:** Tích hợp nút mở nhanh trên CodeSandbox hoặc StackBlitz.
-- [ ] **Curated Collections:** Tạo các bộ Landing Page Kit, Dashboard Kit sẵn sàng sử dụng.
+- [x] **Curated Collections:** Tạo các bộ Landing Page Kit, Dashboard Kit sẵn sàng sử dụng.

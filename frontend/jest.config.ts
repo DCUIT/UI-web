@@ -11,11 +11,15 @@ const config: Config = {
     '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['next/babel'] }],
   },
 
+  // IMPORTANT: keep Jest config as plain JS (no ts-node needed)
+  // Jest will load this file via ESM; specifying presets is enough for ts/tsx transpilation.
+
+
   // Make TS path aliases work ("@/...")
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 }
 
-export default config
+module.exports = config
 
