@@ -76,9 +76,9 @@
 - [ ] **Sticky Header:** Cố định navbar mobile khi cuộn trang.
 
 ### 6.6 Visual & Metadata System
-- [ ] **Metadata Schema:** Thêm thông tin `difficulty`, `tags`, `responsive-support` cho data.
-- [ ] **Typography Upgrade:** Áp dụng `tracking-tight` cho heading và `text-muted-foreground` cho mô tả.
-- [ ] **Visual Hierarchy:** Card đang chọn sẽ có hiệu ứng `glow` hoặc `accent border`.
+- [x] **Metadata Schema:** Thêm thông tin `difficulty`, `tags`, `responsive-support` cho data.
+- [x] Typography Upgrade: Áp dụng `tracking-tight` cho heading và `text-muted-foreground` cho mô tả.
+- [x] Visual Hierarchy: Card đang chọn sẽ có hiệu ứng `glow` hoặc `accent border`.
 - [ ] **Animation Polish:** Thêm hiệu ứng `hover lift` và `smooth layout transitions` (Framer Motion).
 
 ### 6.7 Bonus Features

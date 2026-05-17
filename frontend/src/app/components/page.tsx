@@ -355,7 +355,7 @@ export default function ComponentsPage() {
                   onClick={() => setSelectedId(component.id)}
                   className={`w-full rounded-xl border p-3 text-left transition-all duration-200 ${
                     selectedComponent.id === component.id
-                      ? 'border-slate-300 bg-slate-50 text-slate-950 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white'
+                      ? 'border-indigo-500 bg-white text-slate-950 shadow-[0_0_20px_rgba(79,70,229,0.15)] dark:border-indigo-400 dark:bg-slate-800 dark:text-white'
                       : 'border-transparent bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-transparent dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -370,8 +370,26 @@ export default function ComponentsPage() {
             <div className="space-y-6">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Selected component</p>
-                <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">{selectedComponent.name}</h2>
-                <p className="mt-2 text-base leading-7 text-slate-600 dark:text-slate-400">{selectedComponent.description}</p>
+                <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{selectedComponent.name}</h2>
+                
+                <div className="mt-4 flex flex-wrap items-center gap-4">
+                  {/* @ts-ignore - Hiển thị độ khó từ metadata */}
+                  {selectedComponent.difficulty && (
+                    <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>
+                      {selectedComponent.difficulty}
+                    </Badge>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {/* @ts-ignore - Hiển thị danh sách tags */}
+                    {selectedComponent.tags?.map((tag: string) => (
+                      <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="mt-4 text-lg leading-7 text-slate-500 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
               </div>
               <Button type="button" variant="secondary" onClick={copyCode}>
                 Copy source
@@ -443,7 +461,7 @@ export default function ComponentsPage() {
                       onClick={() => setSelectedId(component.id)}
                       className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
                         active
-                          ? 'border-slate-300 bg-slate-50 shadow-md dark:border-slate-700 dark:bg-slate-800'
+                          ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
                           : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
                       }`}
                     >
