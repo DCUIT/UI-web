@@ -18,9 +18,9 @@
 - [x] **Confirm Dialog**
 
 - [x] **Primitives & States:** Hoàn thiện Modal, Progress Bar và hệ thống trạng thái (Empty/Error/Loading).
-- [ ] **Card System:** Chuẩn hóa các biến thể Card (Product, User, Blog, Analytics) với slot metadata.
-- [ ] **Data & Overlays:** Xây dựng Table (sort/search/pagination) và các thành phần Overlay (Drawer, Alert Dialog).
-- [ ] **Forms:** Xây dựng bộ UI cho Form (Login, Register, Multi-step, Checkout).
+- [x] **Card System:** Chuẩn hóa các biến thể Card (Product, User, Blog, Analytics) với slot metadata.
+- [x] **Data & Overlays:** Xây dựng Table (sort/search/pagination) và các thành phần Overlay (Drawer, Alert Dialog).
+- [x] **Forms:** Xây dựng bộ UI cho Form (Login, Register, Multi-step, Checkout).
 
 
 ## 2. Shell & Navigation (The Framework)
@@ -32,7 +32,7 @@
 ## 3. Page Templates & Verticals (Organisms)
 *Tập trung vào việc lắp ghép các thành phần thành các trang hoàn chỉnh.*
 - [ ] **Marketing Sections:** Hero, Features, Pricing, Testimonials, FAQ, Footer.
-- [ ] **Industry Templates:** Xây dựng Dashboard UI, Ecommerce (In Progress), Portfolio và Auth pages (Done).
+- [x] **Industry Templates:** Xây dựng Dashboard UI, Ecommerce, Portfolio và Auth pages.
 - [ ] **Product Polish:** Tinh chỉnh Typography, Spacing, SEO và Favicon cho các trang mẫu.
 
 ## 4. Platform Discovery UX (The Product Site)
