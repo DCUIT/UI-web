@@ -33,6 +33,7 @@ import Button from '@/components/ui/Button';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
 import ComponentPreview from '@/components/discovery/ComponentPreview'; // Import ComponentPreview
+import CuratedCollections from '@/components/templates/CuratedCollections';
 
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
@@ -404,10 +405,39 @@ export default function ComponentsPage() {
           <p className="mx-auto max-w-2xl text-lg leading-7 text-slate-600 dark:text-slate-300">
             Browse, preview, and copy production-ready components for your design system.
           </p>
+
+          <div className="mt-10 flex justify-center">
+            <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
+              <button
+                onClick={() => setViewMode('individual')}
+                className={cn(
+                  "rounded-lg px-4 py-2 text-sm font-bold transition-all",
+                  viewMode === 'individual' 
+                    ? "bg-indigo-600 text-white shadow-md" 
+                    : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                )}
+              >
+                Individual
+              </button>
+              <button
+                onClick={() => setViewMode('collections')}
+                className={cn(
+                  "rounded-lg px-4 py-2 text-sm font-bold transition-all",
+                  viewMode === 'collections' 
+                    ? "bg-indigo-600 text-white shadow-md" 
+                    : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                )}
+              >
+                Collections
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Mobile Filter Trigger & Horizontal Categories */}
-        <div className="sticky top-[64px] z-30 -mx-4 mb-8 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
+        {viewMode === 'individual' ? (
+          <>
+            {/* Mobile Filter Trigger & Horizontal Categories */}
+            <div className="sticky top-[64px] z-30 -mx-4 mb-8 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
           <div className="flex items-center gap-3">
             <Button variant="secondary" onClick={() => setIsMobileFiltersOpen(true)} className="shrink-0">
               <Filter size={18} className="mr-2" /> Filters
@@ -560,7 +590,12 @@ export default function ComponentsPage() {
               </div>
             </div>
           </div>
-        </div>
+          </>
+        ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <CuratedCollections />
+          </motion.div>
+        )}
       </div>
 
       <Toast message={toastMessage} />
