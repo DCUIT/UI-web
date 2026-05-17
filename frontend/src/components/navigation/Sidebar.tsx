@@ -10,7 +10,7 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <nav className="sticky top-20 w-full">      
+    <nav className="sticky top-20 w-full" aria-label="Main Sidebar Navigation">      
       <div className="space-y-3">
         <div className="mb-3 px-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Browse</div>
         <div className="flex flex-col gap-2">
@@ -18,7 +18,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none"
             >
               {item.label}
             </Link>
