@@ -409,7 +409,7 @@ export default function ComponentsPage() {
         {/* Mobile Filter Trigger & Horizontal Categories */}
         <div className="sticky top-[64px] z-30 -mx-4 mb-8 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
           <div className="flex items-center gap-3">
-            <Button variant="secondary" size="md" onClick={() => setIsMobileFiltersOpen(true)} className="shrink-0">
+            <Button variant="secondary" onClick={() => setIsMobileFiltersOpen(true)} className="shrink-0">
               <Filter size={18} className="mr-2" /> Filters
             </Button>
             <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
