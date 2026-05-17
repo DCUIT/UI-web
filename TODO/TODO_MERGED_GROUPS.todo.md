@@ -43,4 +43,4 @@
 ## 5. Ops & Infrastructure
 *Các công việc hậu cần và triển khai.*
 - [x] **Project Setup:** Cấu trúc folder, GitHub setup và quy trình Deploy.
-- [ ] **Final Review:** Kiểm tra tổng thể trước khi release.
+- [x] **Final Review:** Hoàn thiện Documentation (README) và kiểm tra tổng thể.
