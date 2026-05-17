@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Command } from "cmdk"
+import { motion, AnimatePresence } from "framer-motion"
 import { 
   Search, 
   Layout, 
