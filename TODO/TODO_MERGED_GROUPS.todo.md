@@ -26,13 +26,13 @@
 ## 2. Shell & Navigation (The Framework)
 *Tập trung vào khung sườn ứng dụng và trải nghiệm điều hướng.*
 - [x] **Global Navigation:** Chuẩn hóa Navbar, Sidebar, Mega Menu và Command Menu (Ctrl+K).
-- [ ] **Mobile Experience:** Tối ưu Bottom Navbar và các biến thể Mobile UI/Cards.
-- [ ] **Theme & Accessibility:** Hoàn thiện Dark Mode, Keyboard support và Layout tổng thể.
+- [x] **Mobile Experience:** Tối ưu Bottom Navbar và các biến thể Mobile UI/Cards.
+- [x] **Theme & Accessibility:** Hoàn thiện Dark Mode, Keyboard support và Layout tổng thể.
 
 ## 3. Page Templates & Verticals (Organisms)
 *Tập trung vào việc lắp ghép các thành phần thành các trang hoàn chỉnh.*
 - [ ] **Marketing Sections:** Hero, Features, Pricing, Testimonials, FAQ, Footer.
-- [ ] **Industry Templates:** Xây dựng Dashboard UI, Ecommerce, Portfolio và Auth pages.
+- [ ] **Industry Templates:** Xây dựng Dashboard UI (In Progress), Ecommerce, Portfolio và Auth pages.
 - [ ] **Product Polish:** Tinh chỉnh Typography, Spacing, SEO và Favicon cho các trang mẫu.
 
 ## 4. Platform Discovery UX (The Product Site)
