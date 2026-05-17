@@ -22,21 +22,21 @@ export default function Navbar({ onMobileMenu }: { onMobileMenu?: () => void }) 
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white/60 backdrop-blur dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800">
+    <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/70">
       <CommandMenu />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="font-bold text-lg">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="text-xl font-bold tracking-tight text-slate-950 dark:text-white">
               UI Platform
             </Link>
 
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="hidden items-center gap-1 md:flex">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-2 rounded ${path === item.href ? "bg-slate-100 dark:bg-slate-800" : "hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${path === item.href ? "bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-white" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"}`}
                 >
                   {item.label}
                 </Link>
@@ -45,13 +45,13 @@ export default function Navbar({ onMobileMenu }: { onMobileMenu?: () => void }) 
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <SearchBar />
-            <button onClick={openCommandMenu} title="Command menu (Ctrl/Cmd+K)" className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
-              <Command size={16} /> <span className="text-sm">Cmd</span>
+            <button onClick={openCommandMenu} title="Command menu (Ctrl/Cmd+K)" className="hidden items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex">
+              <Command size={16} /> <span>Cmd</span>
             </button>
             <ThemeToggle />
-            <button className="md:hidden p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800" onClick={onMobileMenu} aria-label="Open mobile menu">
+            <button className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden" onClick={onMobileMenu} aria-label="Open mobile menu">
               <MenuIcon />
             </button>
           </div>

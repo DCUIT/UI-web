@@ -315,174 +315,169 @@ export default function ComponentsPage() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-10 space-y-3 text-center">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-500">Component library</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-          Browse reusable UI primitives and copy ready-to-use code.
-        </h1>
-        <p className="mx-auto max-w-2xl text-slate-600 dark:text-slate-300">
-          Search through components, preview states, and inspect source right from the builder page.
-        </p>
-      </div>
+    <section className="min-h-screen bg-white dark:bg-slate-950">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-12 space-y-4 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Component library</p>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
+            Reusable UI Components
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg leading-7 text-slate-600 dark:text-slate-300">
+            Browse, preview, and copy production-ready components for your design system.
+          </p>
+        </div>
 
-      <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="space-y-6 rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-card shadow-slate-900/5 dark:border-slate-800/80 dark:bg-slate-950">
-          <div className="space-y-3">
-            <Input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search components"
-            />
-            <div className="flex flex-wrap gap-2">
-              {categories.map((option) => (
+        <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+          <aside className="sticky top-20 h-fit space-y-8 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-slate-900">
+            <div className="space-y-4">
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search components"
+              />
+              <div className="flex flex-wrap gap-2">
+                {categories.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setCategory(option)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
+                      category === option
+                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {results.map((component) => (
                 <button
-                  key={option}
+                  key={component.id}
                   type="button"
-                  onClick={() => setCategory(option)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                    category === option
-                      ? 'bg-slate-950 text-white dark:bg-sky-400 dark:text-slate-950'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
+                  onClick={() => setSelectedId(component.id)}
+                  className={`w-full rounded-xl border p-3 text-left transition-all duration-200 ${
+                    selectedComponent.id === component.id
+                      ? 'border-slate-300 bg-slate-50 text-slate-950 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white'
+                      : 'border-transparent bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-transparent dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
-                  {option}
+                  <p className="text-sm font-medium">{component.name}</p>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
                 </button>
               ))}
             </div>
-          </div>
+          </aside>
 
-          <div className="space-y-3">
-            {results.map((component) => (
-              <button
-                key={component.id}
-                type="button"
-                onClick={() => setSelectedId(component.id)}
-                className={`w-full rounded-3xl border p-4 text-left transition ${
-                  selectedComponent.id === component.id
-                    ? 'border-sky-500 bg-sky-50 text-slate-950 dark:border-sky-400 dark:bg-slate-900 dark:text-white'
-                    : 'border-slate-200 bg-white text-slate-950 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-slate-700'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-semibold">{component.name}</p>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{component.category}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </aside>
-
-        <Card className="space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-500">Selected component</p>
-              <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">{selectedComponent.name}</h2>
-              <p className="mt-2 text-slate-600 dark:text-slate-400">{selectedComponent.description}</p>
-            </div>
-            <Button type="button" variant="secondary" onClick={copyCode}>
-              Copy source
-            </Button>
-          </div>
-
-          <div className="rounded-[2rem] border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
-            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-8">
+            <div className="space-y-6">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                  Grid preview
-                </p>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                  Click an item to update the preview and code.
-                </p>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Selected component</p>
+                <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">{selectedComponent.name}</h2>
+                <p className="mt-2 text-base leading-7 text-slate-600 dark:text-slate-400">{selectedComponent.description}</p>
               </div>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{results.length} results</p>
+              <Button type="button" variant="secondary" onClick={copyCode}>
+                Copy source
+              </Button>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {results.map((component) => {
-                const active = component.id === selectedComponent.id;
-                return (
-                  <button
-                    key={component.id}
-                    type="button"
-                    onClick={() => setSelectedId(component.id)}
-                    className={
-                      active
-                        ? 'group rounded-3xl border border-sky-500/70 bg-white p-4 text-left shadow-sm shadow-sky-500/10 transition hover:shadow-md dark:border-sky-400/70'
-                        : 'group rounded-3xl border border-slate-200/80 bg-white/70 p-4 text-left transition hover:bg-white dark:border-slate-800/80 dark:bg-slate-900/30'
-                    }
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-slate-950 dark:text-white">{component.name}</p>
-                        <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{component.category}</p>
-                      </div>
-                      <span
-                        className={
-                          active
-                            ? 'text-sky-600 dark:text-sky-400'
-                            : 'text-slate-300 transition group-hover:text-slate-500 dark:text-slate-700 dark:group-hover:text-slate-400'
-                        }
-                      >
-                        {active ? 'Selected' : '→'}
-                      </span>
-                    </div>
-                    <div className="mt-3 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950">
-                      {renderPreview(component)}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-            <div className="rounded-[2rem] border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
-              <div className="mb-5 flex items-center justify-between">
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Preview</p>
-              </div>
-              {renderPreview(selectedComponent)}
-            </div>
-
-            <div className="rounded-[2rem] border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
-              <div className="mb-5 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('preview')}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    activeTab === 'preview'
-                      ? 'bg-slate-950 text-white dark:bg-slate-200 dark:text-slate-950'
-                      : 'bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  Preview
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('code')}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    activeTab === 'code'
-                      ? 'bg-slate-950 text-white dark:bg-slate-200 dark:text-slate-950'
-                      : 'bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  Code
-                </button>
-              </div>
-              {activeTab === 'preview' ? (
-                <div className="rounded-3xl border border-slate-200/80 bg-white p-6 text-slate-950 dark:border-slate-800/80 dark:bg-slate-900 dark:text-slate-100">
+            <div className="grid gap-8 lg:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                <p className="mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Preview</p>
+                <div className="space-y-4">
                   {renderPreview(selectedComponent)}
                 </div>
-              ) : (
-                <pre className="max-h-[380px] overflow-auto rounded-3xl border border-slate-200/80 bg-slate-950 p-5 text-sm text-slate-100 dark:border-slate-800/80 dark:bg-slate-900">
-                  <code>{selectedComponent.source}</code>
-                </pre>
-              )}
+              </div>
+
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                <div className="mb-6 flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('preview')}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                      activeTab === 'preview'
+                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    Preview
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('code')}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                      activeTab === 'code'
+                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    Code
+                  </button>
+                </div>
+                {activeTab === 'preview' ? (
+                  <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
+                    {renderPreview(selectedComponent)}
+                  </div>
+                ) : (
+                  <pre className="max-h-[420px] overflow-auto rounded-xl border border-slate-200/80 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800/80">
+                    <code>{selectedComponent.source}</code>
+                  </pre>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                    All components
+                  </p>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{results.length} results available</p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {results.map((component) => {
+                  const active = component.id === selectedComponent.id;
+                  return (
+                    <button
+                      key={component.id}
+                      type="button"
+                      onClick={() => setSelectedId(component.id)}
+                      className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
+                        active
+                          ? 'border-slate-300 bg-slate-50 shadow-md dark:border-slate-700 dark:bg-slate-800'
+                          : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
+                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
+                        </div>
+                        <span
+                          className={`text-sm transition-transform ${
+                            active
+                              ? 'text-slate-950 dark:text-white'
+                              : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
+                          }`}
+                        >
+                          {active ? '✓' : '→'}
+                        </span>
+                      </div>
+                      <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
+                        {renderPreview(component)}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       <Toast message={toastMessage} />
