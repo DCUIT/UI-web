@@ -1,20 +1,24 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
 import { Command } from "cmdk"
 import { 
   Search, 
   Layout, 
-  Settings, 
-  User, 
-  Plus, 
   FileText, 
-  Github,
-  Monitor
+  Monitor,
+  Moon,
+  Sun,
+  Laptop
 } from "lucide-react"
+import { componentsData } from "@/data/components"
 
 export default function CommandMenu() {
   const [open, setOpen] = useState(false)
+  const router = useRouter()
+  const { setTheme } = useTheme()
 
   // Lắng nghe phím tắt Ctrl+K / Cmd+K
   useEffect(() => {
@@ -36,6 +40,11 @@ export default function CommandMenu() {
     }
   }, [])
 
+  const runCommand = (command: () => void) => {
+    setOpen(false)
+    command()
+  }
+
   if (!open) return null
 
   return (
@@ -54,21 +63,42 @@ export default function CommandMenu() {
           />
         </div>
         
-        <Command.List className="max-h-[300px] overflow-y-auto p-2">
+        <Command.List className="max-h-[450px] overflow-y-auto p-2">
           <Command.Empty className="py-6 text-center text-sm text-slate-500">No results found.</Command.Empty>
           
-          <Command.Group heading="Suggestions" className="px-2 py-1.5 text-xs font-medium text-slate-500">
-            <Item icon={Layout} label="Go to Components" shortcut="G C" />
-            <Item icon={Plus} label="New Project" shortcut="N P" />
-            <Item icon={Monitor} label="Dashboard Overview" />
+          <Command.Group heading="Navigation" className="px-2 py-1.5 text-xs font-medium text-slate-500">
+            <Item 
+              icon={Layout} 
+              label="All Components" 
+              shortcut="G C" 
+              onSelect={() => runCommand(() => router.push("/components"))} 
+            />
+            <Item 
+              icon={Monitor} 
+              label="Dashboard View" 
+              onSelect={() => runCommand(() => router.push("/components?category=Dashboard"))} 
+            />
           </Command.Group>
 
           <Command.Separator className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
 
-          <Command.Group heading="Settings" className="px-2 py-1.5 text-xs font-medium text-slate-500">
-            <Item icon={User} label="Profile Settings" shortcut="S P" />
-            <Item icon={Settings} label="General Preferences" />
-            <Item icon={Github} label="View on GitHub" />
+          <Command.Group heading="Components" className="px-2 py-1.5 text-xs font-medium text-slate-500">
+            {componentsData.map((comp) => (
+              <Item 
+                key={comp.id} 
+                icon={FileText} 
+                label={comp.name} 
+                onSelect={() => runCommand(() => router.push(`/components?id=${comp.id}`))} 
+              />
+            ))}
+          </Command.Group>
+
+          <Command.Separator className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
+
+          <Command.Group heading="System Commands" className="px-2 py-1.5 text-xs font-medium text-slate-500">
+            <Item icon={Sun} label="Set Light Mode" onSelect={() => runCommand(() => setTheme("light"))} />
+            <Item icon={Moon} label="Set Dark Mode" onSelect={() => runCommand(() => setTheme("dark"))} />
+            <Item icon={Laptop} label="Set System Mode" onSelect={() => runCommand(() => setTheme("system"))} />
           </Command.Group>
         </Command.List>
       </Command>
@@ -76,9 +106,10 @@ export default function CommandMenu() {
   )
 }
 
-function Item({ icon: Icon, label, shortcut }: { icon: any, label: string, shortcut?: string }) {
+function Item({ icon: Icon, label, shortcut, onSelect }: { icon: any, label: string, shortcut?: string, onSelect?: () => void }) {
   return (
     <Command.Item 
+      onSelect={onSelect}
       className="relative flex cursor-default select-none items-center rounded-lg px-2 py-2 text-sm outline-none aria-selected:bg-slate-100 aria-selected:text-slate-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:text-slate-300 dark:aria-selected:bg-slate-800 dark:aria-selected:text-slate-100"
     >
       <Icon className="mr-3 h-4 w-4" />
