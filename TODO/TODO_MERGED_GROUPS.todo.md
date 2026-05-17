@@ -10,7 +10,7 @@
 - [x] **Pricing**
 - [x] **Footer**
 - [x] **Dashboard UI**
-- [ ] **Ecommerce UI**
+- [x] **Ecommerce UI**
 - [x] **Skeleton**
 - [x] **Progress Bar**
 - [x] **Drawer**
@@ -32,7 +32,7 @@
 ## 3. Page Templates & Verticals (Organisms)
 *Tập trung vào việc lắp ghép các thành phần thành các trang hoàn chỉnh.*
 - [ ] **Marketing Sections:** Hero, Features, Pricing, Testimonials, FAQ, Footer.
-- [ ] **Industry Templates:** Xây dựng Dashboard UI (In Progress), Ecommerce, Portfolio và Auth pages.
+- [ ] **Industry Templates:** Xây dựng Dashboard UI, Ecommerce (In Progress), Portfolio và Auth pages (Done).
 - [ ] **Product Polish:** Tinh chỉnh Typography, Spacing, SEO và Favicon cho các trang mẫu.
 
 ## 4. Platform Discovery UX (The Product Site)
