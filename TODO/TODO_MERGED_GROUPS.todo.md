@@ -37,8 +37,8 @@
 
 ## 4. Platform Discovery UX (The Product Site)
 *Tập trung vào trải nghiệm của người dùng khi duyệt và copy component.*
-- [ ] **Component Preview:** Xây dựng trang `/components`, tab preview code và tính năng copy-to-clipboard.
-- [ ] **Search & Search UX:** Hệ thống Search/Filter linh hoạt kết hợp với Framer Motion và hiệu ứng hover.
+- [x] **Component Preview:** Xây dựng trang `/components`, tab preview code và tính năng copy-to-clipboard.
+- [x] **Search & Search UX:** Hệ thống Search/Filter linh hoạt kết hợp với Framer Motion và hiệu ứng hover.
 
 ## 5. Ops & Infrastructure
 *Các công việc hậu cần và triển khai.*
