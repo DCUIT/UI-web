@@ -15,18 +15,18 @@ export default function Button({
   variant = 'primary',
   href,
   className,
+  'aria-label': ariaLabel,
   ...props
 }: ButtonProps) {
   const classes = `inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition ${variantStyles[variant]} ${className ?? ''}`;
 
   if (href) {
     return (
-      <Link href={href} className={classes} {...(props as any)}>
+      <Link href={href} className={classes} aria-label={ariaLabel} {...(props as any)}>
         {props.children}
       </Link>
     );
   }
 
-  return <button className={classes} {...props} />;
+  return <button className={classes} aria-label={ariaLabel} {...props} />;
 }
-

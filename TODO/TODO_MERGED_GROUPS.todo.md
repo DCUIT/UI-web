@@ -85,3 +85,6 @@
 ### 6.7 Bonus Features
 - [x] **Open in Playground:** Tích hợp nút mở nhanh trên CodeSandbox hoặc StackBlitz.
 - [x] **Curated Collections:** Tạo các bộ Landing Page Kit, Dashboard Kit sẵn sàng sử dụng.
+### 6.8 Accessibility & Quality Assurance
+- [x] **Accessibility Testing:** Thiết lập quy trình kiểm thử tự động với `jest-axe`.
+- [ ] **A11y Audit:** Sửa lỗi tương phản màu sắc và bổ sung ARIA labels còn thiếu.
