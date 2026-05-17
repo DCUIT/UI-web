@@ -451,42 +451,53 @@ export default function ComponentsPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {results.map((component) => {
-                  const active = component.id === selectedComponent.id;
-                  return (
-                    <button
-                      key={component.id}
-                      type="button"
-                      onClick={() => setSelectedId(component.id)}
-                      className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
-                        active
-                          ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
-                          : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
-                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
-                        </div>
-                        <span
-                          className={`text-sm transition-transform ${
+              <motion.div layout className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <AnimatePresence mode="popLayout">
+                  {results.map((component) => {
+                    const active = component.id === selectedComponent.id;
+                    return (
+                      <motion.div
+                        key={component.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        whileHover={{ y: -5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(component.id)}
+                          className={`group h-full w-full rounded-xl border p-4 text-left transition-all duration-200 ${
                             active
-                              ? 'text-slate-950 dark:text-white'
-                              : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
+                              ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
+                              : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
                           }`}
                         >
-                          {active ? '✓' : '→'}
-                        </span>
-                      </div>
-                      <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
-                        {renderPreview(component)}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
+                              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
+                            </div>
+                            <span
+                              className={`text-sm transition-transform ${
+                                active
+                                  ? 'text-slate-950 dark:text-white'
+                                  : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
+                              }`}
+                            >
+                              {active ? '✓' : '→'}
+                            </span>
+                          </div>
+                          <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
+                            {renderPreview(component)}
+                          </div>
+                        </button>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              </motion.div>
             </div>
           </div>
         </div>
