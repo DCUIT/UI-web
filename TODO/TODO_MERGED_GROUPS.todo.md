@@ -31,9 +31,9 @@
 
 ## 3. Page Templates & Verticals (Organisms)
 *Tập trung vào việc lắp ghép các thành phần thành các trang hoàn chỉnh.*
-- [ ] **Marketing Sections:** Hero, Features, Pricing, Testimonials, FAQ, Footer.
+- [x] **Marketing Sections:** Hero, Features, Pricing, Testimonials, FAQ, Footer.
 - [x] **Industry Templates:** Xây dựng Dashboard UI, Ecommerce, Portfolio và Auth pages.
-- [ ] **Product Polish:** Tinh chỉnh Typography, Spacing, SEO và Favicon cho các trang mẫu.
+- [x] **Product Polish:** Tinh chỉnh Typography, Spacing, SEO và Favicon cho các trang mẫu.
 
 ## 4. Platform Discovery UX (The Product Site)
 *Tập trung vào trải nghiệm của người dùng khi duyệt và copy component.*
