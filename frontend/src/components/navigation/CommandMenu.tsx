@@ -4,7 +4,8 @@ import React, { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, Layout, FileText, Monitor, Moon, Sun, Laptop } from "lucide-react"
+import { Search, Layout, FileText, Monitor, Moon, Sun, Laptop, Clock, Trash2 } from "lucide-react"
+import { Command } from "cmdk"
 import { componentsData } from "@/data/components"
 
 type MenuItem = {
@@ -16,9 +17,24 @@ type MenuItem = {
   onSelect: () => void
 }
 
+function HighlightedText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <span>{text}</span>
+  const parts = text.split(new RegExp(`(${query})`, "gi"))
+  return (
+    <span>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <span key={i} className="text-indigo-600 font-semibold dark:text-indigo-400">{part}</span>
+        ) : (part)
+      )}
+    </span>
+  )
+}
+
 export default function CommandMenu() {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
+  const [recent, setRecent] = useState<string[]>([])
 
   const router = useRouter()
   const { setTheme } = useTheme()
@@ -88,6 +104,23 @@ export default function CommandMenu() {
     return Array.from(map.entries())
   }, [filtered])
 
+  useEffect(() => {
+    const saved = localStorage.getItem("ui-platform-recent-searches")
+    if (saved) setRecent(JSON.parse(saved))
+  }, [])
+
+  const addToRecent = (term: string) => {
+    if (!term.trim()) return
+    const newRecent = [term, ...recent.filter(t => t !== term)].slice(0, 5)
+    setRecent(newRecent)
+    localStorage.setItem("ui-platform-recent-searches", JSON.stringify(newRecent))
+  }
+
+  const clearRecent = () => {
+    setRecent([])
+    localStorage.removeItem("ui-platform-recent-searches")
+  }
+
   // Lắng nghe phím tắt Ctrl+K / Cmd+K
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -116,6 +149,7 @@ export default function CommandMenu() {
   }, [open])
 
   const runCommand = (command: () => void) => {
+    if (query.trim()) addToRecent(query)
     setOpen(false)
     setQuery("")
     command()
@@ -188,4 +222,3 @@ export default function CommandMenu() {
     </AnimatePresence>
   )
 }
-

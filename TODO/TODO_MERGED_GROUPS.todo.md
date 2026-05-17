@@ -55,10 +55,10 @@
 - [ ] **Zoom Control:** Tính năng phóng to/thu nhỏ vùng xem trước UI.
 
 ### 6.2 Advanced Search UX (Priority 2)
-- [ ] **Fuzzy Search:** Cải thiện thuật toán tìm kiếm (gần đúng) trong Command Menu.
-- [ ] **Search History:** Lưu và hiển thị các tìm kiếm gần đây.
-- [ ] **Keyboard Nav:** Tối ưu hóa việc dùng phím mũi tên để chọn kết quả search.
-- [ ] **Highlighted Results:** Làm nổi bật từ khóa trong danh sách kết quả.
+- [x] **Fuzzy Search:** Cải thiện thuật toán tìm kiếm (gần đúng) trong Command Menu.
+- [x] **Search History:** Lưu và hiển thị các tìm kiếm gần đây.
+- [x] **Keyboard Nav:** Tối ưu hóa việc dùng phím mũi tên để chọn kết quả search.
+- [x] **Highlighted Results:** Làm nổi bật từ khóa trong danh sách kết quả.
 
 ### 6.3 Developer-Focused Sidebar (Priority 3)
 - [ ] **Collapsible Groups:** Cho phép đóng/mở các nhóm category (UI, Sections, App UI).

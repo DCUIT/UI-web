@@ -762,6 +762,9 @@ video {
 .max-h-\[450px\] {
   max-height: 450px;
 }
+.max-h-\[260px\] {
+  max-height: 260px;
+}
 .min-h-\[140px\] {
   min-height: 140px;
 }
@@ -1433,6 +1436,9 @@ video {
 }
 .leading-relaxed {
   line-height: 1.625;
+}
+.leading-5 {
+  line-height: 1.25rem;
 }
 .tracking-\[0\.2em\] {
   letter-spacing: 0.2em;
