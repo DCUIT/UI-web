@@ -5,19 +5,17 @@
 - [x] **Buttons**
 - [x] **Inputs**
 - [x] **Cards**
-- [ ] **Modals**
+- [x] **Modals**
 - [x] **Hero**
 - [x] **Pricing**
 - [x] **Footer**
 - [x] **Dashboard UI**
 - [ ] **Ecommerce UI**
 - [x] **Skeleton**
-- [ ] **Progress Bar**
-
-- [x] **Modal**
-- [ ] **Drawer**
-- [ ] **Alert Dialog**
-- [ ] **Confirm Dialog**
+- [x] **Progress Bar**
+- [x] **Drawer**
+- [x] **Alert Dialog**
+- [x] **Confirm Dialog**
 
 - [x] **Primitives & States:** Hoàn thiện Modal, Progress Bar và hệ thống trạng thái (Empty/Error/Loading).
 - [ ] **Card System:** Chuẩn hóa các biến thể Card (Product, User, Blog, Analytics) với slot metadata.
@@ -27,7 +25,7 @@
 
 ## 2. Shell & Navigation (The Framework)
 *Tập trung vào khung sườn ứng dụng và trải nghiệm điều hướng.*
-- [ ] **Global Navigation:** Chuẩn hóa Navbar, Sidebar, Mega Menu và Command Menu (Ctrl+K).
+- [x] **Global Navigation:** Chuẩn hóa Navbar, Sidebar, Mega Menu và Command Menu (Ctrl+K).
 - [ ] **Mobile Experience:** Tối ưu Bottom Navbar và các biến thể Mobile UI/Cards.
 - [ ] **Theme & Accessibility:** Hoàn thiện Dark Mode, Keyboard support và Layout tổng thể.
 
@@ -44,5 +42,5 @@
 
 ## 5. Ops & Infrastructure
 *Các công việc hậu cần và triển khai.*
-- [ ] **Project Setup:** Cấu trúc folder, GitHub setup và quy trình Deploy.
+- [x] **Project Setup:** Cấu trúc folder, GitHub setup và quy trình Deploy.
 - [ ] **Final Review:** Kiểm tra tổng thể trước khi release.
