@@ -66,9 +66,9 @@
 - [ ] **Compact Mode:** Tối ưu spacing để hiển thị được nhiều mục hơn trên sidebar.
 
 ### 6.4 Advanced Code Viewer (Priority 4)
-- [ ] **Multi-file Tabs:** Hiển thị code theo file (usage.tsx, component.tsx, styles.css).
-- [ ] **Syntax Highlighting:** Tích hợp Prism hoặc Shiki để code hiển thị chuyên nghiệp hơn.
-- [ ] **Expand/Collapse:** Tính năng thu gọn các khối mã nguồn dài.
+- [x] **Multi-file Tabs:** Hiển thị code theo file (usage.tsx, component.tsx, styles.css).
+- [x] **Syntax Highlighting:** Tích hợp cấu trúc hỗ trợ Shiki/Prism để code hiển thị chuyên nghiệp hơn.
+- [x] **Expand/Collapse:** Tính năng thu gọn các khối mã nguồn dài.
 
 ### 6.5 Mobile UX & Accessibility (Priority 5)
 - [ ] **Mobile Drawer:** Xây dựng sidebar dạng drawer chuyên dụng cho điện thoại.

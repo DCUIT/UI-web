@@ -31,6 +31,8 @@ import AnalyticsCard from '@/components/cards/AnalyticsCard';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
 import ComponentPreview from '@/components/discovery/ComponentPreview'; // Import ComponentPreview
+import { motion, AnimatePresence } from 'framer-motion';
+
 
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
@@ -297,8 +299,22 @@ export default function ComponentsPage() {
   const [category, setCategory] = useState('All');
   const [selectedId, setSelectedId] = useState(1);
   const [toastMessage, setToastMessage] = useState('');
-  
+  const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
+
   const selectedComponent = componentsData.find((item) => item.id === selectedId) ?? componentsData[0];
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(selectedComponent.source);
+      setToastMessage('Source copied to clipboard');
+    } catch {
+      setToastMessage('Failed to copy source');
+    }
+
+    // Clear toast after a bit.
+    setTimeout(() => setToastMessage(''), 2500);
+  };
+
 
   const results = useMemo(() => {
     return componentsData.filter((component) => {

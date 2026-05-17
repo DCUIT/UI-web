@@ -4,5 +4,8 @@ export type Component = {
   category: string;
   description: string;
   source: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard' | string;
+  tags?: string[];
 };
+
 
