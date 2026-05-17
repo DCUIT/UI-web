@@ -88,6 +88,7 @@
 ### 6.8 Accessibility & Quality Assurance
 - [x] **Accessibility Testing:** Thiết lập quy trình kiểm thử tự động với `jest-axe`.
 - [x] **A11y Audit:** Sửa lỗi tương phản màu sắc và bổ sung ARIA labels còn thiếu.
+- [x] **Integration Tests:** Viết Integration Test cho logic lọc và tìm kiếm linh kiện.
 
 ### 6.9 SEO & Discoverability
 - [x] **JSON-LD Integration:** Triển khai dữ liệu cấu trúc cho SoftwareApplication và CreativeWork.
