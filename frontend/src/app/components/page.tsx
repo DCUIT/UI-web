@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X, Search as SearchIcon, ChevronRight } from 'lucide-react';
 import Input from '@/components/ui/Input';
@@ -297,10 +298,21 @@ function renderPreview(component: UIComponent) {
   }
 }
 
-export default function ComponentsPage() {
+/**
+ * Extended component type to fix @ts-ignore issues
+ */
+interface ExtendedUIComponent extends UIComponent {
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
+  tags?: string[];
+}
+
+function ComponentsPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('All');
-  const [selectedId, setSelectedId] = useState(1);
+  const [category, setCategory] = useState(searchParams.get('category') || 'All');
+  const [selectedId, setSelectedId] = useState(Number(searchParams.get('id')) || 1);
   const [toastMessage, setToastMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -313,7 +325,21 @@ export default function ComponentsPage() {
     window.setTimeout(() => setToastMessage(''), 2200);
   };
   
-  const selectedComponent = componentsData.find((item) => item.id === selectedId) ?? componentsData[0];
+  const selectedComponent = (componentsData.find((item) => item.id === selectedId) ?? componentsData[0]) as ExtendedUIComponent;
+
+  // Sync State with URL for deep linking
+  const updateParams = (id: number, cat: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('id', id.toString());
+    params.set('category', cat);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleSelectComponent = (id: number) => {
+    setSelectedId(id);
+    updateParams(id, category);
+    if (isMobileFiltersOpen) setIsMobileFiltersOpen(false);
+  };
 
   // Dynamic Meta Tags & Page Title Update
   useEffect(() => {
@@ -359,6 +385,7 @@ export default function ComponentsPage() {
                 type="button"
                 onClick={() => {
                   setCategory(option);
+                  updateParams(selectedId, option);
                   if (isMobileFiltersOpen) setIsMobileFiltersOpen(false);
                 }}
                 className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all ${
@@ -390,10 +417,7 @@ export default function ComponentsPage() {
               >
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedId(component.id);
-                    if (isMobileFiltersOpen) setIsMobileFiltersOpen(false);
-                  }}
+                  onClick={() => handleSelectComponent(component.id)}
                   className={`w-full rounded-xl border p-3 text-left transition-all duration-200 ${
                     selectedComponent.id === component.id
                       ? 'border-indigo-500 bg-white text-slate-950 shadow-[0_0_20px_rgba(79,70,229,0.15)] dark:border-indigo-400 dark:bg-slate-800 dark:text-white'
@@ -499,7 +523,10 @@ export default function ComponentsPage() {
                   {categories.map((option) => (
                     <button
                       key={option}
-                      onClick={() => setCategory(option)}
+                      onClick={() => {
+                        setCategory(option);
+                        updateParams(selectedId, option);
+                      }}
                       className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
                         category === option
                           ? 'bg-indigo-600 text-white'
@@ -527,15 +554,13 @@ export default function ComponentsPage() {
                 <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{selectedComponent.name}</h2>
                 
                 <div className="mt-4 flex flex-wrap items-center gap-4">
-                  {/* @ts-ignore - Hiển thị độ khó từ metadata */}
                   {selectedComponent.difficulty && (
                     <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>
                       {selectedComponent.difficulty}
                     </Badge>
                   )}
                   <div className="flex flex-wrap gap-2">
-                    {/* @ts-ignore - Hiển thị danh sách tags */}
-                    {selectedComponent.tags?.map((tag: string) => (
+                    {selectedComponent.tags?.map((tag) => (
                       <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">
                         {tag}
                       </span>
@@ -612,7 +637,7 @@ export default function ComponentsPage() {
                     <button
                       key={component.id}
                       type="button"
-                      onClick={() => setSelectedId(component.id)}
+                      onClick={() => handleSelectComponent(component.id)}
                       className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
                         active
                           ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
@@ -653,5 +678,13 @@ export default function ComponentsPage() {
 
       <Toast message={toastMessage} />
     </section>
+  );
+}
+
+export default function ComponentsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50/30 dark:bg-slate-950 flex items-center justify-center">Loading Library...</div>}>
+      <ComponentsPageContent />
+    </Suspense>
   );
 }
