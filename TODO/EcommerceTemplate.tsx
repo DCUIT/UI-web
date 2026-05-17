@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   Filter, 
@@ -118,9 +119,11 @@ export default function EcommerceTemplate() {
                 className={`group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl transition-all ${view === "list" ? "flex gap-6" : ""}`}
               >
                 <div className={`relative aspect-square overflow-hidden bg-slate-100 dark:bg-slate-800 ${view === "list" ? "w-48 h-48 shrink-0" : "w-full"}`}>
-                  <img 
-                    src={product.image} 
+                  <Image 
+                    src={product.image}
                     alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
                   />
                   <button className="absolute top-3 right-3 p-2 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">

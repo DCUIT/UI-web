@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 import { Menu as MenuIcon, Command } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import MegaMenu from "@/components/navigation/MegaMenu";
 import SearchBar from "@/components/navigation/SearchBar";
-import CommandMenu from "@/components/navigation/CommandMenu";
+import dynamic from "next/dynamic";
+
+const CommandMenu = dynamic(() => import("@/components/navigation/CommandMenu"), { ssr: false });
 
 const navItems = [
   { href: "/", label: "Home" },

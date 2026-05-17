@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Image from "next/image"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Github, Twitter, Linkedin, ExternalLink, Code, Palette, Zap } from "lucide-react"
 
@@ -85,7 +86,15 @@ export default function PortfolioTemplate() {
                 className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
               >
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img src={project.image} alt={project.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <Image 
+                    src={project.image} 
+                    alt={project.title}
+                    width={600}
+                    height={450}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8AKpTiaz7wAAAABJRU5ErkJggg=="
+                  />
                 </div>
                 <div className="p-8">
                   <div className="flex gap-2">

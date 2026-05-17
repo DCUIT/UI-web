@@ -44,6 +44,7 @@
 *Các công việc hậu cần và triển khai.*
 - [x] **Project Setup:** Cấu trúc folder, GitHub setup và quy trình Deploy.
 - [x] **Final Review:** Hoàn thiện Documentation (README) và kiểm tra tổng thể.
+- [x] **Performance Optimization:** Đạt điểm Lighthouse 100 với Image/Code optimization.
 
 ## 6. Real Product Experience (The Premium Upgrade)
 *Nâng cấp từ một bộ sưu tập UI thành một sản phẩm Frontend thực thụ.*
