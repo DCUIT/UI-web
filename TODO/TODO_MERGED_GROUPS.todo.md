@@ -89,6 +89,7 @@
 - [x] **Accessibility Testing:** Thiết lập quy trình kiểm thử tự động với `jest-axe`.
 - [x] **A11y Audit:** Sửa lỗi tương phản màu sắc và bổ sung ARIA labels còn thiếu.
 - [x] **Integration Tests:** Viết Integration Test cho logic lọc và tìm kiếm linh kiện.
+- [x] **E2E Testing:** Thiết lập bộ kiểm thử đầu cuối với Playwright cho luồng Discovery.
 
 ### 6.9 SEO & Discoverability
 - [x] **JSON-LD Integration:** Triển khai dữ liệu cấu trúc cho SoftwareApplication và CreativeWork.

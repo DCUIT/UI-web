@@ -1,6 +1,5 @@
-import type { Config } from 'jest'
-
-const config: Config = {
+// Jest config in JS to avoid ts-node requirement.
+module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   testMatch: ['**/?(*.)+(test).[tj]s?(x)'],
@@ -21,5 +20,5 @@ const config: Config = {
   },
 }
 
-module.exports = config
+
 
