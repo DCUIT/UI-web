@@ -30,6 +30,7 @@ import DashboardCard from '@/components/cards/DashboardCard';
 import AnalyticsCard from '@/components/cards/AnalyticsCard';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
+import ComponentPreview from '@/components/discovery/ComponentPreview'; // Import ComponentPreview
 
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
@@ -296,8 +297,7 @@ export default function ComponentsPage() {
   const [category, setCategory] = useState('All');
   const [selectedId, setSelectedId] = useState(1);
   const [toastMessage, setToastMessage] = useState('');
-  const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
-
+  
   const selectedComponent = componentsData.find((item) => item.id === selectedId) ?? componentsData[0];
 
   const results = useMemo(() => {
@@ -307,12 +307,6 @@ export default function ComponentsPage() {
       return matchesCategory && matchesQuery;
     });
   }, [category, query]);
-
-  const copyCode = async () => {
-    await navigator.clipboard.writeText(selectedComponent.source);
-    setToastMessage('Code copied to clipboard');
-    window.setTimeout(() => setToastMessage(''), 2200);
-  };
 
   return (
     <section className="min-h-screen bg-white dark:bg-slate-950">

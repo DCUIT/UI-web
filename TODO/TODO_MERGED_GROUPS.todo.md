@@ -49,9 +49,9 @@
 *Nâng cấp từ một bộ sưu tập UI thành một sản phẩm Frontend thực thụ.*
 
 ### 6.1 Component Preview Experience (Priority 1)
-- [ ] **Live Preview Frame:** Xây dựng container bao ngoài component hỗ trợ resize.
-- [ ] **Responsive Toggle:** Thêm các nút chuyển đổi Desktop/Mobile/Tablet preview.
-- [ ] **Theme Switcher:** Cho phép đổi theme (Light/Dark) riêng biệt cho vùng preview.
+- [x] **Live Preview Frame:** Xây dựng container bao ngoài component hỗ trợ resize.
+- [x] **Responsive Toggle:** Thêm các nút chuyển đổi Desktop/Mobile/Tablet preview.
+- [x] **Theme Switcher:** Cho phép đổi theme (Light/Dark) riêng biệt cho vùng preview.
 - [ ] **Zoom Control:** Tính năng phóng to/thu nhỏ vùng xem trước UI.
 
 ### 6.2 Advanced Search UX (Priority 2)
