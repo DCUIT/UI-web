@@ -300,6 +300,8 @@ export default function ComponentsPage() {
   const [selectedId, setSelectedId] = useState(1);
   const [toastMessage, setToastMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(selectedComponent.source);
