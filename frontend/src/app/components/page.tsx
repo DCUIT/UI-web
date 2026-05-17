@@ -34,6 +34,8 @@ import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
 import ComponentPreview from '@/components/discovery/ComponentPreview'; // Import ComponentPreview
 import CuratedCollections from '@/components/templates/CuratedCollections';
+import { cn } from '@/lib/utils';
+
 
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
@@ -302,9 +304,10 @@ export default function ComponentsPage() {
   const [toastMessage, setToastMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-
+  const [viewMode, setViewMode] = useState<'individual' | 'collections'>('individual');
 
   const copyCode = async () => {
+
     await navigator.clipboard.writeText(selectedComponent.source);
     setToastMessage('Code copied to clipboard');
     window.setTimeout(() => setToastMessage(''), 2200);
@@ -334,7 +337,7 @@ export default function ComponentsPage() {
           />
         </div>
         <div className="space-y-1">
-          <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Categories</p>
+          <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Categories</p>
           <div className="flex flex-col gap-1">
             {categories.map((option) => (
               <button
@@ -359,7 +362,7 @@ export default function ComponentsPage() {
       </div>
 
       <div className="space-y-1">
-        <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Available Components</p>
+        <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Available Components</p>
         <div className="flex flex-col gap-1">
           <AnimatePresence mode="popLayout">
             {results.map((component) => (
@@ -438,28 +441,33 @@ export default function ComponentsPage() {
           <>
             {/* Mobile Filter Trigger & Horizontal Categories */}
             <div className="sticky top-[64px] z-30 -mx-4 mb-8 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
-          <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={() => setIsMobileFiltersOpen(true)} className="shrink-0">
-              <Filter size={18} className="mr-2" /> Filters
-            </Button>
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
-            <div className="flex flex-1 gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {categories.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => setCategory(option)}
-                  className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
-                    category === option
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                  }`}
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => setIsMobileFiltersOpen(true)}
+                  className="shrink-0"
                 >
-                  {option}
-                </button>
-              ))}
+                  <Filter size={18} className="mr-2" /> Filters
+                </Button>
+                <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
+                <div className="flex flex-1 gap-2 overflow-x-auto pb-1 no-scrollbar">
+                  {categories.map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setCategory(option)}
+                      className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
+                        category === option
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+
 
         <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
           {/* Desktop Sidebar */}
@@ -490,7 +498,7 @@ export default function ComponentsPage() {
                   </div>
                 </div>
 
-                <p className="mt-4 text-lg leading-7 text-slate-500 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
+                <p className="mt-4 text-lg leading-7 text-slate-600 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
               </div>
               <Button type="button" variant="secondary" onClick={copyCode}>
                 Copy source

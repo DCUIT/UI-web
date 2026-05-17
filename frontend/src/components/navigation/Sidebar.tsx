@@ -79,7 +79,7 @@ export default function Sidebar() {
             <div key={group.title} className="flex flex-col">
               <button
                 onClick={() => toggleGroup(group.title)}
-                className="flex items-center justify-between rounded-lg px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+                className="flex items-center justify-between rounded-lg px-2 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
               >
                 <div className="flex items-center gap-2">
                   <Icon size={14} />
