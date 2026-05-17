@@ -1,6 +1,4 @@
-export default {
+module.exports = {
   presets: ['next/babel'],
 };
-
-
 
