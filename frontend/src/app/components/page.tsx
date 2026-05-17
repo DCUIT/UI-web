@@ -399,6 +399,37 @@ export default function ComponentsPage() {
 
   return (
     <section className="min-h-screen bg-slate-50/30 dark:bg-slate-950">
+      {/* JSON-LD Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Master UI Platform",
+            "description": "A comprehensive UI component library built with React and Tailwind CSS.",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Web",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "mainEntity": {
+              "@type": "CreativeWork",
+              "name": selectedComponent.name,
+              "description": selectedComponent.description,
+              "author": {
+                "@type": "Organization",
+                "name": "Master UI"
+              },
+              "keywords": selectedComponent.tags?.join(", "),
+              "genre": "UI Component"
+            }
+          })
+        }}
+      />
+
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 space-y-4 text-center lg:mb-16">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Component library</p>

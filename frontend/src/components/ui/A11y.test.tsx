@@ -1,6 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
+
+// TypeScript/Jest types are provided by the Jest toolchain; this file should run under Jest.
+
 import Button from './Button';
 import Input from './Input';
 import Table from './Table';
