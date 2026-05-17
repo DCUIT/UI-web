@@ -3,6 +3,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Zap, Shield, Smartphone, ArrowRight, CheckCircle2 } from "lucide-react"
+import Button from "@/components/ui/Button"
 
 export default function MarketingTemplate() {
   return (
@@ -22,12 +23,12 @@ export default function MarketingTemplate() {
             Built with Next.js, Tailwind CSS, and Framer Motion.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <button className="flex items-center gap-2 rounded-full bg-indigo-600 px-8 py-4 font-bold text-white transition hover:bg-indigo-700">
+            <Button variant="primary" className="rounded-full px-8 py-4">
               Get Started <ArrowRight size={20} />
-            </button>
-            <button className="rounded-full border border-slate-200 bg-white px-8 py-4 font-bold text-slate-900 transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:hover:bg-slate-900">
+            </Button>
+            <Button variant="secondary" className="rounded-full px-8 py-4">
               View Components
-            </button>
+            </Button>
           </div>
         </motion.div>
       </section>
@@ -75,7 +76,7 @@ export default function MarketingTemplate() {
   )
 }
 
-function FeatureItem({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
+function FeatureItem({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
