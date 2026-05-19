@@ -14,7 +14,7 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
   - `mobile-playground/runtime/`
   - `mobile-playground/registry/`
 - [x] **Phone Frame Preview (Fake Mobile Device):** Tạo component vẽ khung viền thiết bị giả lập (sử dụng CSS).
-- [ ] **Live Code Editor:** Tích hợp **Monaco Editor** với khả năng hiển thị code.
+- [x] **Live Code Editor:** Tích hợp **Monaco Editor** với khả năng hiển thị code.
 - [x] **Device Switcher:** Thêm Dropdown/Nút chọn thiết bị để giả lập kích thước thật:
   - `iPhone 15`
   - `Pixel`
@@ -38,11 +38,10 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
   - Hiển thị Notch / Dynamic Island cho thiết bị iOS.
   - Hiển thị System Status Bar giả.
   - Hiển thị thanh Home Indicator (dưới cùng).
-- [ ] **Editor Tabs:** Chia Monaco Editor thành các tab:
-  - `[ Preview ]` (nếu xem độc lập)
-  - `[ TSX / JSX ]`
-  - `[ Styles ]`
-  - `[ Usage ]`
+- [x] **Editor Tabs:** Chia Monaco Editor thành các tab:
+  - `[ HTML ]`
+  - `[ CSS ]`
+  - `[ JavaScript ]`
 
 ---
 

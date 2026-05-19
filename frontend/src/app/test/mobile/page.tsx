@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
+import Editor from '@monaco-editor/react'
 
 const defaultHtml = `
 <div class="mobile-app">
@@ -183,6 +184,7 @@ export default function MobileUITestPage() {
   const [device, setDevice] = useState<DeviceType>('iphone')
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [activeTab, setActiveTab] = useState<'html' | 'css' | 'js'>('html')
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -215,22 +217,6 @@ export default function MobileUITestPage() {
       .catch(err => console.error('Failed to copy: ', err))
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    if (e.key === 'Tab') {
-      e.preventDefault()
-      const target = e.target as HTMLTextAreaElement
-      const start = target.selectionStart
-      const end = target.selectionEnd
-      const value = target.value
-      
-      setter(value.substring(0, start) + '  ' + value.substring(end))
-      
-      requestAnimationFrame(() => {
-        target.selectionStart = target.selectionEnd = start + 2
-      })
-    }
-  }
-
   return (
     <div className="space-y-8 pb-20">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-950 dark:shadow-none">
@@ -255,68 +241,44 @@ export default function MobileUITestPage() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr]">
-          <div className="space-y-4">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">HTML</h2>
+          <div className="space-y-4 flex flex-col h-full">
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
+                  <button onClick={() => setActiveTab('html')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'html' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>HTML</button>
+                  <button onClick={() => setActiveTab('css')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'css' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>CSS</button>
+                  <button onClick={() => setActiveTab('js')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'js' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>JavaScript</button>
                 </div>
                 <button 
-                  onClick={() => copyToClipboard(html)}
-                  className="text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium"
+                  onClick={() => copyToClipboard(activeTab === 'html' ? html : activeTab === 'css' ? css : js)}
+                  className="text-xs px-3 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium flex items-center gap-1"
                 >
-                  Copy
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy {activeTab.toUpperCase()}
                 </button>
               </div>
-              <textarea
-                value={html}
-                onChange={(event) => setHtml(event.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, setHtml)}
-                spellCheck={false}
-                className="h-48 w-full font-mono rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-              />
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">CSS</h2>
-                </div>
-                <button 
-                  onClick={() => copyToClipboard(css)}
-                  className="text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium"
-                >
-                  Copy
-                </button>
+              
+              <div className="flex-1 w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] min-h-[500px]">
+                <Editor
+                  height="100%"
+                  language={activeTab === 'js' ? 'javascript' : activeTab}
+                  theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                  value={activeTab === 'html' ? html : activeTab === 'css' ? css : js}
+                  onChange={(value) => {
+                    if (activeTab === 'html') setHtml(value || '')
+                    if (activeTab === 'css') setCss(value || '')
+                    if (activeTab === 'js') setJs(value || '')
+                  }}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    padding: { top: 16 },
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                    tabSize: 2
+                  }}
+                />
               </div>
-              <textarea
-                value={css}
-                onChange={(event) => setCss(event.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, setCss)}
-                spellCheck={false}
-                className="h-48 w-full font-mono rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-              />
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">JavaScript</h2>
-                </div>
-                <button 
-                  onClick={() => copyToClipboard(js)}
-                  className="text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium"
-                >
-                  Copy
-                </button>
-              </div>
-              <textarea
-                value={js}
-                onChange={(event) => setJs(event.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, setJs)}
-                spellCheck={false}
-                className="h-48 w-full font-mono rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-              />
             </div>
           </div>
 
