@@ -33,3 +33,4 @@
   - [x] Metadata & Dependencies Panel (Sidebar info + npm copy command)
   - [x] Auto-save drafts to LocalStorage
   - [x] Share Playground (URL encoded state sharing)
+  - [x] Export Component (Download .tsx file)

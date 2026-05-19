@@ -78,7 +78,7 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 - [ ] Real-time editing (debounce + tối ưu rerender)
 - [ ] Save drafts (lưu vào localStorage)
 - [x] Share playground (export JSON + share link via URL params)
-- [ ] Export component (tải xuống file)
+- [x] Export component (tải xuống file .tsx)
 - [ ] AI prompt (future): tạo code theo prompt
 
 ---

@@ -113,6 +113,92 @@ const COMPONENT_REGISTRY: ComponentRegistryItem[] = [
     ],
     dependencies: ['clsx'],
     metadata: { responsive: 'Fully', darkMode: 'Dark Only', complexity: 'Beginner' }
+  },
+  {
+    id: 'mobile-dashboard',
+    name: 'Mobile Dashboard',
+    category: 'Screens',
+    tsx: `function App({ userName = "Alex Rivera", balance = "$12,450.00" }) {
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans">
+      {/* Header */}
+      <div className="p-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">AR</div>
+          <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Welcome back</p>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">{userName}</h2>
+          </div>
+        </div>
+        <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center relative">
+          <div className="w-2 h-2 bg-rose-500 rounded-full absolute top-2 right-2 border-2 border-white dark:border-slate-900"></div>
+          <svg className="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+        </div>
+      </div>
+
+      {/* Main Card */}
+      <div className="px-6">
+        <div className="bg-indigo-600 rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+          <p className="text-xs font-medium text-indigo-100 opacity-80 mb-1">Total Balance</p>
+          <h3 className="text-3xl font-bold mb-6">{balance}</h3>
+          <div className="flex gap-4">
+            <button className="flex-1 bg-white/20 hover:bg-white/30 backdrop-blur-md py-3 rounded-2xl text-xs font-bold transition-all">Send</button>
+            <button className="flex-1 bg-white text-indigo-600 py-3 rounded-2xl text-xs font-bold transition-all">Receive</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="p-6 grid grid-cols-4 gap-4">
+        {[ { n: 'Bills', c: 'bg-emerald-100 text-emerald-600' }, { n: 'Trade', c: 'bg-amber-100 text-amber-600' }, { n: 'Vault', c: 'bg-rose-100 text-rose-600' }, { n: 'More', c: 'bg-slate-100 text-slate-600' } ].map(item => (
+          <div key={item.n} className="flex flex-col items-center gap-2">
+            <div className={\`w-12 h-12 rounded-2xl \${item.c} flex items-center justify-center\`}>
+              <div className="w-5 h-5 border-2 border-current rounded-md"></div>
+            </div>
+            <span className="text-[10px] font-bold text-slate-500 uppercase">{item.n}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Transactions */}
+      <div className="flex-1 bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-6 shadow-inner border-t border-slate-100 dark:border-slate-800">
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="font-bold text-slate-900 dark:text-white">Recent Transactions</h4>
+          <button className="text-xs font-bold text-indigo-600 dark:text-indigo-400">View All</button>
+        </div>
+        
+        <div className="space-y-4">
+          {[
+            { n: 'Netflix Subscription', d: '24 May 2024', a: '-$15.99', i: 'bg-slate-100' },
+            { n: 'Salary Deposit', d: '22 May 2024', a: '+$4,250.00', i: 'bg-emerald-100 text-emerald-600' },
+            { n: 'Apple Store', d: '20 May 2024', a: '-$199.00', i: 'bg-slate-100' }
+          ].map((t, idx) => (
+            <div key={idx} className="flex justify-between items-center p-2">
+              <div className="flex items-center gap-3">
+                <div className={\`w-10 h-10 rounded-xl \${t.i} flex items-center justify-center text-xs font-bold\`}>
+                  {t.n.charAt(0)}
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">{t.n}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">{t.d}</p>
+                </div>
+              </div>
+              <p className={\`text-xs font-bold \${t.a.startsWith('+') ? 'text-emerald-500' : 'text-slate-900 dark:text-white'}\`}>{t.a}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    css: '',
+    controls: [
+      { id: 'userName', label: 'User Name', type: 'text', value: 'Alex Rivera' },
+      { id: 'balance', label: 'Balance Amount', type: 'text', value: '$12,450.00' }
+    ],
+    dependencies: ['lucide-react', 'clsx'],
+    metadata: { responsive: 'Mobile-First', darkMode: 'Ready', complexity: 'Advanced' }
   }
 ];
 
@@ -129,7 +215,7 @@ export default function PlaygroundPage() {
   const [isCopied, setIsCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isShared, setIsShared] = useState(false);
-  
+
   // Mẫu controls khởi tạo cho component mặc định
   const [controls, setControls] = useState<Control[]>(COMPONENT_REGISTRY[0].controls);
 
@@ -145,12 +231,12 @@ export default function PlaygroundPage() {
         // Giải mã Base64 an toàn cho Unicode
         const decoded = JSON.parse(decodeURIComponent(escape(window.atob(sharedData))));
         const comp = COMPONENT_REGISTRY.find(c => c.id === decoded.componentId) || COMPONENT_REGISTRY[0];
-        
+
         setSelectedComponent(comp);
         setTsxCode(decoded.tsx);
         setCssCode(decoded.css);
         setControls(decoded.controls);
-        
+
         // Xóa query param để URL sạch sẽ sau khi load
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -164,7 +250,7 @@ export default function PlaygroundPage() {
       try {
         const parsed = JSON.parse(savedDraft);
         const comp = COMPONENT_REGISTRY.find(c => c.id === parsed.componentId) || COMPONENT_REGISTRY[0];
-        
+
         setSelectedComponent(comp);
         setTsxCode(parsed.tsx || comp.tsx);
         setCssCode(parsed.css || comp.css);
@@ -200,8 +286,8 @@ export default function PlaygroundPage() {
 
   // Filter linh kiện dựa trên search
   const filteredRegistry = useMemo(() => {
-    return COMPONENT_REGISTRY.filter(c => 
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    return COMPONENT_REGISTRY.filter(c =>
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
@@ -231,7 +317,7 @@ export default function PlaygroundPage() {
       });
 
       const compiledCode = result.code;
-      
+
       // Chuyển mảng controls thành object props
       const currentProps = controls.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.value }), {});
       const propsJson = JSON.stringify(currentProps);
@@ -290,8 +376,8 @@ export default function PlaygroundPage() {
       setSrcDoc(doc);
     } catch (err: any) {
       // Lỗi biên dịch (syntax error)
-      setLogs(prev => [{ 
-        type: 'error', 
+      setLogs(prev => [{
+        type: 'error',
         content: \`Compiler Error: \${err.message}\`, 
         timestamp: new Date().toLocaleTimeString() 
       }, ...prev].slice(0, 20));
@@ -389,16 +475,16 @@ export default function PlaygroundPage() {
                 {`// Example Usage
 import MyComponent from '@/components/MyComponent';
 
-export default function Page() {
-  return (
-    <MyComponent 
-      title="${controls.find(c => c.id === 'title')?.value}"
-      buttonText="${controls.find(c => c.id === 'buttonText')?.value}"
-      showIcon={${controls.find(c => c.id === 'showIcon')?.value}}
-      accentColor="${controls.find(c => c.id === 'accentColor')?.value}"
-    />
+      export default function Page() {
+        return (
+          <MyComponent
+            title="${controls.find(c => c.id === 'title')?.value}"
+            buttonText="${controls.find(c => c.id === 'buttonText')?.value}"
+            showIcon={${controls.find(c => c.id === 'showIcon')?.value}}
+      accentColor = "${controls.find(c => c.id === 'accentColor')?.value}"
+        />
   );
-}`}
+} `}
               </pre>
             </div>
           ),
@@ -423,7 +509,7 @@ export default function Page() {
   }, []);
 
   const copyFullComponent = async () => {
-    const content = `/** TSX **/\n${tsxCode}\n\n/** CSS **/\n${cssCode}`;
+    const content = `/** TSX **/\n${ tsxCode } \n\n/** CSS **/\n${ cssCode } `;
     await navigator.clipboard.writeText(content);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
@@ -438,7 +524,7 @@ export default function Page() {
     };
     // Mã hóa Base64 an toàn cho Unicode
     const encoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encoded}`;
+    const shareUrl = `${ window.location.origin }${ window.location.pathname }?share = ${ encoded } `;
     
     await navigator.clipboard.writeText(shareUrl);
     setIsShared(true);
@@ -487,14 +573,14 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setDevice('desktop')}
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
             >
               Desktop
             </button>
             <button
               type="button"
               onClick={() => setDevice('mobile')}
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
             >
               Mobile
             </button>
@@ -505,14 +591,14 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setOrientation('portrait')}
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
             >
               Portrait
             </button>
             <button
               type="button"
               onClick={() => setOrientation('landscape')}
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
             >
               Landscape
             </button>
@@ -607,7 +693,7 @@ export default function Page() {
               </div>
               <button 
                 onClick={async () => {
-                  await navigator.clipboard.writeText(`npm install ${selectedComponent.dependencies.join(' ')}`);
+                  await navigator.clipboard.writeText(`npm install ${ selectedComponent.dependencies.join(' ') } `);
                 }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950 text-white text-[10px] font-bold hover:bg-slate-800 transition-colors dark:bg-white dark:text-slate-950"
               >
@@ -670,78 +756,4 @@ export default function Page() {
                       />
                     </div>
                   ) : (
-                    <button
-                      onClick={() => updateControl(control.id, !control.value)}
-                      className={`flex h-8 w-full items-center justify-between rounded-xl border px-3 transition-all ${control.value ? 'border-indigo-500/50 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300' : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900'}`}
-                    >
-                      <span className="text-[10px] font-bold">{control.value ? 'ENABLED' : 'DISABLED'}</span>
-                      <div className={`h-4 w-4 rounded-full transition-all ${control.value ? 'translate-x-0 bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Copy</p>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={async () => {
-                await navigator.clipboard.writeText(tsxCode);
-              }}
-              className="w-full justify-start gap-2"
-            >
-              <Code2 className="w-4 h-4" />
-              Copy TSX
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={copyFullComponent}
-              className="w-full justify-start gap-2"
-            >
-              {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {isCopied ? 'Copied All!' : 'Copy full component'}
-            </Button>
-          </div>
-
-          <div className="flex flex-col h-[300px] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-100/50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Console</span>
-              </div>
-              <button 
-                onClick={() => setLogs([])}
-                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"
-              >
-                <RotateCcw className="w-3 h-3 text-slate-500" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-auto p-2 font-mono text-[11px] space-y-1">
-              {logs.length === 0 && (
-                <p className="text-slate-400 italic text-center mt-4">No logs yet...</p>
-              )}
-              {logs.map((log, idx) => (
-                <div key={idx} className={`p-1.5 rounded border-l-2 ${log.type === 'error' ? 'bg-red-50 text-red-600 border-red-500 dark:bg-red-950/20' : 'bg-slate-100 text-slate-700 border-slate-400 dark:bg-slate-800 dark:text-slate-300'}`}>
-                  <div className="flex justify-between items-center opacity-60 mb-0.5">
-                    <span className="font-bold uppercase text-[9px]">{log.type}</span>
-                    <span>{log.timestamp}</span>
-                  </div>
-                  <div className="whitespace-pre-wrap break-words">{log.content}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
-
-        {/* Main */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <Tabs items={tabs as any} />
-        </div>
-      </div>
-    </section>
-  );
-}
+          
