@@ -34,7 +34,7 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
   - `Sidebar` (Bên trái) chứa danh sách Component Categories.
   - `Code Editor` (Bên dưới hoặc ở giữa).
   - `Phone Preview` (Bên phải).
-- [ ] **Safe Area & Device Features Preview:**
+- [x] **Safe Area & Device Features Preview:**
   - Hiển thị Notch / Dynamic Island cho thiết bị iOS.
   - Hiển thị System Status Bar giả.
   - Hiển thị thanh Home Indicator (dưới cùng).

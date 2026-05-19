@@ -57,6 +57,31 @@ export default function PhoneFrame({
 
       {/* Screen Content Wrapper */}
       <div className={`relative w-full h-full overflow-hidden flex flex-col ${device === 'iphone' ? 'rounded-[2rem]' : 'rounded-3xl'}`}>
+         
+         {/* Fake Status Bar */}
+         <div className={`absolute top-0 inset-x-0 z-30 flex items-center justify-between pointer-events-none
+           ${isPortrait ? 'px-6 pt-3 pb-2' : 'px-8 pt-2 pb-1'} 
+           text-[13px] font-semibold tracking-wide ${theme === 'dark' ? 'text-white' : 'text-slate-900'} drop-shadow-md`}
+         >
+           <div className={`flex justify-start ${isPortrait && device === 'iphone' ? 'pl-2' : ''}`}>
+             9:41
+           </div>
+           
+           <div className={`flex justify-end items-center gap-1.5 ${isPortrait && device === 'iphone' ? 'pr-2' : ''}`}>
+             {/* Signal */}
+             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h20V2L2 22z"></path></svg>
+             {/* Wi-Fi */}
+             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"></path></svg>
+             {/* Battery */}
+             <div className="flex items-center opacity-90">
+               <div className="w-[22px] h-[11px] border-[1px] border-current rounded-[3px] p-[1px] flex items-center">
+                 <div className="w-[15px] h-full bg-current rounded-[1.5px]"></div>
+               </div>
+               <div className="w-[1.5px] h-[4px] bg-current rounded-r-[1px] ml-[1px]"></div>
+             </div>
+           </div>
+         </div>
+
          {children}
       </div>
 
