@@ -4,36 +4,42 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
 import Tabs from '@/components/ui/Tabs';
-import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw } from 'lucide-react';
+import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw } from 'lucide-react';
 import * as Babel from '@babel/standalone';
 import Editor from '@monaco-editor/react';
 
-const DEFAULT_TSX = `function App() {
+const DEFAULT_TSX = `function App({ title = "Live Sandbox", buttonText = "Clicked", showIcon = true, accentColor = "#4f46e5" }) {
   const [count, setCount] = React.useState(0);
   
   return (
     <div className="p-8 max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 transition-all duration-500 hover:scale-[1.02]">
       <div className="flex items-center gap-4 mb-6">
-        <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
+        {showIcon && (
+          <div 
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg text-white"
+            style={{ backgroundColor: accentColor, boxShadow: \`0 10px 15px -3px \${accentColor}33\` }}
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+        )}
         <div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white">Live Sandbox</h2>
+          <h2 className="text-xl font-black text-slate-900 dark:text-white">{title}</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Babel Runtime Active</p>
         </div>
       </div>
       
       <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
-        Thử thay đổi nội dung trong tab <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-mono text-indigo-600">TSX</span> để thấy kết quả cập nhật ngay lập tức.
+        Thử thay đổi nội dung trong tab <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-mono" style={{ color: accentColor }}>TSX</span> để thấy kết quả cập nhật ngay lập tức.
       </p>
       
       <button 
         onClick={() => setCount(c => c + 1)}
-        className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-2xl font-bold transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 group"
+        className="w-full py-4 text-white rounded-2xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 group"
+        style={{ backgroundColor: accentColor, boxShadow: \`0 10px 15px -3px \${accentColor}40\` }}
       >
-        Clicked {count} times
+        {buttonText} {count} times
         <span className="group-hover:translate-x-1 transition-transform">→</span>
       </button>
     </div>
@@ -51,6 +57,14 @@ const DEFAULT_CSS = `/* Custom Tailwind or Plain CSS here */
 type Device = 'desktop' | 'mobile';
 type Orientation = 'portrait' | 'landscape';
 type LogEntry = { type: 'log' | 'error'; content: string; timestamp: string };
+type Control = { id: string; label: string; type: 'text' | 'boolean' | 'color'; value: any };
+
+const INITIAL_CONTROLS: Control[] = [
+  { id: 'title', label: 'Title Text', type: 'text', value: 'Live Sandbox' },
+  { id: 'buttonText', label: 'Button Label', type: 'text', value: 'Clicked' },
+  { id: 'showIcon', label: 'Show Icon', type: 'boolean', value: true },
+  { id: 'accentColor', label: 'Accent Color', type: 'color', value: '#4f46e5' },
+];
 
 export default function PlaygroundPage() {
   const [tsxCode, setTsxCode] = useState(DEFAULT_TSX);
@@ -61,6 +75,9 @@ export default function PlaygroundPage() {
   const [srcDoc, setSrcDoc] = useState('');
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isCopied, setIsCopied] = useState(false);
+  
+  // Mẫu controls khởi tạo cho component mặc định
+  const [controls, setControls] = useState<Control[]>(INITIAL_CONTROLS);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -89,6 +106,10 @@ export default function PlaygroundPage() {
       });
 
       const compiledCode = result.code;
+      
+      // Chuyển mảng controls thành object props
+      const currentProps = controls.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.value }), {});
+      const propsJson = JSON.stringify(currentProps);
 
       const doc = `
         <!DOCTYPE html>
@@ -129,7 +150,8 @@ export default function PlaygroundPage() {
                 ${compiledCode}
                 const root = ReactDOM.createRoot(document.getElementById('root'));
                 if (typeof App !== 'undefined') {
-                  root.render(React.createElement(App));
+                  const props = ${propsJson};
+                  root.render(React.createElement(App, props));
                 } else {
                   console.error("Function 'App' is missing. Please define 'function App() { ... }'");
                 }
@@ -155,7 +177,7 @@ export default function PlaygroundPage() {
   useEffect(() => {
     const timer = setTimeout(updateSandbox, 800);
     return () => clearTimeout(timer);
-  }, [tsxCode, cssCode, theme]);
+  }, [tsxCode, cssCode, theme, controls]);
 
   const tabs = useMemo(
     () =>
@@ -275,6 +297,14 @@ export default function Page() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const updateControl = (id: string, value: any) => {
+    setControls(prev => prev.map(c => c.id === id ? { ...c, value } : c));
+  };
+
+  const resetControls = () => {
+    setControls(INITIAL_CONTROLS);
+  };
+
   return (
     <section className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -330,11 +360,73 @@ export default function Page() {
         {/* Left controls */}
         <aside className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
           <div>
-            <p className="text-sm font-semibold text-slate-900 dark:text-white">Controls</p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Sẽ mở rộng sau: props controls, dependencies, console viewer.</p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-indigo-600" />
+                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Props</p>
+              </div>
+              <button 
+                onClick={resetControls}
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors"
+                title="Reset Controls"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {controls.map((control) => (
+                <div key={control.id} className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase ml-1 flex items-center gap-1.5">
+                    {control.type === 'text' && <Type className="w-3 h-3" />}
+                    {control.type === 'color' && <Palette className="w-3 h-3" />}
+                    {control.type === 'boolean' && <ToggleLeft className="w-3 h-3" />}
+                    {control.label}
+                  </label>
+                  
+                  {control.type === 'text' ? (
+                    <input 
+                      type="text"
+                      value={control.value}
+                      onChange={(e) => updateControl(control.id, e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                    />
+                  ) : control.type === 'color' ? (
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <input 
+                          type="text"
+                          value={control.value}
+                          onChange={(e) => updateControl(control.id, e.target.value)}
+                          className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-2 text-xs font-mono outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                        />
+                        <div 
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-white/20 shadow-sm"
+                          style={{ backgroundColor: control.value }}
+                        />
+                      </div>
+                      <input 
+                        type="color"
+                        value={control.value}
+                        onChange={(e) => updateControl(control.id, e.target.value)}
+                        className="h-8 w-8 cursor-pointer rounded-lg border-none bg-transparent"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => updateControl(control.id, !control.value)}
+                      className={`flex h-8 w-full items-center justify-between rounded-xl border px-3 transition-all ${control.value ? 'border-indigo-500/50 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300' : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900'}`}
+                    >
+                      <span className="text-[10px] font-bold">{control.value ? 'ENABLED' : 'DISABLED'}</span>
+                      <div className={`h-4 w-4 rounded-full transition-all ${control.value ? 'translate-x-0 bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Copy</p>
             <Button
               type="button"

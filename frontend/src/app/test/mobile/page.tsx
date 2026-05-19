@@ -8,7 +8,7 @@ import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox
 const defaultAppTsx = `import React, { useState } from 'react';
 import './styles.css';
 
-export default function App() {
+export default function App({ simulatedState = 'normal' }) {
   const [tasks, setTasks] = useState(12);
   const [messages, setMessages] = useState(5);
   const [isStarted, setIsStarted] = useState(false);
@@ -17,6 +17,37 @@ export default function App() {
     setIsStarted(true);
     setTimeout(() => setIsStarted(false), 2000);
   };
+
+  if (simulatedState === 'loading') {
+    return (
+      <div className="mobile-app" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="spinner"></div>
+        <p style={{ marginTop: 16, color: '#64748b' }}>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
+
+  if (simulatedState === 'error') {
+    return (
+      <div className="mobile-app" style={{ justifyContent: 'center', alignItems: 'center', padding: 24, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
+        <h3 style={{ margin: '0 0 8px' }}>Lỗi kết nối</h3>
+        <p style={{ color: '#64748b', margin: '0 0 24px' }}>Không thể tải dữ liệu. Vui lòng thử lại sau.</p>
+        <button className="primary-btn" style={{ width: 'auto', padding: '12px 24px' }}>Thử lại</button>
+      </div>
+    );
+  }
+
+  if (simulatedState === 'empty') {
+    return (
+      <div className="mobile-app" style={{ justifyContent: 'center', alignItems: 'center', padding: 24, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
+        <h3 style={{ margin: '0 0 8px' }}>Chưa có dữ liệu</h3>
+        <p style={{ color: '#64748b', margin: '0 0 24px' }}>Bạn chưa có task hoặc tin nhắn nào mới.</p>
+        <button className="primary-btn" style={{ width: 'auto', padding: '12px 24px' }}>Tạo Task Đầu Tiên</button>
+      </div>
+    );
+  }
 
   return (
     <div className="mobile-app">
@@ -177,6 +208,20 @@ const defaultStylesCss = `body {
 .nav-item.active {
   opacity: 1;
 }
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 `
 
 export default function MobileUITestPage() {
@@ -190,6 +235,28 @@ export default function MobileUITestPage() {
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [activeTab, setActiveTab] = useState<'App.tsx' | 'styles.css'>('App.tsx')
+  const [appState, setAppState] = useState<'normal' | 'loading' | 'empty' | 'error'>('normal')
+
+  const [dependencies, setDependencies] = useState<Record<string, string>>({
+    'lucide-react': 'latest',
+  })
+  const [newDependency, setNewDependency] = useState('')
+
+  const handleAddDependency = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (newDependency.trim()) {
+      setDependencies(prev => ({ ...prev, [newDependency.trim()]: 'latest' }))
+      setNewDependency('')
+    }
+  }
+
+  const removeDependency = (pkg: string) => {
+    setDependencies(prev => {
+      const newDeps = { ...prev }
+      delete newDeps[pkg]
+      return newDeps
+    })
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -242,7 +309,7 @@ export default function MobileUITestPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col overflow-y-auto hidden md:flex">
-          <div className="p-4">
+          <div className="p-4 flex-1">
              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">Components</h3>
              <div className="space-y-1">
                <button className="w-full text-left px-3 py-2 text-sm bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-medium rounded-lg">Buttons</button>
@@ -257,6 +324,34 @@ export default function MobileUITestPage() {
                <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Chat Interface</button>
                <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Social Feed</button>
              </div>
+
+             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 mt-8">Dependencies</h3>
+             <div className="space-y-2 px-1">
+               {Object.entries(dependencies).map(([pkg]) => (
+                 <div key={pkg} className="flex items-center justify-between bg-slate-100 dark:bg-slate-800/50 px-3 py-2 rounded-lg text-sm group">
+                   <span className="text-slate-700 dark:text-slate-300 font-medium truncate pr-2">{pkg}</span>
+                   <button 
+                      onClick={() => removeDependency(pkg)}
+                      className="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                      title="Remove package"
+                   >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                   </button>
+                 </div>
+               ))}
+               <form onSubmit={handleAddDependency} className="flex items-center gap-2 mt-2">
+                 <input 
+                   type="text" 
+                   placeholder="npm package..."
+                   value={newDependency}
+                   onChange={(e) => setNewDependency(e.target.value)}
+                   className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-indigo-500 transition-colors"
+                 />
+                 <button type="submit" disabled={!newDependency.trim()} className="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg p-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                 </button>
+               </form>
+             </div>
           </div>
         </aside>
 
@@ -267,12 +362,23 @@ export default function MobileUITestPage() {
             theme={theme === 'dark' ? 'dark' : 'light'}
             files={{
               '/App.tsx': debouncedAppTsx,
-              '/styles.css': debouncedStylesCss
+              '/styles.css': debouncedStylesCss,
+              '/index.tsx': {
+                code: `import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+
+const root = createRoot(document.getElementById("root"));
+root.render(
+  <StrictMode>
+    <App simulatedState="${appState}" />
+  </StrictMode>
+);`,
+                hidden: true
+              }
             }}
             customSetup={{
-              dependencies: {
-                "lucide-react": "latest"
-              }
+              dependencies: dependencies
             }}
           >
           <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr] h-full max-w-[1600px] mx-auto">
@@ -378,6 +484,19 @@ export default function MobileUITestPage() {
                     >
                       {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
                     </button>
+                  </div>
+
+                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 pl-2 pr-1 uppercase tracking-wider hidden sm:inline">State</span>
+                    {(['normal', 'loading', 'empty', 'error'] as const).map(state => (
+                      <button
+                        key={state}
+                        onClick={() => setAppState(state)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all capitalize ${appState === state ? 'bg-indigo-100 text-indigo-700 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                      >
+                        {state}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

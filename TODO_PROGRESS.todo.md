@@ -26,6 +26,7 @@
   - [x] Theme switch (ThemeToggle)
   - [x] Copy TSX (clipboard)
   - [x] Console/Error viewer placeholder
-  - [ ] Monaco editor (MVP)
-  - [ ] Runtime sandbox (Sandpack/iframe) + capture errors/console
-  - [ ] Copy full component (TSX + CSS + usage)
+  - [x] Monaco editor (MVP)
+  - [x] Runtime sandbox (Sandpack/iframe) + capture errors/console
+  - [x] Copy full component (TSX + CSS + usage)
+  - [x] Component Controls (Dynamic props injection + color picker + reset)

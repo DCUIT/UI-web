@@ -54,11 +54,12 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 
 ---
 
-## Next (tính năng mạnh hơn)
+## Next (Đang thực hiện ✅)
 
-- [ ] Component controls (testing props)
+- [x] Component controls (testing props)
   - [ ] Metadata panel: Category, Responsive, Dark Mode, Dependencies
-  - [ ] Control cho common props (button size/state/variant...)
+  - [x] Control cho common props (text, boolean, color knobs)
+  - [x] Reset controls functionality
 
 - [ ] Dependencies box
   - [ ] Hiển thị lệnh `npm install ...` tương ứng dependencies (dựa registry/component metadata)
