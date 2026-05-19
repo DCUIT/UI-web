@@ -15,13 +15,13 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
   - `mobile-playground/registry/`
 - [x] **Phone Frame Preview (Fake Mobile Device):** Tạo component vẽ khung viền thiết bị giả lập (sử dụng CSS).
 - [ ] **Live Code Editor:** Tích hợp **Monaco Editor** với khả năng hiển thị code.
-- [ ] **Device Switcher:** Thêm Dropdown/Nút chọn thiết bị để giả lập kích thước thật:
+- [x] **Device Switcher:** Thêm Dropdown/Nút chọn thiết bị để giả lập kích thước thật:
   - `iPhone 15`
   - `Pixel`
   - `iPad`
-- [ ] **Responsive Scaling:** Tính năng thay đổi kích thước fake device (Small phone, Medium phone, Tablet).
+- [x] **Responsive Scaling:** Tính năng thay đổi kích thước fake device (Small phone, Medium phone, Tablet).
 - [ ] **Theme Toggle:** Chuyển đổi Dark Mode / Light Mode cho preview frame.
-- [ ] **Orientation Toggle:** Chuyển đổi Portrait (Dọc) / Landscape (Ngang).
+- [x] **Orientation Toggle:** Chuyển đổi Portrait (Dọc) / Landscape (Ngang).
 - [ ] **Copy Code:** Nút sao chép nhanh mã nguồn hiện tại trong Editor.
 
 ---

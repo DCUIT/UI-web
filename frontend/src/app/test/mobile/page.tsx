@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import PhoneFrame from '@/components/mobile-playground/devices/PhoneFrame'
+import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 
 const defaultHtml = `
 <div class="mobile-app">
@@ -180,6 +180,9 @@ export default function MobileUITestPage() {
   const [debouncedCss, setDebouncedCss] = useState(defaultCss)
   const [debouncedJs, setDebouncedJs] = useState(defaultJs)
 
+  const [device, setDevice] = useState<DeviceType>('iphone')
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedHtml(html)
@@ -294,13 +297,51 @@ export default function MobileUITestPage() {
 
           <div className="space-y-4">
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-950 dark:shadow-none flex flex-col items-center">
-              <div className="mb-6 flex w-full items-center justify-between gap-3">
+              <div className="mb-6 flex w-full flex-col xl:flex-row xl:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Xem trước thiết bị Mobile</h2>
                 </div>
+                
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <button
+                      onClick={() => setDevice('iphone')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${device === 'iphone' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                    >
+                      iPhone 15
+                    </button>
+                    <button
+                      onClick={() => setDevice('android')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${device === 'android' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                    >
+                      Pixel
+                    </button>
+                    <button
+                      onClick={() => setDevice('ipad')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${device === 'ipad' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                    >
+                      iPad
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <button
+                      onClick={() => setOrientation('portrait')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${orientation === 'portrait' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                    >
+                      Dọc
+                    </button>
+                    <button
+                      onClick={() => setOrientation('landscape')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${orientation === 'landscape' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                    >
+                      Ngang
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full">
-                <PhoneFrame device="iphone" orientation="portrait">
+              <div className="flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-[850px]">
+                <PhoneFrame device={device} orientation={orientation}>
                   <iframe
                     title="UI Test Preview"
                     srcDoc={previewSrcDoc}
