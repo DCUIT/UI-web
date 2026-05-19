@@ -19,3 +19,13 @@
  - [x] TODO-23: Effects UI (created)
  - [x] TODO-24: Priority list (created)
 
+- [ ] TODO-PLAYGROUND: Playground / Sandbox Page (MVP)
+  - [x] Create route `/playground`
+  - [x] Add device frame preview (Desktop/Mobile + orientation + safe-area simulation)
+  - [x] Tabs [Preview/TSX/CSS/Usage] (MVP stub)
+  - [x] Theme switch (ThemeToggle)
+  - [x] Copy TSX (clipboard)
+  - [x] Console/Error viewer placeholder
+  - [ ] Monaco editor (MVP)
+  - [ ] Runtime sandbox (Sandpack/iframe) + capture errors/console
+  - [ ] Copy full component (TSX + CSS + usage)

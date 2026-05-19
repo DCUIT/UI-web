@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import PhoneFrame from '@/components/mobile-playground/devices/PhoneFrame'
 
 const defaultHtml = `
 <div class="mobile-app">
@@ -298,14 +299,15 @@ export default function MobileUITestPage() {
                   <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Xem trước thiết bị Mobile</h2>
                 </div>
               </div>
-              <div className="transition-all duration-500 ease-in-out relative w-[375px] h-[812px] rounded-[3rem] border-[14px] border-slate-900 shadow-2xl dark:border-slate-800">
-                <div className="absolute top-0 inset-x-0 h-7 bg-slate-900 dark:bg-slate-800 rounded-b-3xl w-40 mx-auto z-10" />
-                <iframe
-                  title="UI Test Preview"
-                  srcDoc={previewSrcDoc}
-                  sandbox="allow-scripts"
-                  className="h-full w-full border-0 bg-white rounded-[2rem]"
-                />
+              <div className="flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full">
+                <PhoneFrame device="iphone" orientation="portrait">
+                  <iframe
+                    title="UI Test Preview"
+                    srcDoc={previewSrcDoc}
+                    sandbox="allow-scripts"
+                    className="h-full w-full border-0 bg-white"
+                  />
+                </PhoneFrame>
               </div>
             </div>
           </div>

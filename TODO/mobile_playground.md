@@ -7,13 +7,13 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
 ## 🚀 Giai đoạn 1: MVP (Minimum Viable Product) - Cốt lõi
 *Mục tiêu: Đạt được tính năng test và preview cơ bản nhất của một Mobile Playground.*
 
-- [ ] **Kiến trúc thư mục:** Thiết lập cấu trúc cơ bản:
+- [x] **Kiến trúc thư mục:** Thiết lập cấu trúc cơ bản:
   - `mobile-playground/preview/`
   - `mobile-playground/editor/`
   - `mobile-playground/devices/`
   - `mobile-playground/runtime/`
   - `mobile-playground/registry/`
-- [ ] **Phone Frame Preview (Fake Mobile Device):** Tạo component vẽ khung viền thiết bị giả lập (sử dụng CSS).
+- [x] **Phone Frame Preview (Fake Mobile Device):** Tạo component vẽ khung viền thiết bị giả lập (sử dụng CSS).
 - [ ] **Live Code Editor:** Tích hợp **Monaco Editor** với khả năng hiển thị code.
 - [ ] **Device Switcher:** Thêm Dropdown/Nút chọn thiết bị để giả lập kích thước thật:
   - `iPhone 15`
