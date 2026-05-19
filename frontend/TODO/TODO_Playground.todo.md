@@ -10,47 +10,47 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 
 ---
 
-## MVP (bắt buộc triển khai trước)
+## MVP (Đang triển khai 🚀)
 
-- [ ] Live Preview (QUAN TRỌNG NHẤT)
-  - [ ] Khung preview tách biệt, tự động cập nhật theo code
-  - [ ] Hiển thị loading/error trạng thái rõ ràng
+- [x] Live Preview (QUAN TRỌNG NHẤT)
+  - [x] Khung preview tách biệt, tự động cập nhật theo code (iframe srcDoc)
+  - [x] Hiển thị loading/error trạng thái rõ ràng (Babel compiler error catch)
 
-- [ ] Code Editor (Monaco)
-  - [ ] Tabs system: **[ Preview ] [ TSX ] [ CSS ] [ Usage ]**
-  - [ ] Syntax highlight, line numbers
-  - [ ] Auto complete (mức cơ bản)
+- [x] Code Editor (Monaco)
+  - [x] Tabs system: **[ Preview ] [ TSX ] [ CSS ] [ Usage ]**
+  - [x] Syntax highlight, line numbers
+  - [x] Auto complete (mức cơ bản qua Monaco core)
 
-- [ ] TSX editor + re-render
-  - [ ] Bảo toàn template code mặc định
-  - [ ] Khi user chỉnh TSX => cập nhật preview
+- [x] TSX editor + re-render
+  - [x] Bảo toàn template code mặc định
+  - [x] Khi user chỉnh TSX => cập nhật preview (Debounced 800ms)
 
-- [ ] Theme switch
-  - [ ] Dark mode / Light mode
-  - [ ] Preview sync với theme hiện tại (dùng `next-themes` / ThemeToggle)
+- [x] Theme switch
+  - [x] Dark mode / Light mode
+  - [x] Preview sync với theme hiện tại (dùng `next-themes` / ThemeToggle)
 
-- [ ] Responsive / Device Preview Frame
-  - [ ] Desktop preview
-  - [ ] Mobile preview (chỉ khung frame, hỗ trợ orientation)
-  - [ ] Orientation toggle: Portrait / Landscape
+- [x] Responsive / Device Preview Frame
+  - [x] Desktop preview
+  - [x] Mobile preview (chỉ khung frame, hỗ trợ orientation)
+  - [x] Orientation toggle: Portrait / Landscape
 
-- [ ] Copy system
-  - [ ] Copy TSX
-  - [ ] Copy CSS
-  - [ ] Copy full component (TSX + CSS + props usage)
+- [x] Copy system
+  - [x] Copy TSX
+  - [x] Copy CSS
+  - [x] Copy full component (TSX + CSS + props usage)
 
-- [ ] Console / Error viewer
-  - [ ] Bắt lỗi runtime và hiển thị trong panel (ví dụ: prop thiếu, import sai)
+- [x] Console / Error viewer
+  - [x] Bắt lỗi runtime và hiển thị trong panel (ví dụ: prop thiếu, import sai)
 
 ---
 
-## MVP “runtime sandbox” (phần quyết định)
+## MVP “runtime sandbox” (Hoàn thành ✅)
 
-- [ ] Xác định/triển khai sandbox runtime
-  - [ ] Sandpack-based runtime (ưu tiên) **hoặc** fallback: render an toàn trong iframe với bundling
-  - [ ] Chặn/whitelist imports (whitelist những gì project cho phép)
-  - [ ] Cơ chế truyền code vào sandbox runtime
-  - [ ] Bắt console logs + errors từ sandbox runtime và đẩy lên error viewer
+- [x] Xác định/triển khai sandbox runtime
+  - [x] Iframe-based runtime với Babel Standalone (An toàn, không cần server-side bundling)
+  - [x] Chặn/whitelist imports (Hiện tại hỗ trợ React & Tailwind từ CDN)
+  - [x] Cơ chế truyền code vào sandbox runtime (via srcDoc)
+  - [x] Bắt console logs + errors từ sandbox runtime và đẩy lên error viewer (via postMessage)
 
 ---
 
@@ -109,4 +109,3 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 - [ ] `frontend` chạy được build
 - [ ] `npm run lint` không lỗi
 - [ ] Smoke test: mở trang playground, sửa code, copy thành công
-

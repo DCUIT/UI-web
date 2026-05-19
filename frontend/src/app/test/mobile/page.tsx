@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
-import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react'
+import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react'
 
 const defaultAppTsx = `import React, { useState } from 'react';
 import './styles.css';
@@ -262,9 +262,22 @@ export default function MobileUITestPage() {
 
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-50/50 dark:bg-slate-950">
+          <SandpackProvider 
+            template="react-ts" 
+            theme={theme === 'dark' ? 'dark' : 'light'}
+            files={{
+              '/App.tsx': debouncedAppTsx,
+              '/styles.css': debouncedStylesCss
+            }}
+            customSetup={{
+              dependencies: {
+                "lucide-react": "latest"
+              }
+            }}
+          >
           <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr] h-full max-w-[1600px] mx-auto">
             <div className="space-y-4 flex flex-col h-full min-h-[600px]">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col">
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col min-h-[500px]">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
                   <button onClick={() => setActiveTab('App.tsx')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'App.tsx' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>App.tsx</button>
@@ -298,6 +311,18 @@ export default function MobileUITestPage() {
                     tabSize: 2
                   }}
                 />
+              </div>
+            </div>
+            
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 h-64 flex flex-col shrink-0">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                  Console & Errors
+                </h3>
+              </div>
+              <div className="flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-console]:h-full [&_.sp-console]:bg-transparent [&_.sp-console]:!border-0">
+                <SandpackConsole standalone resetOnPreviewRestart />
               </div>
             </div>
           </div>
@@ -358,32 +383,19 @@ export default function MobileUITestPage() {
               </div>
               <div className={`flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-[850px] transition-colors ${theme === 'dark' ? '!bg-slate-800/80' : ''}`}>
                 <PhoneFrame device={device} orientation={orientation} theme={theme}>
-                  <div className="h-full w-full bg-white [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-preview-container]:h-full">
-                    <SandpackProvider 
-                      template="react-ts" 
-                      theme={theme === 'dark' ? 'dark' : 'light'}
-                      files={{
-                        '/App.tsx': debouncedAppTsx,
-                        '/styles.css': debouncedStylesCss
-                      }}
-                      customSetup={{
-                        dependencies: {
-                          "lucide-react": "latest"
-                        }
-                      }}
-                    >
-                      <SandpackPreview 
-                        showOpenInCodeSandbox={false} 
-                        showRefreshButton={false} 
-                        style={{ height: '100%', border: 'none' }} 
-                      />
-                    </SandpackProvider>
+                  <div className="h-full w-full bg-white [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-preview-container]:h-full [&_.sp-preview-iframe]:!h-full">
+                    <SandpackPreview 
+                      showOpenInCodeSandbox={false} 
+                      showRefreshButton={false} 
+                      style={{ height: '100%', border: 'none' }} 
+                    />
                   </div>
                 </PhoneFrame>
               </div>
               </div>
             </div>
           </div>
+          </SandpackProvider>
         </main>
       </div>
     </div>
