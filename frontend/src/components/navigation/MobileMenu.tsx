@@ -8,6 +8,7 @@ type Props = {
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/components', label: 'Components' },
+  { href: '/test', label: 'UI Test' },
   { href: '/templates', label: 'Templates' },
 ];
 

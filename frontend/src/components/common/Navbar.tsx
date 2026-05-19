@@ -14,6 +14,7 @@ const CommandMenu = dynamic(() => import("@/components/navigation/CommandMenu"),
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/components", label: "Components" },
+  { href: "/test", label: "UI Test" },
 ];
 
 export default function Navbar({ onMobileMenu }: { onMobileMenu?: () => void }) {

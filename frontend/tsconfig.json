@@ -23,7 +23,7 @@
       }
     ],
     "ignoreDeprecations": "5.0",
-"types": ["node", "jest"],
+    "types": ["node", "jest", "react"],
     "paths": {
       "@/*": [
         "./src/*"

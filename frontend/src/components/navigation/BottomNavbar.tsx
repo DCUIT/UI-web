@@ -3,7 +3,7 @@
 import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Layout, Search, Menu } from "lucide-react"
+import { Home, Layout, Search, Menu, Terminal } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function BottomNavbar({ onMobileMenu }: { onMobileMenu: () => void }) {
@@ -12,6 +12,7 @@ export default function BottomNavbar({ onMobileMenu }: { onMobileMenu: () => voi
   const navItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/components", label: "UI Kit", icon: Layout },
+    { href: "/test", label: "Test", icon: Terminal },
   ]
 
   const openCommandMenu = () => {
