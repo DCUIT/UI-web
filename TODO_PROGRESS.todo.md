@@ -30,3 +30,5 @@
   - [x] Runtime sandbox (Sandpack/iframe) + capture errors/console
   - [x] Copy full component (TSX + CSS + usage)
   - [x] Component Controls (Dynamic props injection + color picker + reset)
+  - [x] Metadata & Dependencies Panel (Sidebar info + npm copy command)
+  - [x] Auto-save drafts to LocalStorage

@@ -54,29 +54,29 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 
 ---
 
-## Next (Đang thực hiện ✅)
+## Next (Hoàn thành ✅)
 
 - [x] Component controls (testing props)
-  - [ ] Metadata panel: Category, Responsive, Dark Mode, Dependencies
+  - [x] Metadata panel: Category, Responsive, Dark Mode, Dependencies
   - [x] Control cho common props (text, boolean, color knobs)
   - [x] Reset controls functionality
 
-- [ ] Dependencies box
-  - [ ] Hiển thị lệnh `npm install ...` tương ứng dependencies (dựa registry/component metadata)
+- [x] Dependencies box
+  - [x] Hiển thị lệnh `npm install ...` tương ứng dependencies (dựa registry/component metadata)
 
 - [ ] Tabs system nâng cấp
   - [ ] Usage tab: hiển thị ví dụ import + JSX usage
 
-- [ ] Search components
-  - [ ] Search theo tên component
-  - [ ] Search theo category
+- [x] Search components
+  - [x] Search theo tên component
+  - [x] Search theo category
 
 ---
 
-## Advanced
+## Advanced (Đang thực hiện 🚀)
 
 - [ ] Real-time editing (debounce + tối ưu rerender)
-- [ ] Save drafts (lưu vào localStorage)
+- [x] Save drafts (lưu vào localStorage)
 - [ ] Share playground (export JSON + share link)
 - [ ] Export component (tải xuống file)
 - [ ] AI prompt (future): tạo code theo prompt

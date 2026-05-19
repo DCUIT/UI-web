@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
 import Tabs from '@/components/ui/Tabs';
-import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw } from 'lucide-react';
+import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw, Info, Package, Zap, ShieldCheck, Search, ChevronRight, Save } from 'lucide-react';
 import * as Babel from '@babel/standalone';
 import Editor from '@monaco-editor/react';
 
@@ -59,14 +59,66 @@ type Orientation = 'portrait' | 'landscape';
 type LogEntry = { type: 'log' | 'error'; content: string; timestamp: string };
 type Control = { id: string; label: string; type: 'text' | 'boolean' | 'color'; value: any };
 
-const INITIAL_CONTROLS: Control[] = [
-  { id: 'title', label: 'Title Text', type: 'text', value: 'Live Sandbox' },
-  { id: 'buttonText', label: 'Button Label', type: 'text', value: 'Clicked' },
-  { id: 'showIcon', label: 'Show Icon', type: 'boolean', value: true },
-  { id: 'accentColor', label: 'Accent Color', type: 'color', value: '#4f46e5' },
+interface ComponentRegistryItem {
+  id: string;
+  name: string;
+  category: string;
+  tsx: string;
+  css: string;
+  controls: Control[];
+  dependencies: string[];
+  metadata: { responsive: string; darkMode: string; complexity: string };
+}
+
+const COMPONENT_REGISTRY: ComponentRegistryItem[] = [
+  {
+    id: 'default-sandbox',
+    name: 'Default Sandbox',
+    category: 'Feedback',
+    tsx: DEFAULT_TSX,
+    css: DEFAULT_CSS,
+    controls: [
+      { id: 'title', label: 'Title Text', type: 'text', value: 'Live Sandbox' },
+      { id: 'buttonText', label: 'Button Label', type: 'text', value: 'Clicked' },
+      { id: 'showIcon', label: 'Show Icon', type: 'boolean', value: true },
+      { id: 'accentColor', label: 'Accent Color', type: 'color', value: '#4f46e5' },
+    ],
+    dependencies: ['lucide-react', 'framer-motion', 'clsx'],
+    metadata: { responsive: 'Fully', darkMode: 'Ready', complexity: 'Entry' }
+  },
+  {
+    id: 'neon-button',
+    name: 'Neon Glow Button',
+    category: 'Buttons',
+    tsx: `function App({ text = "Neon Glow", color = "#00f2ff" }) {
+  return (
+    <div className="flex items-center justify-center min-h-[300px] bg-slate-950 p-10 rounded-2xl">
+      <button 
+        className="px-10 py-5 rounded-full font-black text-white transition-all duration-300 active:scale-95 uppercase tracking-widest text-sm"
+        style={{ 
+          backgroundColor: color,
+          boxShadow: \`0 0 20px \${color}66, 0 0 40px \${color}33\`,
+          textShadow: '0 0 8px rgba(0,0,0,0.3)'
+        }}
+      >
+        {text}
+      </button>
+    </div>
+  );
+}`,
+    css: '',
+    controls: [
+      { id: 'text', label: 'Button Text', type: 'text', value: 'Neon Glow' },
+      { id: 'color', label: 'Glow Color', type: 'color', value: '#00f2ff' }
+    ],
+    dependencies: ['clsx'],
+    metadata: { responsive: 'Fully', darkMode: 'Dark Only', complexity: 'Beginner' }
+  }
 ];
 
 export default function PlaygroundPage() {
+  const [selectedComponent, setSelectedComponent] = useState<ComponentRegistryItem>(COMPONENT_REGISTRY[0]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [tsxCode, setTsxCode] = useState(DEFAULT_TSX);
   const [cssCode, setCssCode] = useState(DEFAULT_CSS);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -75,11 +127,61 @@ export default function PlaygroundPage() {
   const [srcDoc, setSrcDoc] = useState('');
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isCopied, setIsCopied] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Mẫu controls khởi tạo cho component mặc định
-  const [controls, setControls] = useState<Control[]>(INITIAL_CONTROLS);
+  const [controls, setControls] = useState<Control[]>(COMPONENT_REGISTRY[0].controls);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // 1. Load drafts on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem('ui-platform-playground-draft');
+    if (savedDraft) {
+      try {
+        const parsed = JSON.parse(savedDraft);
+        const comp = COMPONENT_REGISTRY.find(c => c.id === parsed.componentId) || COMPONENT_REGISTRY[0];
+        
+        setSelectedComponent(comp);
+        setTsxCode(parsed.tsx || comp.tsx);
+        setCssCode(parsed.css || comp.css);
+        setControls(parsed.controls || comp.controls);
+      } catch (e) {
+        console.error("Failed to parse playground draft", e);
+      }
+    }
+  }, []);
+
+  // 2. Auto-save drafts on change
+  useEffect(() => {
+    setIsSaving(true);
+    const draft = {
+      tsx: tsxCode,
+      css: cssCode,
+      controls: controls,
+      componentId: selectedComponent.id
+    };
+    localStorage.setItem('ui-platform-playground-draft', JSON.stringify(draft));
+    const timer = setTimeout(() => setIsSaving(false), 1000);
+    return () => clearTimeout(timer);
+  }, [tsxCode, cssCode, controls, selectedComponent.id]);
+
+  // Hàm tải linh kiện mới
+  const loadComponent = (component: ComponentRegistryItem) => {
+    setSelectedComponent(component);
+    setTsxCode(component.tsx);
+    setCssCode(component.css);
+    setControls(component.controls);
+    setLogs([]); // Clear logs khi đổi component
+  };
+
+  // Filter linh kiện dựa trên search
+  const filteredRegistry = useMemo(() => {
+    return COMPONENT_REGISTRY.filter(c => 
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      c.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
 
   // Theme sync với class trên html/body (đang do next-themes quản lý)
   useEffect(() => {
@@ -260,12 +362,19 @@ export default function PlaygroundPage() {
           label: <span className="flex items-center gap-2"><FileCode className="w-4 h-4" /> Usage</span>,
           content: (
             <div className="h-full rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
-              <pre className="whitespace-pre-wrap font-mono text-xs">
+              <pre className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
                 {`// Example Usage
-import MyComponent from './Component';
+import MyComponent from '@/components/MyComponent';
 
 export default function Page() {
-  return <MyComponent />
+  return (
+    <MyComponent 
+      title="${controls.find(c => c.id === 'title')?.value}"
+      buttonText="${controls.find(c => c.id === 'buttonText')?.value}"
+      showIcon={${controls.find(c => c.id === 'showIcon')?.value}}
+      accentColor="${controls.find(c => c.id === 'accentColor')?.value}"
+    />
+  );
 }`}
               </pre>
             </div>
@@ -302,15 +411,22 @@ export default function Page() {
   };
 
   const resetControls = () => {
-    setControls(INITIAL_CONTROLS);
+    setControls(selectedComponent.controls);
   };
 
   return (
     <section className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Playground</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">Playground / Sandbox Page</h1>
+          <div className="flex items-center gap-3">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Playground</p>
+            {isSaving && (
+              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse">
+                <Save className="w-3 h-3" /> SAVED
+              </span>
+            )}
+          </div>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">Playground / Sandbox Page</h1>
           <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
             Runtime Sandbox Ready: Code được biên dịch trực tiếp bằng Babel và render trong IFrame riêng biệt.
           </p>
@@ -358,7 +474,100 @@ export default function Page() {
 
       <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         {/* Left controls */}
-        <aside className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <aside className="h-fit space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+          {/* Component Search & Selection */}
+          <div className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input 
+                type="text"
+                placeholder="Search components..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+            
+            {searchTerm && (
+              <div className="max-h-40 overflow-y-auto rounded-xl border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 z-20">
+                {filteredRegistry.length > 0 ? (
+                  filteredRegistry.map(comp => (
+                    <button
+                      key={comp.id}
+                      onClick={() => {
+                        loadComponent(comp);
+                        setSearchTerm('');
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors border-b last:border-0 border-slate-50 dark:border-slate-900"
+                    >
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-900 dark:text-white">{comp.name}</p>
+                        <p className="text-[9px] text-slate-400 uppercase">{comp.category}</p>
+                      </div>
+                      <ChevronRight className="w-3 h-3 text-slate-300" />
+                    </button>
+                  ))
+                ) : (
+                  <p className="p-3 text-[10px] text-slate-400 text-center italic">No components found</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Metadata & Dependencies */}
+          <div className="space-y-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-indigo-600" />
+                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Info</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Category</p>
+                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{selectedComponent.category}</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Responsive</p>
+                  <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <Zap className="w-3 h-3" /> {selectedComponent.metadata.responsive}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Dark Mode</p>
+                  <p className="text-xs font-semibold text-indigo-600 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" /> {selectedComponent.metadata.darkMode}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Complexity</p>
+                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{selectedComponent.metadata.complexity}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center gap-2">
+                <Package className="w-4 h-4 text-indigo-600" />
+                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Dependencies</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {selectedComponent.dependencies.map(dep => (
+                  <span key={dep} className="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                    {dep}
+                  </span>
+                ))}
+              </div>
+              <button 
+                onClick={async () => {
+                  await navigator.clipboard.writeText(`npm install ${selectedComponent.dependencies.join(' ')}`);
+                }}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950 text-white text-[10px] font-bold hover:bg-slate-800 transition-colors dark:bg-white dark:text-slate-950"
+              >
+                <Copy className="w-3 h-3" /> Copy Install Command
+              </button>
+            </div>
+          </div>
+
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
