@@ -68,6 +68,7 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
   - Tabs, Drawer, Stack Header.
 - [x] **Components - Screens (Full Layout):**
   - Login Screen (Đã thêm mẫu), Dashboard (Đã thêm mẫu), E-commerce Product Page (Đã thêm mẫu), Chat Interface.
+  - Login Screen (Đã thêm mẫu), Dashboard (Đã thêm mẫu), E-commerce Product Page (Đã thêm mẫu), Chat Interface (Đã thêm mẫu).
 
 ---
 
