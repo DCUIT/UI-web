@@ -48,7 +48,7 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
 ## ⚡ Giai đoạn 3: Runtime & Testing Mở rộng
 *Mục tiêu: Nâng cấp Playground từ HTML/CSS tĩnh sang hỗ trợ biên dịch Code (React/React Native Web).*
 
-- [ ] **Runtime Integration:** Cài đặt và tích hợp **Sandpack** để biên dịch React / React Native Web trực tiếp trên trình duyệt.
+- [x] **Runtime Integration:** Cài đặt và tích hợp **Sandpack** để biên dịch React / React Native Web trực tiếp trên trình duyệt.
 - [ ] **Console/Error Box:** Component hiển thị log console và Warning/Error (VD: `Warning: SafeAreaView missing`).
 - [ ] **Dependencies Box:** Hiển thị lệnh cài đặt package tương ứng với component đang xem (VD: `npm install react-native-reanimated`).
 - [ ] **App State Simulator:** Tạo panel hoặc toggle để giả lập các trạng thái của màn hình:

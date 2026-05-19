@@ -3,42 +3,63 @@
 import { useEffect, useMemo, useState } from 'react'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
+import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react'
 
-const defaultHtml = `
-<div class="mobile-app">
-  <header class="app-header">
-    <div class="menu-icon">☰</div>
-    <h2>My App</h2>
-    <div class="profile-icon">👤</div>
-  </header>
-  <main class="app-content">
-    <div class="welcome-card">
-      <h3>Welcome back!</h3>
-      <p>Here is your daily summary.</p>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h4>Tasks</h4>
-        <p>12</p>
-      </div>
-      <div class="stat-card">
-        <h4>Messages</h4>
-        <p>5</p>
-      </div>
-    </div>
-    <button id="actionButton" class="primary-btn">Start New Task</button>
-  </main>
-  <nav class="bottom-nav">
-    <div class="nav-item active">🏠</div>
-    <div class="nav-item">🔍</div>
-    <div class="nav-item">🔔</div>
-    <div class="nav-item">⚙️</div>
-  </nav>
-</div>
-`
+const defaultAppTsx = `import React, { useState } from 'react';
+import './styles.css';
 
-const defaultCss = `
-body {
+export default function App() {
+  const [tasks, setTasks] = useState(12);
+  const [messages, setMessages] = useState(5);
+  const [isStarted, setIsStarted] = useState(false);
+
+  const handleStart = () => {
+    setIsStarted(true);
+    setTimeout(() => setIsStarted(false), 2000);
+  };
+
+  return (
+    <div className="mobile-app">
+      <header className="app-header">
+        <div className="menu-icon">☰</div>
+        <h2>My React App</h2>
+        <div className="profile-icon">👤</div>
+      </header>
+      <main className="app-content">
+        <div className="welcome-card">
+          <h3>Welcome back!</h3>
+          <p>Here is your daily summary.</p>
+        </div>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <h4>Tasks</h4>
+            <p>{tasks}</p>
+          </div>
+          <div className="stat-card">
+            <h4>Messages</h4>
+            <p>{messages}</p>
+          </div>
+        </div>
+        <button 
+          onClick={handleStart}
+          className="primary-btn"
+          style={{ background: isStarted ? '#22c55e' : '#0f172a' }}
+        >
+          {isStarted ? 'Task Started!' : 'Start New Task'}
+        </button>
+      </main>
+      <nav className="bottom-nav">
+        <div className="nav-item active">🏠</div>
+        <div className="nav-item">🔍</div>
+        <div className="nav-item">🔔</div>
+        <div className="nav-item">⚙️</div>
+      </nav>
+    </div>
+  );
+}
+`;
+
+const defaultStylesCss = `body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #f1f5f9;
@@ -158,58 +179,27 @@ body {
 }
 `
 
-const defaultJs = `
-const button = document.getElementById('actionButton');
-if (button) {
-  button.addEventListener('click', () => {
-    button.textContent = 'Task Started!';
-    button.style.background = '#22c55e';
-    setTimeout(() => {
-      button.textContent = 'Start New Task';
-      button.style.background = '#0f172a';
-    }, 2000);
-  });
-}
-`
-
 export default function MobileUITestPage() {
-  const [html, setHtml] = useState(defaultHtml)
-  const [css, setCss] = useState(defaultCss)
-  const [js, setJs] = useState(defaultJs)
+  const [appTsx, setAppTsx] = useState(defaultAppTsx)
+  const [stylesCss, setStylesCss] = useState(defaultStylesCss)
 
-  const [debouncedHtml, setDebouncedHtml] = useState(defaultHtml)
-  const [debouncedCss, setDebouncedCss] = useState(defaultCss)
-  const [debouncedJs, setDebouncedJs] = useState(defaultJs)
+  const [debouncedAppTsx, setDebouncedAppTsx] = useState(defaultAppTsx)
+  const [debouncedStylesCss, setDebouncedStylesCss] = useState(defaultStylesCss)
 
   const [device, setDevice] = useState<DeviceType>('iphone')
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [activeTab, setActiveTab] = useState<'html' | 'css' | 'js'>('html')
+  const [activeTab, setActiveTab] = useState<'App.tsx' | 'styles.css'>('App.tsx')
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedHtml(html)
-      setDebouncedCss(css)
-      setDebouncedJs(js)
+      setDebouncedAppTsx(appTsx)
+      setDebouncedStylesCss(stylesCss)
     }, 500)
     return () => clearTimeout(timer)
-  }, [html, css, js])
+  }, [appTsx, stylesCss])
 
-  const previewSrcDoc = useMemo(
-    () => \`<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>\${debouncedCss}</style>
-  </head>
-  <body>
-    \${debouncedHtml}
-    <script>\${debouncedJs.replace(/<\/script>/g, '<\\\\/script>')} </script>
-  </body>
-</html>\`,
-    [debouncedHtml, debouncedCss, debouncedJs]
-  )
+
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -235,9 +225,8 @@ export default function MobileUITestPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
-              setHtml(defaultHtml)
-              setCss(defaultCss)
-              setJs(defaultJs)
+              setAppTsx(defaultAppTsx)
+              setStylesCss(defaultStylesCss)
             }}
             className="text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors"
           >
@@ -278,29 +267,27 @@ export default function MobileUITestPage() {
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
-                  <button onClick={() => setActiveTab('html')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'html' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>HTML</button>
-                  <button onClick={() => setActiveTab('css')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'css' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>CSS</button>
-                  <button onClick={() => setActiveTab('js')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'js' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>JavaScript</button>
+                  <button onClick={() => setActiveTab('App.tsx')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'App.tsx' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>App.tsx</button>
+                  <button onClick={() => setActiveTab('styles.css')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'styles.css' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>styles.css</button>
                 </div>
                 <button 
-                  onClick={() => copyToClipboard(activeTab === 'html' ? html : activeTab === 'css' ? css : js)}
+                  onClick={() => copyToClipboard(activeTab === 'App.tsx' ? appTsx : stylesCss)}
                   className="text-xs px-3 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium flex items-center gap-1"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  Copy {activeTab.toUpperCase()}
+                  Copy {activeTab}
                 </button>
               </div>
               
               <div className="flex-1 w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] min-h-[500px]">
                 <Editor
                   height="100%"
-                  language={activeTab === 'js' ? 'javascript' : activeTab}
+                  language={activeTab === 'styles.css' ? 'css' : 'typescript'}
                   theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                  value={activeTab === 'html' ? html : activeTab === 'css' ? css : js}
+                  value={activeTab === 'App.tsx' ? appTsx : stylesCss}
                   onChange={(value) => {
-                    if (activeTab === 'html') setHtml(value || '')
-                    if (activeTab === 'css') setCss(value || '')
-                    if (activeTab === 'js') setJs(value || '')
+                    if (activeTab === 'App.tsx') setAppTsx(value || '')
+                    if (activeTab === 'styles.css') setStylesCss(value || '')
                   }}
                   options={{
                     minimap: { enabled: false },
@@ -371,12 +358,27 @@ export default function MobileUITestPage() {
               </div>
               <div className={`flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-[850px] transition-colors ${theme === 'dark' ? '!bg-slate-800/80' : ''}`}>
                 <PhoneFrame device={device} orientation={orientation} theme={theme}>
-                  <iframe
-                    title="UI Test Preview"
-                    srcDoc={previewSrcDoc}
-                    sandbox="allow-scripts"
-                    className="h-full w-full border-0 bg-white"
-                  />
+                  <div className="h-full w-full bg-white [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-preview-container]:h-full">
+                    <SandpackProvider 
+                      template="react-ts" 
+                      theme={theme === 'dark' ? 'dark' : 'light'}
+                      files={{
+                        '/App.tsx': debouncedAppTsx,
+                        '/styles.css': debouncedStylesCss
+                      }}
+                      customSetup={{
+                        dependencies: {
+                          "lucide-react": "latest"
+                        }
+                      }}
+                    >
+                      <SandpackPreview 
+                        showOpenInCodeSandbox={false} 
+                        showRefreshButton={false} 
+                        style={{ height: '100%', border: 'none' }} 
+                      />
+                    </SandpackProvider>
+                  </div>
                 </PhoneFrame>
               </div>
               </div>
