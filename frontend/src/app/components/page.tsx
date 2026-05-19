@@ -10,7 +10,6 @@ import Toast from '@/components/ui/Toast';
 import Button from '@/components/ui/Button';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
-import ComponentPreview from '@/components/discovery/ComponentPreview'; // Import ComponentPreview
 import CuratedCollections from '@/components/templates/CuratedCollections';
 import { cn } from '@/lib/utils';
 
@@ -517,134 +516,137 @@ function ComponentsPageContent() {
               </div>
             </div>
 
+            <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+              {/* Desktop Sidebar */}
+              <aside className="sticky top-24 hidden h-[calc(100vh-120px)] overflow-y-auto pr-4 lg:block custom-scrollbar">
+                <SidebarContent />
+              </aside>
 
-        <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
-          {/* Desktop Sidebar */}
-          <aside className="sticky top-24 hidden h-[calc(100vh-120px)] overflow-y-auto pr-4 lg:block custom-scrollbar">
-            <SidebarContent />
-          </aside>
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Selected component</p>
+                    <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{selectedComponent.name}</h2>
 
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Selected component</p>
-                <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{selectedComponent.name}</h2>
-                
-                <div className="mt-4 flex flex-wrap items-center gap-4">
-                  {selectedComponent.difficulty && (
-                    <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>
-                      {selectedComponent.difficulty}
-                    </Badge>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    {selectedComponent.tags?.map((tag) => (
-                      <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">
-                        {tag}
-                      </span>
-                    ))}
+                    <div className="mt-4 flex flex-wrap items-center gap-4">
+                      {selectedComponent.difficulty && (
+                        <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>
+                          {selectedComponent.difficulty}
+                        </Badge>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {selectedComponent.tags?.map((tag) => (
+                          <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-lg leading-7 text-slate-600 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
+                  </div>
+                  <Button type="button" variant="secondary" onClick={copyCode}>
+                    Copy source
+                  </Button>
+                </div>
+
+                {/* Premium Integrated Box: Preview + Code */}
+                <div className="grid gap-8 lg:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                    <p className="mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Preview</p>
+                    <div className="space-y-4">
+                      {renderPreview(selectedComponent)}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                    <div className="mb-6 flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('preview')}
+                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                          activeTab === 'preview'
+                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        Preview
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('code')}
+                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                          activeTab === 'code'
+                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        Code
+                      </button>
+                    </div>
+
+                    {activeTab === 'preview' ? (
+                      <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
+                        {renderPreview(selectedComponent)}
+                      </div>
+                    ) : (
+                      <pre className="max-h-[420px] overflow-auto rounded-xl border border-slate-200/80 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800/80">
+                        <code>{selectedComponent.source}</code>
+                      </pre>
+                    )}
                   </div>
                 </div>
 
-                <p className="mt-4 text-lg leading-7 text-slate-600 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
-              </div>
-              <Button type="button" variant="secondary" onClick={copyCode}>
-                Copy source
-              </Button>
-            </div>
-
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
-                <p className="mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Preview</p>
-                <div className="space-y-4">
-                  {renderPreview(selectedComponent)}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
-                <div className="mb-6 flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('preview')}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
-                      activeTab === 'preview'
-                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    Preview
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('code')}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
-                      activeTab === 'code'
-                        ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    Code
-                  </button>
-                </div>
-                {activeTab === 'preview' ? (
-                  <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
-                    {renderPreview(selectedComponent)}
+                {/* Move All components BELOW preview/code block */}
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                  <div className="mb-8 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                        All components
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{results.length} results available</p>
+                    </div>
                   </div>
-                ) : (
-                  <pre className="max-h-[420px] overflow-auto rounded-xl border border-slate-200/80 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800/80">
-                    <code>{selectedComponent.source}</code>
-                  </pre>
-                )}
-              </div>
-            </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
-              <div className="mb-8 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                    All components
-                  </p>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{results.length} results available</p>
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {results.map((component) => {
-                  const active = component.id === selectedComponent.id;
-                  return (
-                    <button
-                      key={component.id}
-                      type="button"
-                      onClick={() => handleSelectComponent(component.id)}
-                      className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
-                        active
-                          ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
-                          : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
-                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
-                        </div>
-                        <span
-                          className={`text-sm transition-transform ${
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {results.map((component) => {
+                      const active = component.id === selectedComponent.id;
+                      return (
+                        <button
+                          key={component.id}
+                          type="button"
+                          onClick={() => handleSelectComponent(component.id)}
+                          className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
                             active
-                              ? 'text-slate-950 dark:text-white'
-                              : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
+                              ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
+                              : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
                           }`}
                         >
-                          {active ? '✓' : '→'}
-                        </span>
-                      </div>
-                      <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
-                        {renderPreview(component)}
-                      </div>
-                    </button>
-                  );
-                })}
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
+                              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
+                            </div>
+                            <span
+                              className={`text-sm transition-transform ${
+                                active
+                                  ? 'text-slate-950 dark:text-white'
+                                  : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
+                              }`}
+                            >
+                              {active ? '✓' : '→'}
+                            </span>
+                          </div>
+                          <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
+                            {renderPreview(component)}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           </>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -665,3 +667,4 @@ export default function ComponentsPage() {
     </Suspense>
   );
 }
+
