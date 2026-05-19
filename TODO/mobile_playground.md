@@ -20,9 +20,9 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
   - `Pixel`
   - `iPad`
 - [x] **Responsive Scaling:** Tính năng thay đổi kích thước fake device (Small phone, Medium phone, Tablet).
-- [ ] **Theme Toggle:** Chuyển đổi Dark Mode / Light Mode cho preview frame.
+- [x] **Theme Toggle:** Chuyển đổi Dark Mode / Light Mode cho preview frame.
 - [x] **Orientation Toggle:** Chuyển đổi Portrait (Dọc) / Landscape (Ngang).
-- [ ] **Copy Code:** Nút sao chép nhanh mã nguồn hiện tại trong Editor.
+- [x] **Copy Code:** Nút sao chép nhanh mã nguồn hiện tại trong Editor.
 
 ---
 

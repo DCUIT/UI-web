@@ -182,6 +182,7 @@ export default function MobileUITestPage() {
 
   const [device, setDevice] = useState<DeviceType>('iphone')
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -207,6 +208,12 @@ export default function MobileUITestPage() {
 </html>\`,
     [debouncedHtml, debouncedCss, debouncedJs]
   )
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => alert('Đã sao chép vào clipboard!'))
+      .catch(err => console.error('Failed to copy: ', err))
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
     if (e.key === 'Tab') {
@@ -254,6 +261,12 @@ export default function MobileUITestPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-slate-950 dark:text-white">HTML</h2>
                 </div>
+                <button 
+                  onClick={() => copyToClipboard(html)}
+                  className="text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium"
+                >
+                  Copy
+                </button>
               </div>
               <textarea
                 value={html}
@@ -269,6 +282,12 @@ export default function MobileUITestPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-slate-950 dark:text-white">CSS</h2>
                 </div>
+                <button 
+                  onClick={() => copyToClipboard(css)}
+                  className="text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium"
+                >
+                  Copy
+                </button>
               </div>
               <textarea
                 value={css}
@@ -284,6 +303,12 @@ export default function MobileUITestPage() {
                 <div>
                   <h2 className="text-lg font-semibold text-slate-950 dark:text-white">JavaScript</h2>
                 </div>
+                <button 
+                  onClick={() => copyToClipboard(js)}
+                  className="text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-300 transition-colors font-medium"
+                >
+                  Copy
+                </button>
               </div>
               <textarea
                 value={js}
@@ -338,10 +363,19 @@ export default function MobileUITestPage() {
                       Ngang
                     </button>
                   </div>
+                  
+                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <button
+                      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white transition-all"
+                    >
+                      {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-[850px]">
-                <PhoneFrame device={device} orientation={orientation}>
+              <div className={`flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-[850px] transition-colors ${theme === 'dark' ? '!bg-slate-800/80' : ''}`}>
+                <PhoneFrame device={device} orientation={orientation} theme={theme}>
                   <iframe
                     title="UI Test Preview"
                     srcDoc={previewSrcDoc}
