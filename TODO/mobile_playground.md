@@ -29,7 +29,7 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
 ## 🎨 Giai đoạn 2: Trải nghiệm & Giao diện (Layout & UI)
 *Mục tiêu: Bố cục chuẩn chỉnh giống một Frontend Tooling Product chuyên nghiệp.*
 
-- [ ] **Layout tổng thể:**
+- [x] **Layout tổng thể:**
   - `Navbar` phía trên cùng (Header, Tools).
   - `Sidebar` (Bên trái) chứa danh sách Component Categories.
   - `Code Editor` (Bên dưới hoặc ở giữa).

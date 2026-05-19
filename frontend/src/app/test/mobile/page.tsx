@@ -218,30 +218,63 @@ export default function MobileUITestPage() {
   }
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-950 dark:shadow-none">
-        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-slate-950 dark:text-white">Mobile App UI Tester</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-              Nhập mã HTML, CSS và JavaScript vào trình chỉnh sửa để xem trước ngay lập tức.
-            </p>
+    <div className="flex flex-col h-screen min-h-[800px] bg-slate-50 dark:bg-slate-950 -m-4 sm:-m-8">
+      {/* Navbar */}
+      <header className="h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-6 z-10">
+        <div className="flex items-center gap-4">
+          <div className="font-bold text-xl tracking-tight text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            Mobile Sandbox
           </div>
+          <div className="hidden md:flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-4 text-sm font-medium">
+             <button className="px-3 py-1 bg-white dark:bg-slate-700 shadow-sm rounded-md text-slate-900 dark:text-white">Playground</button>
+             <button className="px-3 py-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Components</button>
+             <button className="px-3 py-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Documentation</button>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
           <button
-            type="button"
             onClick={() => {
               setHtml(defaultHtml)
               setCss(defaultCss)
               setJs(defaultJs)
             }}
-            className="inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-slate-200"
+            className="text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors"
           >
-            Reset starter code
+            Reset Code
+          </button>
+          <button className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm shadow-indigo-200 dark:shadow-none">
+            Share
           </button>
         </div>
+      </header>
 
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr]">
-          <div className="space-y-4 flex flex-col h-full">
+      {/* Main Body */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside className="w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col overflow-y-auto hidden md:flex">
+          <div className="p-4">
+             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">Components</h3>
+             <div className="space-y-1">
+               <button className="w-full text-left px-3 py-2 text-sm bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-medium rounded-lg">Buttons</button>
+               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Cards</button>
+               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Inputs & Forms</button>
+               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Bottom Sheets</button>
+             </div>
+             
+             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 mt-8">Templates</h3>
+             <div className="space-y-1">
+               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">E-commerce App</button>
+               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Chat Interface</button>
+               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Social Feed</button>
+             </div>
+          </div>
+        </aside>
+
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-50/50 dark:bg-slate-950">
+          <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr] h-full max-w-[1600px] mx-auto">
+            <div className="space-y-4 flex flex-col h-full min-h-[600px]">
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
@@ -346,9 +379,10 @@ export default function MobileUITestPage() {
                   />
                 </PhoneFrame>
               </div>
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   )
