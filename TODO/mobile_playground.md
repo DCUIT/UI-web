@@ -62,12 +62,12 @@ Dưới đây là danh sách công việc (TODO list) được chia thành các 
 ## 📂 Giai đoạn 4: Danh mục Mobile Component
 *Mục tiêu: Xây dựng hệ thống UI Library sẵn có cho người dùng kéo thả hoặc tham khảo.*
 
-- [ ] **Components - UI:**
-  - Buttons, Inputs, Cards, Bottom Sheets.
+- [x] **Components - UI:**
+  - Buttons, Inputs, Cards (Đã thêm Mobile Task Card mẫu).
 - [ ] **Components - Navigation:**
   - Tabs, Drawer, Stack Header.
-- [ ] **Components - Screens (Full Layout):**
-  - Login Screen, Dashboard, Chat Interface, E-commerce Product Page.
+- [x] **Components - Screens (Full Layout):**
+  - Login Screen (Đã thêm mẫu), Dashboard, Chat Interface, E-commerce Product Page.
 
 ---
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
 import Tabs from '@/components/ui/Tabs';
-import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw, Info, Package, Zap, ShieldCheck, Search, ChevronRight, Save } from 'lucide-react';
+import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw, Info, Package, Zap, ShieldCheck, Search, ChevronRight, Save, Share2 } from 'lucide-react';
 import * as Babel from '@babel/standalone';
 import Editor from '@monaco-editor/react';
 
@@ -128,14 +128,37 @@ export default function PlaygroundPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isCopied, setIsCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isShared, setIsShared] = useState(false);
   
   // Mẫu controls khởi tạo cho component mặc định
   const [controls, setControls] = useState<Control[]>(COMPONENT_REGISTRY[0].controls);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // 1. Load drafts on mount
+  // 1. Load shared state or drafts on mount
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedData = params.get('share');
+
+    if (sharedData) {
+      try {
+        // Giải mã Base64 an toàn cho Unicode
+        const decoded = JSON.parse(decodeURIComponent(escape(window.atob(sharedData))));
+        const comp = COMPONENT_REGISTRY.find(c => c.id === decoded.componentId) || COMPONENT_REGISTRY[0];
+        
+        setSelectedComponent(comp);
+        setTsxCode(decoded.tsx);
+        setCssCode(decoded.css);
+        setControls(decoded.controls);
+        
+        // Xóa query param để URL sạch sẽ sau khi load
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      } catch (e) {
+        console.error("Failed to decode shared playground data", e);
+      }
+    }
+
     const savedDraft = localStorage.getItem('ui-platform-playground-draft');
     if (savedDraft) {
       try {
@@ -406,6 +429,22 @@ export default function Page() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const sharePlayground = async () => {
+    const data = {
+      tsx: tsxCode,
+      css: cssCode,
+      controls: controls,
+      componentId: selectedComponent.id
+    };
+    // Mã hóa Base64 an toàn cho Unicode
+    const encoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encoded}`;
+    
+    await navigator.clipboard.writeText(shareUrl);
+    setIsShared(true);
+    setTimeout(() => setIsShared(false), 2000);
+  };
+
   const updateControl = (id: string, value: any) => {
     setControls(prev => prev.map(c => c.id === id ? { ...c, value } : c));
   };
@@ -433,6 +472,15 @@ export default function Page() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={sharePlayground}
+            className="gap-2 rounded-xl"
+          >
+            {isShared ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
+            {isShared ? 'Link Copied!' : 'Share'}
+          </Button>
           <ThemeToggle />
           <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-300">Device</span>

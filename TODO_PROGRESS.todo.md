@@ -32,3 +32,4 @@
   - [x] Component Controls (Dynamic props injection + color picker + reset)
   - [x] Metadata & Dependencies Panel (Sidebar info + npm copy command)
   - [x] Auto-save drafts to LocalStorage
+  - [x] Share Playground (URL encoded state sharing)
