@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
 import Tabs from '@/components/ui/Tabs';
-import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw, Info, Package, Zap, ShieldCheck, Search, ChevronRight, Save, Share2 } from 'lucide-react';
+import { Code2, Layout, Terminal, FileCode, Check, Copy, Monitor, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw, Info, Package, Zap, ShieldCheck, Search, ChevronRight, Save, Share2, Download, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import * as Babel from '@babel/standalone';
 import Editor from '@monaco-editor/react';
 
@@ -113,304 +113,6 @@ const COMPONENT_REGISTRY: ComponentRegistryItem[] = [
     ],
     dependencies: ['clsx'],
     metadata: { responsive: 'Fully', darkMode: 'Dark Only', complexity: 'Beginner' }
-  },
-  {
-    id: 'mobile-dashboard',
-    name: 'Mobile Dashboard',
-    category: 'Screens',
-    tsx: `function App({ userName = "Alex Rivera", balance = "$12,450.00" }) {
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans">
-      {/* Header */}
-      <div className="p-6 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">AR</div>
-          <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Welcome back</p>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">{userName}</h2>
-          </div>
-        </div>
-        <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center relative">
-          <div className="w-2 h-2 bg-rose-500 rounded-full absolute top-2 right-2 border-2 border-white dark:border-slate-900"></div>
-          <svg className="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-        </div>
-      </div>
-
-      {/* Main Card */}
-      <div className="px-6">
-        <div className="bg-indigo-600 rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-          <p className="text-xs font-medium text-indigo-100 opacity-80 mb-1">Total Balance</p>
-          <h3 className="text-3xl font-bold mb-6">{balance}</h3>
-          <div className="flex gap-4">
-            <button className="flex-1 bg-white/20 hover:bg-white/30 backdrop-blur-md py-3 rounded-2xl text-xs font-bold transition-all">Send</button>
-            <button className="flex-1 bg-white text-indigo-600 py-3 rounded-2xl text-xs font-bold transition-all">Receive</button>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="p-6 grid grid-cols-4 gap-4">
-        {[ { n: 'Bills', c: 'bg-emerald-100 text-emerald-600' }, { n: 'Trade', c: 'bg-amber-100 text-amber-600' }, { n: 'Vault', c: 'bg-rose-100 text-rose-600' }, { n: 'More', c: 'bg-slate-100 text-slate-600' } ].map(item => (
-          <div key={item.n} className="flex flex-col items-center gap-2">
-            <div className={\`w-12 h-12 rounded-2xl \${item.c} flex items-center justify-center\`}>
-              <div className="w-5 h-5 border-2 border-current rounded-md"></div>
-            </div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase">{item.n}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Transactions */}
-      <div className="flex-1 bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-6 shadow-inner border-t border-slate-100 dark:border-slate-800">
-        <div className="flex justify-between items-center mb-6">
-          <h4 className="font-bold text-slate-900 dark:text-white">Recent Transactions</h4>
-          <button className="text-xs font-bold text-indigo-600 dark:text-indigo-400">View All</button>
-        </div>
-        
-        <div className="space-y-4">
-          {[
-            { n: 'Netflix Subscription', d: '24 May 2024', a: '-$15.99', i: 'bg-slate-100' },
-            { n: 'Salary Deposit', d: '22 May 2024', a: '+$4,250.00', i: 'bg-emerald-100 text-emerald-600' },
-            { n: 'Apple Store', d: '20 May 2024', a: '-$199.00', i: 'bg-slate-100' }
-          ].map((t, idx) => (
-            <div key={idx} className="flex justify-between items-center p-2">
-              <div className="flex items-center gap-3">
-                <div className={\`w-10 h-10 rounded-xl \${t.i} flex items-center justify-center text-xs font-bold\`}>
-                  {t.n.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">{t.n}</p>
-                  <p className="text-[10px] text-slate-400 font-medium">{t.d}</p>
-                </div>
-              </div>
-              <p className={\`text-xs font-bold \${t.a.startsWith('+') ? 'text-emerald-500' : 'text-slate-900 dark:text-white'}\`}>{t.a}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}`,
-    css: '',
-    controls: [
-      { id: 'userName', label: 'User Name', type: 'text', value: 'Alex Rivera' },
-      { id: 'balance', label: 'Balance Amount', type: 'text', value: '$12,450.00' }
-    ],
-    dependencies: ['lucide-react', 'clsx'],
-    metadata: { responsive: 'Mobile-First', darkMode: 'Ready', complexity: 'Advanced' }
-  },
-  {
-    id: 'mobile-ecommerce-page',
-    name: 'E-commerce Product Page',
-    category: 'Screens',
-    tsx: `function App({ 
-  productName = "Nike Air Max 270", 
-  price = "$150.00", 
-  rating = 4.8, 
-  reviews = "124",
-  description = "The Nike Air Max 270 delivers visible cushioning under every step. Updated for modern comfort, it nods to the original 1991 Air Max 180." 
-}) {
-  const [selectedSize, setSelectedSize] = React.useState('42');
-  const sizes = ['40', '41', '42', '43', '44', '45'];
-
-  return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col font-sans pb-24">
-      {/* Top Navigation */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center">
-        <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-center shadow-sm">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-center shadow-sm text-rose-500">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </button>
-      </div>
-
-      {/* Product Image Gallery (Simulated) */}
-      <div className="relative aspect-[4/5] bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden">
-        <div className="w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl absolute -bottom-10 -right-10"></div>
-        <div className="relative z-0 scale-125 rotate-[-15deg] drop-shadow-2xl">
-           <div className="w-48 h-24 bg-indigo-600 rounded-full opacity-20 blur-xl absolute bottom-0 left-1/2 -translate-x-1/2"></div>
-           <svg className="w-64 h-64 text-slate-800 dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3 4-3 9-3 9 1.34 9 3z"/><path d="M3 12v6c0 1.66 4 3 9 3s9-1.34 9-3v-6"/></svg>
-        </div>
-        <div className="absolute bottom-6 flex gap-2">
-          {[0,1,2].map(i => <div key={i} className={\`w-2 h-2 rounded-full \${i === 0 ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}\`}></div>)}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="px-6 pt-8 space-y-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white">{productName}</h1>
-            <div className="flex items-center gap-2">
-              <div className="flex text-amber-400 font-bold text-xs items-center">
-                ★ <span className="ml-1 text-slate-900 dark:text-white">{rating}</span>
-              </div>
-              <span className="text-xs text-slate-400">({reviews} Reviews)</span>
-            </div>
-          </div>
-          <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{price}</span>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Select Size</h3>
-            <button className="text-xs text-slate-400 underline">Size Guide</button>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {sizes.map(size => (
-              <button 
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={\`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xs transition-all \${selectedSize === size ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-800'}\`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Description</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{description}</p>
-        </div>
-      </div>
-
-      {/* Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
-        <button className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400">
-           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-        </button>
-        <button className="flex-1 h-16 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-xl shadow-indigo-500/20 active:scale-[0.98] transition-all">
-          Add to Cart
-        </button>
-      </div>
-    </div>
-  );
-}`,
-    css: '',
-    controls: [
-      { id: 'productName', label: 'Product Name', type: 'text', value: 'Nike Air Max 270' },
-      { id: 'price', label: 'Price', type: 'text', value: '$150.00' },
-      { id: 'rating', label: 'Rating (0-5)', type: 'text', value: '4.8' },
-      { id: 'description', label: 'Description', type: 'text', value: 'The Nike Air Max 270 delivers visible cushioning under every step.' }
-    ],
-    dependencies: ['lucide-react', 'clsx'],
-    metadata: { responsive: 'Mobile-First', darkMode: 'Ready', complexity: 'Advanced' }
-  },
-  {
-    id: 'mobile-login-screen',
-    name: 'Mobile Login Screen',
-    category: 'Screens',
-    tsx: `function App({ title = "Welcome Back", subtitle = "Please enter your details", buttonText = "Sign In", showSocial = true }) {
-  return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 p-6 flex flex-col justify-center">
-      <div className="mb-10 text-center">
-        <div className="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-black text-2xl">M</div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{title}</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">{subtitle}</p>
-      </div>
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-400 uppercase ml-1">Email</label>
-          <input type="email" placeholder="name@example.com" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all" />
-        </div>
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-400 uppercase ml-1">Password</label>
-          <input type="password" placeholder="••••••••" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all" />
-        </div>
-      </div>
-      <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl mt-8 shadow-lg shadow-indigo-500/30 active:scale-95 transition-all">{buttonText}</button>
-      {showSocial && (
-        <div className="mt-8 flex gap-4">
-          <button className="flex-1 py-3 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold dark:text-white">Google</button>
-          <button className="flex-1 py-3 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold dark:text-white">Apple</button>
-        </div>
-      )}
-    </div>
-  );
-}`,
-    css: '',
-    controls: [
-      { id: 'title', label: 'Title', type: 'text', value: 'Welcome Back' },
-      { id: 'subtitle', label: 'Subtitle', type: 'text', value: 'Please enter your details' },
-      { id: 'buttonText', label: 'Button Label', type: 'text', value: 'Sign In' },
-      { id: 'showSocial', label: 'Social Login', type: 'boolean', value: true }
-    ],
-    dependencies: ['lucide-react'],
-    metadata: { responsive: 'Mobile-First', darkMode: 'Ready', complexity: 'Intermediate' }
-  },
-  {
-    id: 'mobile-chat-interface',
-    name: 'Mobile Chat Interface',
-    category: 'Screens',
-    tsx: `function App({ chatName = "Sarah Jenkins", status = "Online", showAvatars = true }) {
-  const messages = [
-    { id: 1, text: "Hey! How is the new design coming along?", sender: "other", time: "09:41 AM" },
-    { id: 2, text: "It's looking great! Just finished the playground section. 🚀", sender: "me", time: "09:42 AM" },
-    { id: 3, text: "Awesome! Can you send a screenshot?", sender: "other", time: "09:43 AM" }
-  ];
-
-  return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 font-sans">
-      {/* Chat Header */}
-      <div className="p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 flex items-center gap-3 sticky top-0 z-10">
-        <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">SJ</div>
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
-        </div>
-        <div className="flex-1">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{chatName}</h2>
-          <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">{status}</p>
-        </div>
-      </div>
-
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((m) => (
-          <div key={m.id} className={\`flex \${m.sender === 'me' ? 'justify-end' : 'justify-start'} items-end gap-2\`}>
-            {m.sender === 'other' && showAvatars && (
-               <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-800 flex-shrink-0" />
-            )}
-            <div className={\`max-w-[75%] space-y-1\`}>
-              <div className={\`px-4 py-2.5 rounded-2xl text-sm \${
-                m.sender === 'me' 
-                  ? 'bg-indigo-600 text-white rounded-br-none shadow-md shadow-indigo-500/20' 
-                  : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-800 rounded-bl-none shadow-sm'
-              }\`}>
-                {m.text}
-              </div>
-              <p className={\`text-[9px] font-bold text-slate-400 px-1 \${m.sender === 'me' ? 'text-right' : 'text-left'}\`}>{m.time}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Input Area */}
-      <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
-        <div className="flex-1 relative">
-          <input 
-            type="text" 
-            placeholder="Type a message..." 
-            className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 dark:text-white"
-          />
-        </div>
-        <button className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-lg active:scale-90 transition-all">
-          <svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
-      </div>
-    </div>
-  );
-}`,
-    css: '',
-    controls: [
-      { id: 'chatName', label: 'Contact Name', type: 'text', value: 'Sarah Jenkins' },
-      { id: 'status', label: 'Status', type: 'text', value: 'Online' },
-      { id: 'showAvatars', label: 'Show Avatars', type: 'boolean', value: true }
-    ],
-    dependencies: ['lucide-react', 'clsx'],
-    metadata: { responsive: 'Mobile-First', darkMode: 'Ready', complexity: 'Intermediate' }
   }
 ];
 
@@ -427,7 +129,10 @@ export default function PlaygroundPage() {
   const [isCopied, setIsCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isShared, setIsShared] = useState(false);
-
+  const [isExporting, setIsExporting] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  
   // Mẫu controls khởi tạo cho component mặc định
   const [controls, setControls] = useState<Control[]>(COMPONENT_REGISTRY[0].controls);
 
@@ -443,12 +148,12 @@ export default function PlaygroundPage() {
         // Giải mã Base64 an toàn cho Unicode
         const decoded = JSON.parse(decodeURIComponent(escape(window.atob(sharedData))));
         const comp = COMPONENT_REGISTRY.find(c => c.id === decoded.componentId) || COMPONENT_REGISTRY[0];
-
+        
         setSelectedComponent(comp);
         setTsxCode(decoded.tsx);
         setCssCode(decoded.css);
         setControls(decoded.controls);
-
+        
         // Xóa query param để URL sạch sẽ sau khi load
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
@@ -462,7 +167,7 @@ export default function PlaygroundPage() {
       try {
         const parsed = JSON.parse(savedDraft);
         const comp = COMPONENT_REGISTRY.find(c => c.id === parsed.componentId) || COMPONENT_REGISTRY[0];
-
+        
         setSelectedComponent(comp);
         setTsxCode(parsed.tsx || comp.tsx);
         setCssCode(parsed.css || comp.css);
@@ -498,8 +203,8 @@ export default function PlaygroundPage() {
 
   // Filter linh kiện dựa trên search
   const filteredRegistry = useMemo(() => {
-    return COMPONENT_REGISTRY.filter(c =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return COMPONENT_REGISTRY.filter(c => 
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       c.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
@@ -529,7 +234,7 @@ export default function PlaygroundPage() {
       });
 
       const compiledCode = result.code;
-
+      
       // Chuyển mảng controls thành object props
       const currentProps = controls.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.value }), {});
       const propsJson = JSON.stringify(currentProps);
@@ -588,8 +293,8 @@ export default function PlaygroundPage() {
       setSrcDoc(doc);
     } catch (err: any) {
       // Lỗi biên dịch (syntax error)
-      setLogs(prev => [{
-        type: 'error',
+      setLogs(prev => [{ 
+        type: 'error', 
         content: \`Compiler Error: \${err.message}\`, 
         timestamp: new Date().toLocaleTimeString() 
       }, ...prev].slice(0, 20));
@@ -684,26 +389,41 @@ export default function PlaygroundPage() {
           content: (
             <div className="h-full rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
               <pre className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
-                {\`// Example Usage for \${selectedComponent.name}
-import \${selectedComponent.name.replace(/\s+/g, '')} from '@/components/\${selectedComponent.id}';
+                {`// Example Usage
+import MyComponent from '@/components/MyComponent';
 
 export default function Page() {
   return (
-    <\${selectedComponent.name.replace(/\s+/g, '')}
-\${controls.map(c => {
-  const val = typeof c.value === 'string' ? \`"\${c.value}"\` : \`{\${c.value}}\`;
-  return \`      \${c.id}=\${val}\`;
-}).join('\\n')}
+    <MyComponent 
+      title="${controls.find(c => c.id === 'title')?.value}"
+      buttonText="${controls.find(c => c.id === 'buttonText')?.value}"
+      showIcon={${controls.find(c => c.id === 'showIcon')?.value}}
+      accentColor="${controls.find(c => c.id === 'accentColor')?.value}"
     />
   );
-}\`}
+}`}
               </pre>
             </div>
           ),
         },
       ] as const,
-    [tsxCode, cssCode, device, orientation, deviceDims.w, deviceDims.h, srcDoc, controls, selectedComponent]
+    [tsxCode, cssCode, device, orientation, deviceDims.w, deviceDims.h, srcDoc]
   );
+
+  // Dữ liệu cấu trúc SEO (JSON-LD)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Master UI Playground",
+    "operatingSystem": "Web",
+    "applicationCategory": "DeveloperApplication",
+    "description": "An interactive playground for React and Tailwind CSS components with live preview and AI generation.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
 
   // Lắng nghe message từ sandbox
   useEffect(() => {
@@ -721,7 +441,7 @@ export default function Page() {
   }, []);
 
   const copyFullComponent = async () => {
-    const content = `/** TSX **/\n${ tsxCode } \n\n/** CSS **/\n${ cssCode } `;
+    const content = `/** TSX **/\n${tsxCode}\n\n/** CSS **/\n${cssCode}`;
     await navigator.clipboard.writeText(content);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
@@ -736,11 +456,39 @@ export default function Page() {
     };
     // Mã hóa Base64 an toàn cho Unicode
     const encoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-    const shareUrl = `${ window.location.origin }${ window.location.pathname }?share = ${ encoded } `;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encoded}`;
     
     await navigator.clipboard.writeText(shareUrl);
     setIsShared(true);
     setTimeout(() => setIsShared(false), 2000);
+  };
+
+  const exportComponent = () => {
+    setIsExporting(true);
+    const fileName = `${selectedComponent.id || 'component'}.tsx`;
+    const content = `/**
+ * Generated by UI Platform Playground
+ * Component: ${selectedComponent.name}
+ * Category: ${selectedComponent.category}
+ * Dependencies: ${selectedComponent.dependencies.join(', ')}
+ */
+
+${tsxCode}
+
+/** CSS Styles (Optional) **/
+${cssCode}`;
+
+    const blob = new Blob([content], { type: 'text/typescript' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    setTimeout(() => setIsExporting(false), 1500);
   };
 
   const updateControl = (id: string, value: any) => {
@@ -751,19 +499,57 @@ export default function Page() {
     setControls(selectedComponent.controls);
   };
 
+  const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) return;
+    
+    setIsGenerating(true);
+    // Giả lập gọi API AI (sau này bạn có thể thay bằng fetch tới OpenAI/Gemini)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    let generatedCode = "";
+    const prompt = aiPrompt.toLowerCase();
+
+    if (prompt.includes('button')) {
+      generatedCode = `function App({ text = "AI Button", color = "#ef4444" }) {\n  return (\n    <div className="p-10 flex justify-center">\n      <button className="px-6 py-3 rounded-lg text-white font-bold transition-all hover:scale-105 active:scale-95 shadow-lg" style={{ backgroundColor: color }}>\n        {text}\n      </button>\n    </div>\n  );\n}`;
+    } else if (prompt.includes('card')) {
+      generatedCode = `function App({ title = "AI Generated Card", desc = "This was created using your prompt." }) {\n  return (\n    <div className="p-8">\n      <div className="max-w-sm rounded-3xl bg-white dark:bg-slate-800 p-6 shadow-2xl border border-slate-100 dark:border-slate-700">\n        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h3>\n        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{desc}</p>\n        <div className="mt-6 flex gap-2">\n           <div className="w-8 h-8 rounded-full bg-indigo-500" />\n           <div className="w-8 h-8 rounded-full bg-emerald-500" />\n        </div>\n      </div>\n    </div>\n  );\n}`;
+    } else {
+      generatedCode = `function App() {\n  return (\n    <div className="p-12 text-center">\n      <div className="inline-block p-4 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-4">\n        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>\n      </div>\n      <h2 className="text-2xl font-black dark:text-white">AI Result</h2>\n      <p className="text-slate-500 mt-2">Mã nguồn được tạo dựa trên prompt: "${aiPrompt}"</p>\n    </div>\n  );\n}`;
+    }
+
+    setTsxCode(generatedCode);
+    setAiPrompt('');
+    setIsGenerating(false);
+    
+    // Thông báo cho Console
+    setLogs(prev => [{
+      type: 'log',
+      content: `✨ AI has generated a new component based on: "${prompt}"`,
+      timestamp: new Date().toLocaleTimeString()
+    }, ...prev]);
+  };
+
   return (
-    <section className="space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <main className="space-y-6" role="main">
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" aria-labelledby="playground-title">
         <div>
           <div className="flex items-center gap-3">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Playground</p>
             {isSaving && (
-              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse">
+              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse" role="status" aria-live="polite">
                 <Save className="w-3 h-3" /> SAVED
               </span>
             )}
           </div>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">Playground / Sandbox Page</h1>
+          <h1 id="playground-title" className="mt-1 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">
+            Playground / Sandbox Page
+          </h1>
           <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
             Runtime Sandbox Ready: Code được biên dịch trực tiếp bằng Babel và render trong IFrame riêng biệt.
           </p>
@@ -775,9 +561,21 @@ export default function Page() {
             size="sm"
             onClick={sharePlayground}
             className="gap-2 rounded-xl"
+            aria-label="Share this playground"
           >
             {isShared ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
             {isShared ? 'Link Copied!' : 'Share'}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportComponent}
+            className="gap-2 rounded-xl"
+            disabled={isExporting}
+            aria-label="Export component as TSX file"
+          >
+            <Download className={`w-4 h-4 ${isExporting ? 'animate-bounce' : ''}`} />
+            {isExporting ? 'Exporting...' : 'Export .tsx'}
           </Button>
           <ThemeToggle />
           <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
@@ -785,14 +583,18 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setDevice('desktop')}
-              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
+              aria-pressed={device === 'desktop'}
+              aria-label="Switch to desktop preview"
+              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
             >
               Desktop
             </button>
             <button
               type="button"
               onClick={() => setDevice('mobile')}
-              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
+              aria-pressed={device === 'mobile'}
+              aria-label="Switch to mobile preview"
+              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
             >
               Mobile
             </button>
@@ -803,14 +605,18 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setOrientation('portrait')}
-              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
+              aria-pressed={orientation === 'portrait'}
+              aria-label="Portrait orientation"
+              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
             >
               Portrait
             </button>
             <button
               type="button"
               onClick={() => setOrientation('landscape')}
-              className={`rounded - lg px - 2 py - 1 text - xs font - bold transition ${ orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' } `}
+              aria-pressed={orientation === 'landscape'}
+              aria-label="Landscape orientation"
+              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
             >
               Landscape
             </button>
@@ -820,13 +626,45 @@ export default function Page() {
 
       <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         {/* Left controls */}
-        <aside className="h-fit space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <aside className="h-fit space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950" aria-label="Playground controls">
+          {/* AI Magic Prompt */}
+          <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">AI Magic Prompt</h2>
+            </div>
+            <div className="relative group">
+              <textarea
+                id="ai-prompt-input"
+                aria-label="Describe the component you want to generate"
+                placeholder="Mô tả linh kiện bạn muốn tạo..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 p-3 text-[11px] font-medium outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white resize-none"
+              />
+              <button 
+                onClick={handleAIGenerate}
+                disabled={isGenerating || !aiPrompt.trim()}
+                className="absolute bottom-2 right-2 p-2 rounded-lg bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all disabled:opacity-50 disabled:scale-100 active:scale-90"
+                aria-label="Generate component with AI"
+              >
+                {isGenerating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Wand2 className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+            <p className="text-[9px] text-slate-400 italic">Ví dụ: "Tạo một card giới thiệu sản phẩm mượt mà"</p>
+          </section>
+
           {/* Component Search & Selection */}
-          <div className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
                 type="text"
+                aria-label="Search components by name or category"
                 placeholder="Search components..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -858,10 +696,10 @@ export default function Page() {
                 )}
               </div>
             )}
-          </div>
+          </section>
 
           {/* Metadata & Dependencies */}
-          <div className="space-y-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <section className="space-y-4 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-indigo-600" />
@@ -905,25 +743,27 @@ export default function Page() {
               </div>
               <button 
                 onClick={async () => {
-                  await navigator.clipboard.writeText(`npm install ${ selectedComponent.dependencies.join(' ') } `);
+                  await navigator.clipboard.writeText(`npm install ${selectedComponent.dependencies.join(' ')}`);
                 }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950 text-white text-[10px] font-bold hover:bg-slate-800 transition-colors dark:bg-white dark:text-slate-950"
+                aria-label="Copy install command to clipboard"
               >
                 <Copy className="w-3 h-3" /> Copy Install Command
               </button>
             </div>
-          </div>
+          </section>
 
-          <div>
+          <section aria-labelledby="props-controls-title">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-indigo-600" />
-                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Props</p>
+                <h2 id="props-controls-title" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Props</h2>
               </div>
               <button 
                 onClick={resetControls}
                 className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors"
                 title="Reset Controls"
+                aria-label="Reset all controls to default"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
@@ -943,6 +783,7 @@ export default function Page() {
                     <input 
                       type="text"
                       value={control.value}
+                      aria-label={`Change ${control.label}`}
                       onChange={(e) => updateControl(control.id, e.target.value)}
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                     />
@@ -952,6 +793,7 @@ export default function Page() {
                         <input 
                           type="text"
                           value={control.value}
+                          aria-label={`Hex color for ${control.label}`}
                           onChange={(e) => updateControl(control.id, e.target.value)}
                           className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-2 text-xs font-mono outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                         />
@@ -963,6 +805,7 @@ export default function Page() {
                       <input 
                         type="color"
                         value={control.value}
+                        aria-label={`Pick color for ${control.label}`}
                         onChange={(e) => updateControl(control.id, e.target.value)}
                         className="h-8 w-8 cursor-pointer rounded-lg border-none bg-transparent"
                       />
@@ -970,16 +813,18 @@ export default function Page() {
                   ) : (
                     <button
                       onClick={() => updateControl(control.id, !control.value)}
-                      className={`flex h - 8 w - full items - center justify - between rounded - xl border px - 3 transition - all ${ control.value ? 'border-indigo-500/50 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300' : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900' } `}
+                      aria-pressed={control.value}
+                      aria-label={`Toggle ${control.label}`}
+                      className={`flex h-8 w-full items-center justify-between rounded-xl border px-3 transition-all ${control.value ? 'border-indigo-500/50 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300' : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900'}`}
                     >
                       <span className="text-[10px] font-bold">{control.value ? 'ENABLED' : 'DISABLED'}</span>
-                      <div className={`h - 4 w - 4 rounded - full transition - all ${ control.value ? 'translate-x-0 bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600' } `} />
+                      <div className={`h-4 w-4 rounded-full transition-all ${control.value ? 'translate-x-0 bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
                     </button>
                   )}
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
           <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Copy</p>
@@ -989,6 +834,7 @@ export default function Page() {
               onClick={async () => {
                 await navigator.clipboard.writeText(tsxCode);
               }}
+              aria-label="Copy TSX code to clipboard"
               className="w-full justify-start gap-2"
             >
               <Code2 className="w-4 h-4" />
@@ -998,6 +844,7 @@ export default function Page() {
               type="button"
               variant="primary"
               onClick={copyFullComponent}
+              aria-label="Copy component code and styles to clipboard"
               className="w-full justify-start gap-2"
             >
               {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -1014,6 +861,7 @@ export default function Page() {
               <button 
                 onClick={() => setLogs([])}
                 className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"
+                aria-label="Clear console logs"
               >
                 <RotateCcw className="w-3 h-3 text-slate-500" />
               </button>
@@ -1023,7 +871,7 @@ export default function Page() {
                 <p className="text-slate-400 italic text-center mt-4">No logs yet...</p>
               )}
               {logs.map((log, idx) => (
-                <div key={idx} className={`p - 1.5 rounded border - l - 2 ${ log.type === 'error' ? 'bg-red-50 text-red-600 border-red-500 dark:bg-red-950/20' : 'bg-slate-100 text-slate-700 border-slate-400 dark:bg-slate-800 dark:text-slate-300' } `}>
+                <div key={idx} className={`p-1.5 rounded border-l-2 ${log.type === 'error' ? 'bg-red-50 text-red-600 border-red-500 dark:bg-red-950/20' : 'bg-slate-100 text-slate-700 border-slate-400 dark:bg-slate-800 dark:text-slate-300'}`}>
                   <div className="flex justify-between items-center opacity-60 mb-0.5">
                     <span className="font-bold uppercase text-[9px]">{log.type}</span>
                     <span>{log.timestamp}</span>
@@ -1036,11 +884,10 @@ export default function Page() {
         </aside>
 
         {/* Main */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
           <Tabs items={tabs as any} />
-        </div>
+        </article>
       </div>
-    </section>
+    </main>
   );
 }
-  
