@@ -34,3 +34,5 @@
   - [x] Auto-save drafts to LocalStorage
   - [x] Share Playground (URL encoded state sharing)
   - [x] Export Component (Download .tsx file)
+  - [x] Web Worker optimization for Babel compiler
+  - [x] AI Magic Prompt (Mock generation logic)

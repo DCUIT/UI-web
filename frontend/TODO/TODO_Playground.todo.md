@@ -64,8 +64,8 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 - [x] Dependencies box
   - [x] Hiển thị lệnh `npm install ...` tương ứng dependencies (dựa registry/component metadata)
 
-- [x] Tabs system nâng cấp
-  - [x] Usage tab: hiển thị ví dụ import + JSX usage (Dynamic based on controls)
+- [ ] Tabs system nâng cấp
+  - [ ] Usage tab: hiển thị ví dụ import + JSX usage
 
 - [x] Search components
   - [x] Search theo tên component
@@ -73,13 +73,13 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 
 ---
 
-## Advanced
+## Advanced (Đang thực hiện 🚀)
 
-- [ ] Real-time editing (debounce + tối ưu rerender)
-- [ ] Save drafts (lưu vào localStorage)
-- [x] Share playground (export JSON + share link via URL params)
-- [x] Export component (tải xuống file .tsx)
-- [ ] AI prompt (future): tạo code theo prompt
+- [x] Real-time editing (Web Worker optimization)
+- [x] Save drafts (lưu vào localStorage)
+- [ ] Share playground (export JSON + share link)
+- [ ] Export component (tải xuống file)
+- [x] AI prompt (future): tạo code theo prompt
 
 ---
 
