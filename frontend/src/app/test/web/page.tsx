@@ -64,18 +64,18 @@ export default function WebUITestPage() {
   }, [html, css, js])
 
   const previewSrcDoc = useMemo(
-    () => \`<!DOCTYPE html>
+    () => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>\${debouncedCss}</style>
+    <style>${debouncedCss}</style>
   </head>
   <body>
-    \${debouncedHtml}
-    <script>\${debouncedJs.replace(/<\/script>/g, '<\\\\/script>')} </script>
+    ${debouncedHtml}
+    <script>${debouncedJs.replace(new RegExp('</' + 'script>', 'g'), '<\\/' + 'script>')} </script>
   </body>
-</html>\`,
+</html>`,
     [debouncedHtml, debouncedCss, debouncedJs]
   )
 

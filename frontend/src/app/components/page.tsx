@@ -12,6 +12,30 @@ import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
 import CuratedCollections from '@/components/templates/CuratedCollections';
 import { cn } from '@/lib/utils';
+import Modal from '@/components/ui/Modal';
+import Dropdown from '@/components/ui/Dropdown';
+import Tabs from '@/components/ui/Tabs';
+import Accordion from '@/components/ui/Accordion';
+import Pagination from '@/components/ui/Pagination';
+import Textarea from '@/components/ui/Textarea';
+import Select from '@/components/ui/Select';
+import Checkbox from '@/components/ui/Checkbox';
+import Radio from '@/components/ui/Radio';
+import Switch from '@/components/ui/Switch';
+import Avatar from '@/components/ui/Avatar';
+import Tooltip from '@/components/ui/Tooltip';
+import Breadcrumb from '@/components/ui/Breadcrumb';
+import Skeleton from '@/components/ui/Skeleton';
+import Spinner from '@/components/ui/Spinner';
+import DataTable from '@/components/ui/DataTable';
+import {
+  ProductCard,
+  UserCard,
+  PricingCard,
+  BlogCard,
+  DashboardCard,
+  AnalyticsCard,
+} from '@/components/cards';
 
 
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];

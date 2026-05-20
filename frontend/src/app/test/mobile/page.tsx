@@ -404,7 +404,7 @@ root.render(
                   language={activeTab === 'styles.css' ? 'css' : 'typescript'}
                   theme={theme === 'dark' ? 'vs-dark' : 'light'}
                   value={activeTab === 'App.tsx' ? appTsx : stylesCss}
-                  onChange={(value) => {
+                  onChange={(value?: string) => {
                     if (activeTab === 'App.tsx') setAppTsx(value || '')
                     if (activeTab === 'styles.css') setStylesCss(value || '')
                   }}

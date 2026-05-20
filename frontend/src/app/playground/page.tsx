@@ -294,8 +294,8 @@ export default function PlaygroundPage() {
     } catch (err: any) {
       // Lỗi biên dịch (syntax error)
       setLogs(prev => [{ 
-        type: 'error', 
-        content: \`Compiler Error: \${err.message}\`, 
+        type: 'error' as const, 
+        content: `Compiler Error: ${err.message}`, 
         timestamp: new Date().toLocaleTimeString() 
       }, ...prev].slice(0, 20));
     }
@@ -343,7 +343,7 @@ export default function PlaygroundPage() {
                   path="playground.tsx"
                   value={tsxCode}
                   theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                  onChange={(val) => setTsxCode(val || '')}
+                  onChange={(val?: string) => setTsxCode(val || '')}
                   options={{
                     minimap: { enabled: false },
                     fontSize: 14,
@@ -370,7 +370,7 @@ export default function PlaygroundPage() {
                   path="style.css"
                   value={cssCode}
                   theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                  onChange={(val) => setCssCode(val || '')}
+                  onChange={(val?: string) => setCssCode(val || '')}
                   options={{
                     minimap: { enabled: false },
                     fontSize: 14,
@@ -389,25 +389,32 @@ export default function PlaygroundPage() {
           content: (
             <div className="h-full rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
               <pre className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
-                {`// Example Usage
-import MyComponent from '@/components/MyComponent';
+                {(() => {
+                  const componentPascalName = selectedComponent.name.replace(/\s+/g, '');
+                  const propsString = controls.map(c => {
+                    if (c.type === 'boolean') {
+                      return `      ${c.id}={${c.value}}`;
+                    }
+                    return `      ${c.id}="${c.value}"`;
+                  }).join('\n');
+
+                  return `// Example Usage
+import ${componentPascalName} from '@/components/${componentPascalName}';
 
 export default function Page() {
   return (
-    <MyComponent 
-      title="${controls.find(c => c.id === 'title')?.value}"
-      buttonText="${controls.find(c => c.id === 'buttonText')?.value}"
-      showIcon={${controls.find(c => c.id === 'showIcon')?.value}}
-      accentColor="${controls.find(c => c.id === 'accentColor')?.value}"
+    <${componentPascalName}
+${propsString}
     />
   );
-}`}
+}`;
+                })()}
               </pre>
             </div>
           ),
         },
       ] as const,
-    [tsxCode, cssCode, device, orientation, deviceDims.w, deviceDims.h, srcDoc]
+    [tsxCode, cssCode, device, orientation, deviceDims.w, deviceDims.h, srcDoc, controls, selectedComponent]
   );
 
   // Dữ liệu cấu trúc SEO (JSON-LD)
@@ -557,8 +564,7 @@ ${cssCode}`;
 
         <div className="flex flex-wrap items-center gap-3">
           <Button
-            variant="outline"
-            size="sm"
+            variant="secondary"
             onClick={sharePlayground}
             className="gap-2 rounded-xl"
             aria-label="Share this playground"
@@ -567,8 +573,7 @@ ${cssCode}`;
             {isShared ? 'Link Copied!' : 'Share'}
           </Button>
           <Button
-            variant="outline"
-            size="sm"
+            variant="secondary"
             onClick={exportComponent}
             className="gap-2 rounded-xl"
             disabled={isExporting}
@@ -830,7 +835,7 @@ ${cssCode}`;
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Copy</p>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={async () => {
                 await navigator.clipboard.writeText(tsxCode);
               }}

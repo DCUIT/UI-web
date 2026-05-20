@@ -11,7 +11,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "@babel/standalone": "^7.29.4",
     "@codesandbox/sandpack-react": "^2.20.0",
+    "@monaco-editor/react": "^4.7.0",
+    "@types/babel__standalone": "^7.1.9",
     "cmdk": "^1.1.1",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.494.0",
