@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import '../styles/typography.css';
 import Providers from './providers';
 import AppShell from '@/components/common/AppShell';
 

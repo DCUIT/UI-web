@@ -93,7 +93,7 @@ export default function Table<T>({ data, columns, title }: TableProps<T>) {
                     </div>
                   </th>
                 ))}
-                <th className="px-6 py-4"></th>
+                <th className="px-6 py-4"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
@@ -105,7 +105,10 @@ export default function Table<T>({ data, columns, title }: TableProps<T>) {
                     </td>
                   ))}
                   <td className="px-6 py-4 text-right">
-                    <button className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-colors">
+                    <button 
+                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-colors"
+                      aria-label="More options"
+                    >
                       <MoreVertical size={16} className="text-slate-400" />
                     </button>
                   </td>

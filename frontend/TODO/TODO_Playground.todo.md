@@ -2,7 +2,7 @@
 
 Mục tiêu: biến trang component gallery thành **real frontend developer tool** (giống CodeSandbox/StackBlitz/shadcn/ui Playground), với flow:
 
-1) Chọn UI
+1) Chọn UI (via Search/Command Palette)
 2) Paste/Chỉnh code
 3) Render thử (live preview)
 4) Edit nhanh
@@ -57,8 +57,8 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 ## Next (Hoàn thành ✅)
 
 - [x] Component controls (testing props)
-  - [x] Metadata panel: Category, Responsive, Dark Mode, Dependencies
-  - [x] Control cho common props (text, boolean, color knobs)
+  - [x] Metadata & Props moved to **Floating Drawer/Overlay** (Tối ưu không gian)
+  - [x] Control cho common props (text, boolean, color knobs) 
   - [x] Reset controls functionality
 
 - [x] Dependencies box
@@ -68,8 +68,7 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
   - [ ] Usage tab: hiển thị ví dụ import + JSX usage
 
 - [x] Search components
-  - [x] Search theo tên component
-  - [x] Search theo category
+  - [x] Chuyển đổi Search sang **Header Dropdown / Command Palette**
 
 ---
 
@@ -77,6 +76,7 @@ Mục tiêu: biến trang component gallery thành **real frontend developer too
 
 - [x] Real-time editing (Web Worker optimization)
 - [x] Save drafts (lưu vào localStorage)
+- [ ] **Resizable Split Panes** (Kéo giãn vùng Editor/Preview)
 - [ ] Share playground (export JSON + share link)
 - [ ] Export component (tải xuống file)
 - [x] AI prompt (future): tạo code theo prompt

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect, Suspense } from 'react';
+import { useMemo, useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X, Search as SearchIcon, ChevronRight } from 'lucide-react';
@@ -10,32 +10,25 @@ import Toast from '@/components/ui/Toast';
 import Button from '@/components/ui/Button';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
-import CuratedCollections from '@/components/templates/CuratedCollections';
 import { cn } from '@/lib/utils';
-import Modal from '@/components/ui/Modal';
-import Dropdown from '@/components/ui/Dropdown';
-import Tabs from '@/components/ui/Tabs';
-import Accordion from '@/components/ui/Accordion';
-import Pagination from '@/components/ui/Pagination';
-import Textarea from '@/components/ui/Textarea';
-import Select from '@/components/ui/Select';
-import Checkbox from '@/components/ui/Checkbox';
-import Radio from '@/components/ui/Radio';
-import Switch from '@/components/ui/Switch';
-import Avatar from '@/components/ui/Avatar';
-import Tooltip from '@/components/ui/Tooltip';
-import Breadcrumb from '@/components/ui/Breadcrumb';
-import Skeleton from '@/components/ui/Skeleton';
-import Spinner from '@/components/ui/Spinner';
-import DataTable from '@/components/ui/DataTable';
-import {
-  ProductCard,
-  UserCard,
-  PricingCard,
-  BlogCard,
-  DashboardCard,
-  AnalyticsCard,
-} from '@/components/cards';
+
+const CuratedCollections = lazy(() => import('@/components/templates/CuratedCollections'));
+const Modal = lazy(() => import('@/components/ui/Modal'));
+const Dropdown = lazy(() => import('@/components/ui/Dropdown'));
+const Tabs = lazy(() => import('@/components/ui/Tabs'));
+const Accordion = lazy(() => import('@/components/ui/Accordion'));
+const Pagination = lazy(() => import('@/components/ui/Pagination'));
+const Textarea = lazy(() => import('@/components/ui/Textarea'));
+const Select = lazy(() => import('@/components/ui/Select'));
+const Checkbox = lazy(() => import('@/components/ui/Checkbox'));
+const Radio = lazy(() => import('@/components/ui/Radio'));
+const Switch = lazy(() => import('@/components/ui/Switch'));
+const Avatar = lazy(() => import('@/components/ui/Avatar'));
+const Tooltip = lazy(() => import('@/components/ui/Tooltip'));
+const Breadcrumb = lazy(() => import('@/components/ui/Breadcrumb'));
+const Skeleton = lazy(() => import('@/components/ui/Skeleton'));
+const Spinner = lazy(() => import('@/components/ui/Spinner'));
+const DataTable = lazy(() => import('@/components/ui/DataTable'));
 
 
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
@@ -44,17 +37,19 @@ function ModalExample() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-4">
-      <Button variant="primary" onClick={() => setOpen(true)}>
-        Open modal
-      </Button>
-      <Modal open={open} onClose={() => setOpen(false)} title="Dialog preview">
-        <p className="text-sm text-slate-700 dark:text-slate-300">This modal demonstrates a centered overlay with dark mode support.</p>
-        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-          Close window
+    <Suspense fallback={<LoadingBox />}>
+      <div className="space-y-4">
+        <Button variant="primary" onClick={() => setOpen(true)}>
+          Open modal
         </Button>
-      </Modal>
-    </div>
+        <Modal open={open} onClose={() => setOpen(false)} title="Dialog preview">
+          <p className="text-sm text-slate-700 dark:text-slate-300">This modal demonstrates a centered overlay with dark mode support.</p>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+            Close window
+          </Button>
+        </Modal>
+      </div>
+    </Suspense>
   );
 }
 
@@ -62,60 +57,68 @@ function DropdownExample() {
   const [selected, setSelected] = useState('Actions');
 
   return (
-    <div className="space-y-4">
-      <Dropdown
-        label={selected}
-        items={[
-          { label: 'Edit', onSelect: () => setSelected('Edit') },
-          { label: 'Delete', onSelect: () => setSelected('Delete') },
-        ]}
-      />
-      <p className="text-sm text-slate-500 dark:text-slate-400">Selected: {selected}</p>
-    </div>
+    <Suspense fallback={<LoadingBox />}>
+      <div className="space-y-4">
+        <Dropdown
+          label={selected}
+          items={[
+            { label: 'Edit', onSelect: () => setSelected('Edit') },
+            { label: 'Delete', onSelect: () => setSelected('Delete') },
+          ]}
+        />
+        <p className="text-sm text-slate-500 dark:text-slate-400">Selected: {selected}</p>
+      </div>
+    </Suspense>
   );
 }
 
 function TabsExample() {
   return (
-    <Tabs
-      items={[
-        {
-          value: 'details',
-          label: 'Details',
-          content: <p className="text-sm text-slate-600 dark:text-slate-300">Product details content.</p>,
-        },
-        {
-          value: 'reviews',
-          label: 'Reviews',
-          content: <p className="text-sm text-slate-600 dark:text-slate-300">Customer reviews content.</p>,
-        },
-      ]}
-    />
+    <Suspense fallback={<LoadingBox />}>
+      <Tabs
+        items={[
+          {
+            value: 'details',
+            label: 'Details',
+            content: <p className="text-sm text-slate-600 dark:text-slate-300">Product details content.</p>,
+          },
+          {
+            value: 'reviews',
+            label: 'Reviews',
+            content: <p className="text-sm text-slate-600 dark:text-slate-300">Customer reviews content.</p>,
+          },
+        ]}
+      />
+    </Suspense>
   );
 }
 
 function AccordionExample() {
   return (
-    <Accordion
-      items={[
-        {
-          title: 'Why use this?',
-          content: <p className="text-sm text-slate-600 dark:text-slate-300">Built for speed, accessibility, and flexible layouts.</p>,
-        },
-        {
-          title: 'What is included?',
-          content: <p className="text-sm text-slate-600 dark:text-slate-300">Buttons, forms, navigation and feedback patterns.</p>,
-        },
-      ]}
-    />
+    <Suspense fallback={<LoadingBox />}>
+      <Accordion
+        items={[
+          {
+            title: 'Why use this?',
+            content: <p className="text-sm text-slate-600 dark:text-slate-300">Built for speed, accessibility, and flexible layouts.</p>,
+          },
+          {
+            title: 'What is included?',
+            content: <p className="text-sm text-slate-600 dark:text-slate-300">Buttons, forms, navigation and feedback patterns.</p>,
+          },
+        ]}
+      />
+    </Suspense>
   );
 }
 
 function PaginationExample() {
   const [page, setPage] = useState(1);
 
-  return <Pagination currentPage={page} totalPages={5} onChange={setPage} />;
+  return <Suspense fallback={<LoadingBox />}><Pagination currentPage={page} totalPages={5} onChange={setPage} /></Suspense>;
 }
+
+const LoadingBox = () => <div className="h-12 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />;
 
 function renderPreview(component: UIComponent) {
   switch (component.id) {
@@ -138,40 +141,50 @@ function renderPreview(component: UIComponent) {
       );
     case 3:
       return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Textarea input example</p>
-          <Textarea placeholder="Leave a message" />
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-4">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Textarea input example</p>
+            <Textarea placeholder="Leave a message" />
+          </div>
+        </Suspense>
       );
     case 4:
       return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select field preview</p>
-          <Select>
-            <option>Choose an option</option>
-            <option>Option One</option>
-            <option>Option Two</option>
-          </Select>
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-4">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select field preview</p>
+            <Select>
+              <option>Choose an option</option>
+              <option>Option One</option>
+              <option>Option Two</option>
+            </Select>
+          </div>
+        </Suspense>
       );
     case 5:
       return (
-        <div className="space-y-4">
-          <Checkbox label="Accept terms and conditions" />
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-4">
+            <Checkbox label="Accept terms and conditions" />
+          </div>
+        </Suspense>
       );
     case 6:
       return (
-        <div className="flex flex-wrap gap-6">
-          <Radio name="plan" label="Monthly" />
-          <Radio name="plan" label="Annual" />
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="flex flex-wrap gap-6">
+            <Radio name="plan" label="Monthly" />
+            <Radio name="plan" label="Annual" />
+          </div>
+        </Suspense>
       );
     case 7:
       return (
-        <div className="space-y-4">
-          <Switch label="Enable notifications" />
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-4">
+            <Switch label="Enable notifications" />
+          </div>
+        </Suspense>
       );
     case 8:
       return (
@@ -183,20 +196,24 @@ function renderPreview(component: UIComponent) {
       );
     case 9:
       return (
-        <div className="flex items-center gap-4">
-          <Avatar alt="Alex Doe" fallback="AD" />
-          <div>
-            <p className="font-semibold text-slate-950 dark:text-white">Alex Doe</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Product designer</p>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="flex items-center gap-4">
+            <Avatar alt="Alex Doe" fallback="AD" />
+            <div>
+              <p className="font-semibold text-slate-950 dark:text-white">Alex Doe</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Product designer</p>
+            </div>
           </div>
-        </div>
+        </Suspense>
       );
     case 10:
       return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Tooltip on hover</p>
-          <Tooltip label="More information">Hover me</Tooltip>
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-4">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Tooltip on hover</p>
+            <Tooltip label="More information">Hover me</Tooltip>
+          </div>
+        </Suspense>
       );
     case 11:
       return <ModalExample />;
@@ -207,95 +224,83 @@ function renderPreview(component: UIComponent) {
     case 14:
       return <AccordionExample />;
     case 15:
-      return <Breadcrumb
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Library', href: '/library' },
-          { label: 'Current' },
-        ]}
-      />;
+      return (
+        <Suspense fallback={<LoadingBox />}>
+          <Breadcrumb
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Library', href: '/library' },
+              { label: 'Current' },
+            ]}
+          />
+        </Suspense>
+      );
     case 16:
       return <PaginationExample />;
     case 17:
       return (
-        <div className="space-y-3">
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-3/4" />
+          </div>
+        </Suspense>
       );
     case 18:
       return (
-        <div className="flex items-center gap-4">
-          <Spinner />
-          <span className="text-sm text-slate-500 dark:text-slate-400">Loading...</span>
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="flex items-center gap-4">
+            <Spinner />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Loading...</span>
+          </div>
+        </Suspense>
       );
     case 19:
       return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Simple data table</p>
-          <DataTable
-            columns={[
-              { key: 'id', label: 'ID', sortable: true },
-              { key: 'name', label: 'Name', sortable: true },
-              { key: 'email', label: 'Email' },
-            ]}
-            data={[
-              { id: 1, name: 'Alice', email: 'alice@example.com' },
-              { id: 2, name: 'Bob', email: 'bob@example.com' },
-              { id: 3, name: 'Carol', email: 'carol@example.com' },
-              { id: 4, name: 'Dan', email: 'dan@example.com' },
-              { id: 5, name: 'Eve', email: 'eve@example.com' },
-              { id: 6, name: 'Frank', email: 'frank@example.com' },
-            ]}
-          />
-        </div>
+        <Suspense fallback={<LoadingBox />}>
+          <div className="space-y-4">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Simple data table</p>
+            <DataTable
+              columns={[
+                { key: 'id', label: 'ID', sortable: true },
+                { key: 'name', label: 'Name', sortable: true },
+                { key: 'email', label: 'Email' },
+              ]}
+              data={[
+                { id: 1, name: 'Alice', email: 'alice@example.com' },
+                { id: 2, name: 'Bob', email: 'bob@example.com' },
+                { id: 3, name: 'Carol', email: 'carol@example.com' },
+                { id: 4, name: 'Dan', email: 'dan@example.com' },
+                { id: 5, name: 'Eve', email: 'eve@example.com' },
+                { id: 6, name: 'Frank', email: 'frank@example.com' },
+              ]}
+            />
+          </div>
+        </Suspense>
       );
     case 20:
-      return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Product card preview</p>
-          <ProductCard />
-        </div>
-      );
+      return <CardPreview type="ProductCard" />;
     case 21:
-      return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">User profile card preview</p>
-          <UserCard />
-        </div>
-      );
+      return <CardPreview type="UserCard" />;
     case 22:
-      return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Pricing card preview</p>
-          <PricingCard />
-        </div>
-      );
+      return <CardPreview type="PricingCard" />;
     case 23:
-      return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Blog card preview</p>
-          <BlogCard />
-        </div>
-      );
+      return <CardPreview type="BlogCard" />;
     case 24:
-      return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Dashboard overview preview</p>
-          <DashboardCard />
-        </div>
-      );
+      return <CardPreview type="DashboardCard" />;
     case 25:
-      return (
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Analytics summary preview</p>
-          <AnalyticsCard />
-        </div>
-      );
+      return <CardPreview type="AnalyticsCard" />;
     default:
       return null;
   }
+}
+
+function CardPreview({ type }: { type: string }) {
+  const [Card, setCard] = useState<React.ComponentType | null>(null);
+  useEffect(() => {
+    import('@/components/cards').then(m => setCard(() => m[type as keyof typeof m] as React.ComponentType));
+  }, [type]);
+  return Card ? <Suspense fallback={<LoadingBox />}><Card /></Suspense> : <LoadingBox />;
 }
 
 /**
@@ -607,11 +612,18 @@ function ComponentsPageContent() {
                     {results.map((component) => {
                       const active = component.id === selectedComponent.id;
                       return (
-                        <button
+                        <div
                           key={component.id}
-                          type="button"
+                          role="button"
+                          tabIndex={0}
                           onClick={() => handleSelectComponent(component.id)}
-                          className={`group rounded-xl border p-4 text-left transition-all duration-200 ${
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleSelectComponent(component.id);
+                            }
+                          }}
+                          className={`group rounded-xl border p-4 text-left cursor-pointer transition-all duration-200 ${
                             active
                               ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
                               : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
@@ -635,7 +647,7 @@ function ComponentsPageContent() {
                           <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
                             {renderPreview(component)}
                           </div>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -645,7 +657,9 @@ function ComponentsPageContent() {
           </>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Suspense fallback={<div className="grid gap-6 md:grid-cols-2"><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /></div>}>
             <CuratedCollections />
+          </Suspense>
           </motion.div>
         )}
       </div>

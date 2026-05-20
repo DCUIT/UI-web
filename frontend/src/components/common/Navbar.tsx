@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import React, { Suspense } from "react";
 import { Menu as MenuIcon, Command } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import MegaMenu from "@/components/navigation/MegaMenu";
-import SearchBar from "@/components/navigation/SearchBar";
 import dynamic from "next/dynamic";
 
+const MegaMenu = dynamic(() => import("@/components/navigation/MegaMenu"), { ssr: false });
+const SearchBar = dynamic(() => import("@/components/navigation/SearchBar"), { ssr: false });
 const CommandMenu = dynamic(() => import("@/components/navigation/CommandMenu"), { ssr: false });
 
 const navItems = [
@@ -44,12 +44,16 @@ export default function Navbar({ onMobileMenu }: { onMobileMenu?: () => void }) 
                   {item.label}
                 </Link>
               ))}
-              <MegaMenu />
+              <Suspense fallback={<div className="w-20 h-8 animate-pulse bg-slate-200 dark:bg-slate-800 rounded" />}>
+                <MegaMenu />
+              </Suspense>
             </nav>
           </div>
 
           <div className="flex items-center gap-2">
-            <SearchBar />
+            <Suspense fallback={<div className="w-32 h-8 animate-pulse bg-slate-200 dark:bg-slate-800 rounded" />}>
+              <SearchBar />
+            </Suspense>
             <button onClick={openCommandMenu} title="Command menu (Ctrl/Cmd+K)" className="hidden items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex">
               <Command size={16} /> <span>Cmd</span>
             </button>

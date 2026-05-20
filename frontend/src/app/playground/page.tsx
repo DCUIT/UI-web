@@ -462,7 +462,12 @@ ${propsString}
       componentId: selectedComponent.id
     };
     // Mã hóa Base64 an toàn cho Unicode
-    const encoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    const jsonString = JSON.stringify(data);
+    const encoded = window.btoa(
+      encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (match, p1) => 
+        String.fromCharCode(parseInt(p1, 16))
+      )
+    );
     const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encoded}`;
     
     await navigator.clipboard.writeText(shareUrl);

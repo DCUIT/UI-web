@@ -5,9 +5,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, Layout, Search, Menu, Terminal } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useMobileMenu } from "@/components/common/ShellClient"
 
-export default function BottomNavbar({ onMobileMenu }: { onMobileMenu: () => void }) {
+export default function BottomNavbar() {
   const pathname = usePathname()
+  const { setOpen } = useMobileMenu()
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
@@ -51,7 +53,7 @@ export default function BottomNavbar({ onMobileMenu }: { onMobileMenu: () => voi
         </button>
 
         <button
-          onClick={onMobileMenu}
+          onClick={() => setOpen(true)}
           className="flex flex-col items-center gap-1 px-3 py-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
         >
           <Menu size={20} />

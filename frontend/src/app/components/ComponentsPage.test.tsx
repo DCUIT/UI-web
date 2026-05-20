@@ -12,6 +12,23 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      prefetch: () => null,
+      push: () => null,
+      replace: () => null,
+    };
+  },
+  useSearchParams() {
+    return {
+      get: (param: string) => null,
+    };
+  },
+}));
+
+
 // Mock ComponentPreview để tránh render quá sâu vào logic preview phức tạp
 jest.mock('@/components/discovery/ComponentPreview', () => ({
   __esModule: true,
@@ -30,7 +47,7 @@ describe('ComponentsPage Integration - Search & Filter Logic', () => {
     expect(resultsCount).toBeInTheDocument();
     
     // "All" category nên được active mặc định (dựa trên class indigo)
-    const allCategoryBtn = screen.getByRole('button', { name: /^All$/i });
+    const allCategoryBtn = screen.getAllByRole('button', { name: /^All$/i })[0];
     expect(allCategoryBtn).toHaveClass('bg-indigo-600');
   });
 
@@ -54,7 +71,7 @@ describe('ComponentsPage Integration - Search & Filter Logic', () => {
     render(<ComponentsPage />);
     
     // Nhấn vào danh mục "Form"
-    const formCategoryBtn = screen.getByRole('button', { name: /^Form$/ });
+    const formCategoryBtn = screen.getAllByRole('button', { name: /^Form$/ })[0];
     fireEvent.click(formCategoryBtn);
 
     // Kiểm tra kết quả: "Input" thuộc category Form nên phải tồn tại
@@ -78,15 +95,15 @@ describe('ComponentsPage Integration - Search & Filter Logic', () => {
     render(<ComponentsPage />);
     
     // 1. Chọn category "Navigation"
-    fireEvent.click(screen.getByRole('button', { name: /^Navigation$/ }));
+    fireEvent.click(screen.getAllByRole('button', { name: /^Navigation$/ })[0]);
     
-    // 2. Tìm kiếm "Tabs" (thuộc Navigation)
+    // 2. Tìm kiếm "Breadcrumb" (thuộc Navigation)
     const searchInput = screen.getByPlaceholderText(/Search components/i);
-    fireEvent.change(searchInput, { target: { value: 'Tabs' } });
-    expect(screen.getByText('Tabs')).toBeInTheDocument();
+    fireEvent.change(searchInput, { target: { value: 'Breadcrumb' } });
+    expect(screen.getByText('Breadcrumb')).toBeInTheDocument();
 
     // 3. Tìm kiếm "Button" (không thuộc Navigation) -> Không tìm thấy
     fireEvent.change(searchInput, { target: { value: 'Button' } });
-    expect(screen.queryByText('Button')).not.toBeInTheDocument();
+    expect(screen.queryByText('Button', { selector: 'p' })).not.toBeInTheDocument();
   });
 });

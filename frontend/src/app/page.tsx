@@ -1,10 +1,15 @@
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
-import Features from '@/components/sections/Features';
-import DashboardSection from '@/components/sections/DashboardSection';
-import Pricing from '@/components/sections/Pricing';
-import Templates from '@/components/sections/Templates';
-import CTA from '@/components/sections/CTA';
 import Categories from '@/components/sections/Categories';
+import Features from '@/components/sections/Features';
+import Pricing from '@/components/sections/Pricing';
+import CTA from '@/components/sections/CTA';
+import Templates from '@/components/sections/Templates';
+
+const DashboardSection = dynamic(() => import('@/components/sections/DashboardSection'), {
+  loading: () => <div className="h-96 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-2xl" />,
+});
 
 export default function Page() {
   return (
@@ -13,7 +18,9 @@ export default function Page() {
       <Categories value="All" />
 
       <Features />
-      <DashboardSection />
+      <Suspense fallback={<div className="h-96 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-2xl" />}>
+        <DashboardSection />
+      </Suspense>
 
       <Pricing />
       <Templates />
