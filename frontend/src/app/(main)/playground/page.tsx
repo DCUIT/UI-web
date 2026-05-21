@@ -542,97 +542,44 @@ ${cssCode}`;
   };
 
   return (
-    <div className="space-y-6">
-      {/* SEO Structured Data */}
+    <div className="w-full space-y-6 p-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" aria-labelledby="playground-title">
-        <div>
-          <div className="flex items-center gap-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Playground</p>
-            {isSaving && (
-              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse" role="status" aria-live="polite">
-                <Save className="w-3 h-3" /> SAVED
-              </span>
-            )}
-          </div>
-          <h1 id="playground-title" className="mt-1 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">
-            Playground / Sandbox Page
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-            Runtime Sandbox Ready: Code được biên dịch trực tiếp bằng Babel và render trong IFrame riêng biệt.
-          </p>
+      {/* Toolbar: functional controls only */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          {isSaving && (
+            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse" role="status" aria-live="polite">
+              <Save className="w-3 h-3" /> SAVED
+            </span>
+          )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            variant="secondary"
-            onClick={sharePlayground}
-            className="gap-2 rounded-xl"
-            aria-label="Share this playground"
-          >
-            {isShared ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
-            {isShared ? 'Link Copied!' : 'Share'}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="secondary" onClick={sharePlayground} className="gap-2 rounded-lg h-8 text-xs" aria-label="Share this playground">
+            {isShared ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
+            {isShared ? 'Copied!' : 'Share'}
           </Button>
-          <Button
-            variant="secondary"
-            onClick={exportComponent}
-            className="gap-2 rounded-xl"
-            disabled={isExporting}
-            aria-label="Export component as TSX file"
-          >
-            <Download className={`w-4 h-4 ${isExporting ? 'animate-bounce' : ''}`} />
-            {isExporting ? 'Exporting...' : 'Export .tsx'}
+          <Button variant="secondary" onClick={exportComponent} className="gap-2 rounded-lg h-8 text-xs" disabled={isExporting} aria-label="Export component as TSX file">
+            <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
+            {isExporting ? '...' : 'Export'}
           </Button>
           <ThemeToggle />
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-300">Device</span>
-            <button
-              type="button"
-              onClick={() => setDevice('desktop')}
-              aria-pressed={device === 'desktop'}
-              aria-label="Switch to desktop preview"
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
-            >
-              Desktop
-            </button>
-            <button
-              type="button"
-              onClick={() => setDevice('mobile')}
-              aria-pressed={device === 'mobile'}
-              aria-label="Switch to mobile preview"
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
-            >
-              Mobile
-            </button>
+          <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Device</span>
+            <button type="button" onClick={() => setDevice('desktop')} aria-pressed={device === 'desktop'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Desktop</button>
+            <button type="button" onClick={() => setDevice('mobile')} aria-pressed={device === 'mobile'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Mobile</button>
           </div>
-
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-300">Orientation</span>
-            <button
-              type="button"
-              onClick={() => setOrientation('portrait')}
-              aria-pressed={orientation === 'portrait'}
-              aria-label="Portrait orientation"
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
-            >
-              Portrait
-            </button>
-            <button
-              type="button"
-              onClick={() => setOrientation('landscape')}
-              aria-pressed={orientation === 'landscape'}
-              aria-label="Landscape orientation"
-              className={`rounded-lg px-2 py-1 text-xs font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
-            >
-              Landscape
-            </button>
+          <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Orient</span>
+            <button type="button" onClick={() => setOrientation('portrait')} aria-pressed={orientation === 'portrait'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Portrait</button>
+            <button type="button" onClick={() => setOrientation('landscape')} aria-pressed={orientation === 'landscape'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Landscape</button>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         {/* Left controls */}
