@@ -13,7 +13,7 @@ const DashboardSection = dynamic(() => import('@/components/sections/DashboardSe
 
 export default function Page() {
   return (
-    <main className="space-y-24 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="space-y-24 px-4 py-8 sm:px-6 lg:px-8">
       <Hero />
       <Categories value="All" />
 
@@ -25,7 +25,7 @@ export default function Page() {
       <Pricing />
       <Templates />
       <CTA />
-    </main>
+    </div>
   );
 }
 
