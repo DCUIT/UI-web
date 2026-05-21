@@ -5,8 +5,8 @@ import MobileMenu from "@/components/navigation/MobileMenu";
 import ShellClient from "./ShellClient";
 import { SidebarProvider } from "@/components/navigation/SidebarContext";
 import SidebarToggle from "@/components/navigation/SidebarToggle";
+import Sidebar from "@/components/navigation/Sidebar";
 
-const Sidebar = dynamic(() => import("@/components/navigation/Sidebar"), { ssr: true });
 const BottomNavbar = dynamic(() => import("@/components/navigation/BottomNavbar"), { ssr: true });
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
