@@ -17,12 +17,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </a>
         <main id="main-content" className="flex-1 pb-20 md:pb-0 outline-none" tabIndex={-1}>
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <Topbar />
             <div className="mt-6 lg:flex lg:gap-8">
-              <aside className="hidden lg:block lg:w-72">
+              <aside className="hidden lg:block lg:w-72 shrink-0">
                 <Sidebar />
               </aside>
-              <div className="flex-1">{children}</div>
+              <div className="flex-1">
+                <Topbar />
+                <div className="mt-6">{children}</div>
+              </div>
             </div>
           </div>
         </main>

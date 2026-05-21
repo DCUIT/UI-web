@@ -275,7 +275,7 @@ export default function MobileUITestPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen min-h-[800px] bg-slate-50 dark:bg-slate-950 -m-4 sm:-m-8">
+    <div className="flex flex-col h-screen min-h-[800px] bg-slate-50 dark:bg-slate-950">
       {/* Navbar */}
       <header className="h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-6 z-10">
         <div className="flex items-center gap-4">
