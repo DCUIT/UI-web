@@ -2,12 +2,15 @@
 
 import { useMemo, useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import Badge from '@/components/ui/Badge';
 import Toast from '@/components/ui/Toast';
 import Button from '@/components/ui/Button';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
+import { cn } from '@/lib/utils';
 
+const CuratedCollections = lazy(() => import('@/components/templates/CuratedCollections'));
 const Modal = lazy(() => import('@/components/ui/Modal'));
 const Dropdown = lazy(() => import('@/components/ui/Dropdown'));
 const Tabs = lazy(() => import('@/components/ui/Tabs'));
@@ -78,7 +81,7 @@ const LoadingBox = () => <div className="h-12 animate-pulse rounded-lg bg-slate-
 function renderPreview(component: UIComponent) {
   switch (component.id) {
     case 1: return <div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Primary button example</p><div className="flex flex-wrap gap-3"><Button variant="primary">Primary</Button><Button variant="secondary">Secondary</Button></div></div>;
-    case 2: return <div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Form input preview</p><Input placeholder="Enter your email" /></div>;
+    case 2: return <div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Form input preview</p><input className="w-full rounded-lg border p-2 dark:bg-slate-800" placeholder="Enter your email" /></div>;
     case 3: return <Suspense fallback={<LoadingBox />}><div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Textarea input example</p><Textarea placeholder="Leave a message" /></div></Suspense>;
     case 4: return <Suspense fallback={<LoadingBox />}><div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select field preview</p><Select><option>Choose an option</option><option>Option One</option><option>Option Two</option></Select></div></Suspense>;
     case 5: return <Suspense fallback={<LoadingBox />}><div className="space-y-4"><Checkbox label="Accept terms and conditions" /></div></Suspense>;
@@ -95,7 +98,7 @@ function renderPreview(component: UIComponent) {
     case 16: return <PaginationExample />;
     case 17: return <Suspense fallback={<LoadingBox />}><div className="space-y-3"><Skeleton className="h-6 w-full" /><Skeleton className="h-6 w-3/4" /></div></Suspense>;
     case 18: return <Suspense fallback={<LoadingBox />}><div className="flex items-center gap-4"><Spinner /><span className="text-sm text-slate-500 dark:text-slate-400">Loading...</span></div></Suspense>;
-    case 19: return <Suspense fallback={<LoadingBox />}><div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Simple data table</p><DataTable columns={[{ key: 'id', label: 'ID', sortable: true }, { key: 'name', label: 'Name', sortable: true }, { key: 'email', label: 'Email' }]} data={[{ id: 1, name: 'Alice', email: 'alice@example.com' }, { id: 2, name: 'Bob', email: 'bob@example.com' }, { id: 3, name: 'Carol', email: 'carol@example.com' }, { id: 4, name: 'Dan', email: 'dan@example.com' }, { id: 5, name: 'Eve', email: 'eve@example.com' }, { id: 6, name: 'Frank', email: 'frank@example.com' }]} /></div></Suspense>;
+    case 19: return <Suspense fallback={<LoadingBox />}><div className="space-y-4"><p className="text-sm font-medium text-slate-500 dark:text-slate-400">Simple data table</p><DataTable columns={[{ key: 'id', label: 'ID', sortable: true }, { key: 'name', label: 'Name', sortable: true }, { key: 'email', label: 'Email' }]} data={[{ id: 1, name: 'Alice', email: 'alice@example.com' }, { id: 2, name: 'Bob', email: 'bob@example.com' }]} /></div></Suspense>;
     case 20: return <CardPreview type="ProductCard" />;
     case 21: return <CardPreview type="UserCard" />;
     case 22: return <CardPreview type="PricingCard" />;
@@ -123,39 +126,31 @@ function ComponentsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState(searchParams.get('category') || 'All');
-  const [selectedId, setSelectedId] = useState(Number(searchParams.get('id')) || 1);
+  const query = searchParams.get('query') || '';
+  const category = searchParams.get('category') || 'All';
+  const selectedId = Number(searchParams.get('id')) || 1;
+  const viewMode = searchParams.get('view') || 'individual';
+
   const [toastMessage, setToastMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
+
+  const selectedComponent = (componentsData.find((item) => item.id === selectedId) ?? componentsData[0]) as ExtendedUIComponent;
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(selectedComponent.source);
     setToastMessage('Code copied to clipboard');
     window.setTimeout(() => setToastMessage(''), 2200);
   };
-  
-  const selectedComponent = (componentsData.find((item) => item.id === selectedId) ?? componentsData[0]) as ExtendedUIComponent;
-
-  const updateParams = (id: number, cat: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('id', id.toString());
-    params.set('category', cat);
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
 
   const handleSelectComponent = (id: number) => {
-    setSelectedId(id);
-    updateParams(id, category);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('id', id.toString());
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   useEffect(() => {
     if (selectedComponent) {
       document.title = `${selectedComponent.name} Component - Master UI Platform`;
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute('content', selectedComponent.description);
-      }
     }
   }, [selectedComponent]);
 
@@ -174,82 +169,81 @@ function ComponentsPageContent() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "Master UI Platform",
-            "description": "A comprehensive UI component library built with React and Tailwind CSS.",
-            "applicationCategory": "DeveloperApplication",
-            "operatingSystem": "Web",
-            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-            "mainEntity": {
-              "@type": "CreativeWork",
-              "name": selectedComponent.name,
-              "description": selectedComponent.description,
-              "author": { "@type": "Organization", "name": "Master UI" },
-              "keywords": selectedComponent.tags?.join(", "),
-              "genre": "UI Component"
-            }
+            "@type": "CreativeWork",
+            "name": selectedComponent.name,
+            "description": selectedComponent.description,
           })
         }}
       />
 
-      {/* Selected component header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-4 dark:border-slate-800 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="text-xl font-bold text-slate-950 dark:text-white">{selectedComponent.name}</h2>
-          <div className="mt-1 flex items-center gap-2">
-            {selectedComponent.difficulty && <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>{selectedComponent.difficulty}</Badge>}
-            {selectedComponent.tags?.map((tag) => <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">{tag}</span>)}
-          </div>
-          <p className="text-xs text-slate-500 mt-1">{selectedComponent.description}</p>
-        </div>
-        <Button type="button" variant="primary" onClick={copyCode} className="h-9 text-xs shrink-0">Copy Code</Button>
-      </div>
-
-      {/* Workspace: Preview + Code */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Preview</p>
-          <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-slate-950/50">
-            {renderPreview(selectedComponent)}
-          </div>
-        </div>
-
-        <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm flex flex-col">
-          <div className="flex gap-2 mb-3 border-b pb-2 dark:border-slate-800">
-            <button onClick={() => setActiveTab('preview')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'preview' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Visual UI</button>
-            <button onClick={() => setActiveTab('code')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'code' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Source Code</button>
-          </div>
-          <div className="flex-1">
-            {activeTab === 'preview' ? (
-              <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-950 text-sm">{renderPreview(selectedComponent)}</div>
-            ) : (
-              <pre className="max-h-[250px] overflow-auto rounded-lg bg-slate-950 p-4 text-[11px] font-mono leading-5 text-slate-200">
-                <code>{selectedComponent.source}</code>
-              </pre>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Component grid */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Các thành phần cùng nhóm ({results.length})</h3>
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {results.map((item) => {
-            const isSelected = item.id === selectedComponent.id;
-            return (
-              <div
-                key={item.id}
-                onClick={() => handleSelectComponent(item.id)}
-                className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${isSelected ? "border-indigo-500 bg-indigo-50/20 shadow-sm dark:bg-indigo-950/20" : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/50"}`}
-              >
-                <p className="font-medium text-xs text-slate-900 dark:text-slate-100">{item.name}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{item.category}</p>
+      {viewMode === 'individual' ? (
+        <div className="space-y-6">
+          {/* 1. KHU VỰC TIÊU ĐỀ COMPONENT */}
+          <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-4 dark:border-slate-800 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white">{selectedComponent.name}</h2>
+              <div className="mt-1 flex items-center gap-2">
+                {selectedComponent.difficulty && <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>{selectedComponent.difficulty}</Badge>}
+                {selectedComponent.tags?.map((tag) => <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">{tag}</span>)}
               </div>
-            );
-          })}
+              <p className="text-xs text-slate-500 mt-1">{selectedComponent.description}</p>
+            </div>
+            <Button type="button" variant="primary" onClick={copyCode} className="h-9 text-xs shrink-0">Copy Code</Button>
+          </div>
+
+          {/* 2. KHU VỰC WORKSPACE (PREVIEW & CODE) */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Preview</p>
+              <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-slate-950/50">
+                {renderPreview(selectedComponent)}
+              </div>
+            </div>
+
+            <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm flex flex-col">
+              <div className="flex gap-2 mb-3 border-b pb-2 dark:border-slate-800">
+                <button onClick={() => setActiveTab('preview')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'preview' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Visual UI</button>
+                <button onClick={() => setActiveTab('code')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'code' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Source Code</button>
+              </div>
+              <div className="flex-1">
+                {activeTab === 'preview' ? (
+                  <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-950 text-sm">{renderPreview(selectedComponent)}</div>
+                ) : (
+                  <pre className="max-h-[250px] overflow-auto rounded-lg bg-slate-950 p-4 text-[11px] font-mono leading-5 text-slate-200">
+                    <code>{selectedComponent.source}</code>
+                  </pre>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 3. GRID LƯỚI LINH KIỆN CON CÙNG NHÓM */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Các thành phần cùng nhóm ({results.length})</h3>
+            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+              {results.map((item) => {
+                const isSelected = item.id === selectedComponent.id;
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handleSelectComponent(item.id)}
+                    className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${isSelected ? "border-indigo-500 bg-indigo-50/20 shadow-sm dark:bg-indigo-950/20" : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/50"}`}
+                  >
+                    <p className="font-medium text-xs text-slate-900 dark:text-slate-100">{item.name}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{item.category}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Suspense fallback={<div className="grid gap-6 md:grid-cols-2"><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /></div>}>
+            <CuratedCollections />
+          </Suspense>
+        </motion.div>
+      )}
 
       <Toast message={toastMessage} />
     </div>
