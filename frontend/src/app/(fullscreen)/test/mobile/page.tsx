@@ -237,27 +237,6 @@ export default function MobileUITestPage() {
   const [activeTab, setActiveTab] = useState<'App.tsx' | 'styles.css'>('App.tsx')
   const [appState, setAppState] = useState<'normal' | 'loading' | 'empty' | 'error'>('normal')
 
-  const [dependencies, setDependencies] = useState<Record<string, string>>({
-    'lucide-react': 'latest',
-  })
-  const [newDependency, setNewDependency] = useState('')
-
-  const handleAddDependency = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newDependency.trim()) {
-      setDependencies(prev => ({ ...prev, [newDependency.trim()]: 'latest' }))
-      setNewDependency('')
-    }
-  }
-
-  const removeDependency = (pkg: string) => {
-    setDependencies(prev => {
-      const newDeps = { ...prev }
-      delete newDeps[pkg]
-      return newDeps
-    })
-  }
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedAppTsx(appTsx)
@@ -307,54 +286,6 @@ export default function MobileUITestPage() {
 
       {/* Main Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col overflow-y-auto hidden md:flex">
-          <div className="p-4 flex-1">
-             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">Components</h3>
-             <div className="space-y-1">
-               <button className="w-full text-left px-3 py-2 text-sm bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-medium rounded-lg">Buttons</button>
-               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Cards</button>
-               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Inputs & Forms</button>
-               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Bottom Sheets</button>
-             </div>
-             
-             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 mt-8">Templates</h3>
-             <div className="space-y-1">
-               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">E-commerce App</button>
-               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Chat Interface</button>
-               <button className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">Social Feed</button>
-             </div>
-
-             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 mt-8">Dependencies</h3>
-             <div className="space-y-2 px-1">
-               {Object.entries(dependencies).map(([pkg]) => (
-                 <div key={pkg} className="flex items-center justify-between bg-slate-100 dark:bg-slate-800/50 px-3 py-2 rounded-lg text-sm group">
-                   <span className="text-slate-700 dark:text-slate-300 font-medium truncate pr-2">{pkg}</span>
-                   <button 
-                      onClick={() => removeDependency(pkg)}
-                      className="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                      title="Remove package"
-                   >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                   </button>
-                 </div>
-               ))}
-               <form onSubmit={handleAddDependency} className="flex items-center gap-2 mt-2">
-                 <input 
-                   type="text" 
-                   placeholder="npm package..."
-                   value={newDependency}
-                   onChange={(e) => setNewDependency(e.target.value)}
-                   className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-indigo-500 transition-colors"
-                 />
-                 <button type="submit" disabled={!newDependency.trim()} className="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg p-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                 </button>
-               </form>
-             </div>
-          </div>
-        </aside>
-
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-50/50 dark:bg-slate-950">
           <SandpackProvider 
@@ -378,7 +309,7 @@ root.render(
               }
             }}
             customSetup={{
-              dependencies: dependencies
+              dependencies: { 'lucide-react': 'latest' }
             }}
           >
           <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr] h-full max-w-[1600px] mx-auto">
