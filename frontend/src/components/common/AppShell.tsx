@@ -1,11 +1,11 @@
 import dynamic from 'next/dynamic';
+import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import MobileMenu from "@/components/navigation/MobileMenu";
 import ShellClient from "./ShellClient";
 import { SidebarProvider } from "@/components/navigation/SidebarContext";
 import SidebarToggle from "@/components/navigation/SidebarToggle";
 
-const Topbar = dynamic(() => import("@/components/navigation/Topbar"), { ssr: true });
 const Sidebar = dynamic(() => import("@/components/navigation/Sidebar"), { ssr: true });
 const BottomNavbar = dynamic(() => import("@/components/navigation/BottomNavbar"), { ssr: true });
 
@@ -30,12 +30,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </aside>
 
-          {/* Right area: Navbar + Content */}
+          {/* Right area */}
           <div className="flex flex-1 flex-col h-full overflow-hidden">
-            {/* Navbar - fixed top */}
-            <header className="h-14 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-              <Topbar />
-            </header>
+            {/* Navbar - single top bar */}
+            <Navbar />
 
             {/* Scrollable content area */}
             <main id="main-content" className="flex-1 overflow-y-auto custom-scrollbar outline-none" tabIndex={-1}>

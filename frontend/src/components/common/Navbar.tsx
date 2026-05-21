@@ -6,6 +6,7 @@ import React, { Suspense } from "react";
 import { Menu as MenuIcon, Command } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import dynamic from "next/dynamic";
+import { useMobileMenu } from "@/components/common/ShellClient";
 
 const MegaMenu = dynamic(() => import("@/components/navigation/MegaMenu"), { ssr: false });
 const SearchBar = dynamic(() => import("@/components/navigation/SearchBar"), { ssr: false });
@@ -17,17 +18,18 @@ const navItems = [
   { href: "/test", label: "UI Test" },
 ];
 
-export default function Navbar({ onMobileMenu }: { onMobileMenu?: () => void }) {
+export default function Navbar() {
   const path = usePathname();
+  const { setOpen } = useMobileMenu();
 
   function openCommandMenu() {
     window.dispatchEvent(new Event("toggle-command-menu"));
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/70">
+    <header className="shrink-0 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/70">
       <CommandMenu />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-xl font-bold tracking-tight text-slate-950 dark:text-white">
@@ -58,7 +60,7 @@ export default function Navbar({ onMobileMenu }: { onMobileMenu?: () => void }) 
               <Command size={16} /> <span>Cmd</span>
             </button>
             <ThemeToggle />
-            <button className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden" onClick={onMobileMenu} aria-label="Open mobile menu">
+            <button className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden" onClick={() => setOpen(true)} aria-label="Open mobile menu">
               <MenuIcon />
             </button>
           </div>
