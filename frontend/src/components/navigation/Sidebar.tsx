@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { ChevronDown, Box, Layout, MessageSquare, Megaphone, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useSidebar } from './SidebarContext';
 
 const sidebarGroups = [
   {
@@ -58,6 +59,7 @@ const sidebarGroups = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { collapsed } = useSidebar();
   const [openGroups, setOpenGroups] = useState<string[]>(sidebarGroups.map(g => g.title));
 
   const toggleGroup = (title: string) => {
@@ -69,7 +71,11 @@ export default function Sidebar() {
   };
 
   return (
-    <nav className="sticky top-20 w-full select-none" aria-label="Main Sidebar Navigation">
+    <nav
+      className="select-none transition-all duration-300 ease-in-out"
+      style={{ width: collapsed ? '3rem' : '18rem' }}
+      aria-label="Main Sidebar Navigation"
+    >
       <div className="flex flex-col gap-1 pr-2">
         {sidebarGroups.map((group) => {
           const isOpen = openGroups.includes(group.title);
@@ -79,20 +85,26 @@ export default function Sidebar() {
             <div key={group.title} className="flex flex-col">
               <button
                 onClick={() => toggleGroup(group.title)}
-                className="flex items-center justify-between rounded-lg px-2 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+                className={cn(
+                  "flex items-center rounded-lg px-2 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200",
+                  collapsed && "justify-center"
+                )}
+                title={collapsed ? group.title : undefined}
               >
-                <div className="flex items-center gap-2">
-                  <Icon size={14} />
-                  <span>{group.title}</span>
-                </div>
-                <ChevronDown 
-                  size={14} 
-                  className={cn("transition-transform duration-200", !isOpen && "-rotate-90")} 
-                />
+                <Icon size={14} />
+                {!collapsed && (
+                  <>
+                    <span className="ml-2">{group.title}</span>
+                    <ChevronDown 
+                      size={14} 
+                      className={cn("ml-auto transition-transform duration-200", !isOpen && "-rotate-90")} 
+                    />
+                  </>
+                )}
               </button>
               
               <AnimatePresence initial={false}>
-                {isOpen && (
+                {isOpen && !collapsed && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
