@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
 import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react'
@@ -262,11 +263,11 @@ export default function MobileUITestPage() {
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
             Mobile Sandbox
           </div>
-          <div className="hidden md:flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-4 text-sm font-medium">
-             <button className="px-3 py-1 bg-white dark:bg-slate-700 shadow-sm rounded-md text-slate-900 dark:text-white">Playground</button>
-             <button className="px-3 py-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Components</button>
-             <button className="px-3 py-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Documentation</button>
-          </div>
+          <nav className="hidden md:flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-4 text-sm font-medium">
+             <Link href="/playground" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Playground</Link>
+             <Link href="/components" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Components</Link>
+             <Link href="/test" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Test UI</Link>
+          </nav>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -278,7 +279,13 @@ export default function MobileUITestPage() {
           >
             Reset Code
           </button>
-          <button className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm shadow-indigo-200 dark:shadow-none">
+          <button
+            onClick={() => {
+              const url = window.location.href
+              navigator.clipboard.writeText(url).then(() => alert('URL copied to clipboard!'))
+            }}
+            className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm shadow-indigo-200 dark:shadow-none"
+          >
             Share
           </button>
         </div>
