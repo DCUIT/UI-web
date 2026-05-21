@@ -71,12 +71,8 @@ export default function Sidebar() {
   };
 
   return (
-    <nav
-      className="select-none transition-all duration-300 ease-in-out"
-      style={{ width: collapsed ? '3rem' : '18rem' }}
-      aria-label="Main Sidebar Navigation"
-    >
-      <div className="flex flex-col gap-1 pr-2">
+    <nav className="select-none" aria-label="Main Sidebar Navigation">
+      <div className="flex flex-col gap-1">
         {sidebarGroups.map((group) => {
           const isOpen = openGroups.includes(group.title);
           const Icon = group.icon;

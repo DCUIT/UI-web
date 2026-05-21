@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic';
-import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import MobileMenu from "@/components/navigation/MobileMenu";
 import ShellClient from "./ShellClient";
@@ -14,28 +13,38 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <ShellClient>
-        <div className="flex min-h-screen flex-col">
+        <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-lg">
             Skip to main content
           </a>
-          <main id="main-content" className="flex-1 pb-20 md:pb-0 outline-none" tabIndex={-1}>
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-              <div className="mt-6 lg:flex lg:gap-8">
-                <aside className="hidden lg:flex lg:flex-col lg:shrink-0">
-                  <div className="sticky top-20">
-                    <SidebarToggle />
-                    <Sidebar />
-                  </div>
-                </aside>
-                <div className="flex-1">
-                  <Topbar />
-                  <div className="mt-6">{children}</div>
-                </div>
+
+          {/* Sidebar - fixed left */}
+          <aside className="hidden lg:flex lg:flex-col lg:shrink-0 lg:border-r lg:border-slate-200 dark:lg:border-slate-800 lg:bg-white dark:lg:bg-slate-900" style={{ width: 'var(--sidebar-width, 18rem)' }}>
+            <div className="flex flex-col h-full overflow-hidden">
+              <div className="p-3 border-b border-slate-200 dark:border-slate-800">
+                <SidebarToggle />
+              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-3">
+                <Sidebar />
               </div>
             </div>
-          </main>
-          <Footer />
-          <BottomNavbar />
+          </aside>
+
+          {/* Right area: Navbar + Content */}
+          <div className="flex flex-1 flex-col h-full overflow-hidden">
+            {/* Navbar - fixed top */}
+            <header className="h-14 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+              <Topbar />
+            </header>
+
+            {/* Scrollable content area */}
+            <main id="main-content" className="flex-1 overflow-y-auto custom-scrollbar outline-none" tabIndex={-1}>
+              {children}
+            </main>
+
+            <Footer />
+            <BottomNavbar />
+          </div>
         </div>
       </ShellClient>
     </SidebarProvider>

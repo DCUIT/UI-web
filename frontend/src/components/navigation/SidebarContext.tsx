@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 
 interface SidebarContextType {
   collapsed: boolean
@@ -17,6 +17,11 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const toggle = useCallback(() => setCollapsed(prev => !prev), [])
   const expand = useCallback(() => setCollapsed(false), [])
   const collapse = useCallback(() => setCollapsed(true), [])
+
+  useEffect(() => {
+    const width = collapsed ? '3.5rem' : '18rem'
+    document.documentElement.style.setProperty('--sidebar-width', width)
+  }, [collapsed])
 
   return (
     <SidebarContext.Provider value={{ collapsed, toggle, expand, collapse }}>
