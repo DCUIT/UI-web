@@ -2,17 +2,12 @@
 
 import { useMemo, useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Filter, Search as SearchIcon } from 'lucide-react';
-import Input from '@/components/ui/Input';
 import Badge from '@/components/ui/Badge';
 import Toast from '@/components/ui/Toast';
 import Button from '@/components/ui/Button';
 import { componentsData } from '@/data/components';
 import type { Component as UIComponent } from '@/types/component';
-import { cn } from '@/lib/utils';
 
-const CuratedCollections = lazy(() => import('@/components/templates/CuratedCollections'));
 const Modal = lazy(() => import('@/components/ui/Modal'));
 const Dropdown = lazy(() => import('@/components/ui/Dropdown'));
 const Tabs = lazy(() => import('@/components/ui/Tabs'));
@@ -29,8 +24,6 @@ const Breadcrumb = lazy(() => import('@/components/ui/Breadcrumb'));
 const Skeleton = lazy(() => import('@/components/ui/Skeleton'));
 const Spinner = lazy(() => import('@/components/ui/Spinner'));
 const DataTable = lazy(() => import('@/components/ui/DataTable'));
-
-const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
 function ModalExample() {
   const [open, setOpen] = useState(false);
@@ -135,8 +128,6 @@ function ComponentsPageContent() {
   const [selectedId, setSelectedId] = useState(Number(searchParams.get('id')) || 1);
   const [toastMessage, setToastMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'individual' | 'collections'>('individual');
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(selectedComponent.source);
@@ -156,7 +147,6 @@ function ComponentsPageContent() {
   const handleSelectComponent = (id: number) => {
     setSelectedId(id);
     updateParams(id, category);
-    if (isMobileFiltersOpen) setIsMobileFiltersOpen(false);
   };
 
   useEffect(() => {
@@ -202,103 +192,64 @@ function ComponentsPageContent() {
         }}
       />
 
-      {/* Mobile filter bar */}
-      <div className="sticky top-[64px] z-30 -mx-6 mb-4 bg-white/80 px-6 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
-        <div className="flex items-center gap-3">
-          <Button variant="secondary" onClick={() => setIsMobileFiltersOpen(true)} className="shrink-0">
-            <Filter size={18} className="mr-2" /> Filters
-          </Button>
-          <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
-          <div className="flex flex-1 gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {categories.map((option) => (
-              <button
-                key={option}
-                onClick={() => { setCategory(option); updateParams(selectedId, option); }}
-                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-all ${category === option ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}
+      {/* Selected component header */}
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-4 dark:border-slate-800 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="text-xl font-bold text-slate-950 dark:text-white">{selectedComponent.name}</h2>
+          <div className="mt-1 flex items-center gap-2">
+            {selectedComponent.difficulty && <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>{selectedComponent.difficulty}</Badge>}
+            {selectedComponent.tags?.map((tag) => <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">{tag}</span>)}
+          </div>
+          <p className="text-xs text-slate-500 mt-1">{selectedComponent.description}</p>
+        </div>
+        <Button type="button" variant="primary" onClick={copyCode} className="h-9 text-xs shrink-0">Copy Code</Button>
+      </div>
+
+      {/* Workspace: Preview + Code */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Preview</p>
+          <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-slate-950/50">
+            {renderPreview(selectedComponent)}
+          </div>
+        </div>
+
+        <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm flex flex-col">
+          <div className="flex gap-2 mb-3 border-b pb-2 dark:border-slate-800">
+            <button onClick={() => setActiveTab('preview')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'preview' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Visual UI</button>
+            <button onClick={() => setActiveTab('code')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'code' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Source Code</button>
+          </div>
+          <div className="flex-1">
+            {activeTab === 'preview' ? (
+              <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-950 text-sm">{renderPreview(selectedComponent)}</div>
+            ) : (
+              <pre className="max-h-[250px] overflow-auto rounded-lg bg-slate-950 p-4 text-[11px] font-mono leading-5 text-slate-200">
+                <code>{selectedComponent.source}</code>
+              </pre>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Component grid */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Các thành phần cùng nhóm ({results.length})</h3>
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          {results.map((item) => {
+            const isSelected = item.id === selectedComponent.id;
+            return (
+              <div
+                key={item.id}
+                onClick={() => handleSelectComponent(item.id)}
+                className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${isSelected ? "border-indigo-500 bg-indigo-50/20 shadow-sm dark:bg-indigo-950/20" : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/50"}`}
               >
-                {option}
-              </button>
-            ))}
-          </div>
+                <p className="font-medium text-xs text-slate-900 dark:text-slate-100">{item.name}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">{item.category}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
-
-      {/* View mode toggle */}
-      <div className="flex items-center justify-between">
-        <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
-          <button onClick={() => setViewMode('individual')} className={cn("rounded-lg px-4 py-2 text-sm font-bold transition-all", viewMode === 'individual' ? "bg-indigo-600 text-white shadow-md" : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200")}>Individual</button>
-          <button onClick={() => setViewMode('collections')} className={cn("rounded-lg px-4 py-2 text-sm font-bold transition-all", viewMode === 'collections' ? "bg-indigo-600 text-white shadow-md" : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200")}>Collections</button>
-        </div>
-      </div>
-
-      {viewMode === 'individual' ? (
-        <div className="space-y-6">
-          {/* Selected component header */}
-          <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-4 dark:border-slate-800 sm:flex-row sm:items-center">
-            <div>
-              <h2 className="text-xl font-bold text-slate-950 dark:text-white">{selectedComponent.name}</h2>
-              <div className="mt-1 flex items-center gap-2">
-                {selectedComponent.difficulty && <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>{selectedComponent.difficulty}</Badge>}
-                {selectedComponent.tags?.map((tag) => <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">{tag}</span>)}
-              </div>
-              <p className="text-xs text-slate-500 mt-1">{selectedComponent.description}</p>
-            </div>
-            <Button type="button" variant="primary" onClick={copyCode} className="h-9 text-xs shrink-0">Copy Code</Button>
-          </div>
-
-          {/* Workspace: Preview + Code */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Preview</p>
-              <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-slate-950/50">
-                {renderPreview(selectedComponent)}
-              </div>
-            </div>
-
-            <div className="rounded-xl border bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-sm flex flex-col">
-              <div className="flex gap-2 mb-3 border-b pb-2 dark:border-slate-800">
-                <button onClick={() => setActiveTab('preview')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'preview' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Visual UI</button>
-                <button onClick={() => setActiveTab('code')} className={`px-2 py-1 text-xs font-medium rounded ${activeTab === 'code' ? "bg-slate-100 dark:bg-slate-800 font-bold" : "text-slate-400"}`}>Source Code</button>
-              </div>
-              <div className="flex-1">
-                {activeTab === 'preview' ? (
-                  <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-950 text-sm">{renderPreview(selectedComponent)}</div>
-                ) : (
-                  <pre className="max-h-[250px] overflow-auto rounded-lg bg-slate-950 p-4 text-[11px] font-mono leading-5 text-slate-200">
-                    <code>{selectedComponent.source}</code>
-                  </pre>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Component grid */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Các thành phần cùng nhóm ({results.length})</h3>
-            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-              {results.map((item) => {
-                const isSelected = item.id === selectedComponent.id;
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => handleSelectComponent(item.id)}
-                    className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${isSelected ? "border-indigo-500 bg-indigo-50/20 shadow-sm dark:bg-indigo-950/20" : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/50"}`}
-                  >
-                    <p className="font-medium text-xs text-slate-900 dark:text-slate-100">{item.name}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">{item.category}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <Suspense fallback={<div className="grid gap-6 md:grid-cols-2"><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /></div>}>
-            <CuratedCollections />
-          </Suspense>
-        </motion.div>
-      )}
 
       <Toast message={toastMessage} />
     </div>
