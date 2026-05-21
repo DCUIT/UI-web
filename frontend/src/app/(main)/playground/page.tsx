@@ -542,7 +542,7 @@ ${cssCode}`;
   };
 
   return (
-    <main className="space-y-6" role="main">
+    <div className="space-y-6">
       {/* SEO Structured Data */}
       <script
         type="application/ld+json"
@@ -898,6 +898,6 @@ ${cssCode}`;
           <Tabs items={tabs as any} />
         </article>
       </div>
-    </main>
+    </div>
   );
 }
