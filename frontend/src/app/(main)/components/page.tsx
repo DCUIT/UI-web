@@ -30,7 +30,6 @@ const Skeleton = lazy(() => import('@/components/ui/Skeleton'));
 const Spinner = lazy(() => import('@/components/ui/Spinner'));
 const DataTable = lazy(() => import('@/components/ui/DataTable'));
 
-
 const categories = ['All', 'UI', 'Form', 'Overlay', 'Navigation', 'Feedback', 'Layout', 'Cards', 'Dashboard'];
 
 function ModalExample() {
@@ -303,9 +302,6 @@ function CardPreview({ type }: { type: string }) {
   return Card ? <Suspense fallback={<LoadingBox />}><Card /></Suspense> : <LoadingBox />;
 }
 
-/**
- * Extended component type to fix @ts-ignore issues
- */
 interface ExtendedUIComponent extends UIComponent {
   difficulty?: 'Easy' | 'Medium' | 'Hard';
   tags?: string[];
@@ -324,7 +320,6 @@ function ComponentsPageContent() {
   const [viewMode, setViewMode] = useState<'individual' | 'collections'>('individual');
 
   const copyCode = async () => {
-
     await navigator.clipboard.writeText(selectedComponent.source);
     setToastMessage('Code copied to clipboard');
     window.setTimeout(() => setToastMessage(''), 2200);
@@ -332,7 +327,6 @@ function ComponentsPageContent() {
   
   const selectedComponent = (componentsData.find((item) => item.id === selectedId) ?? componentsData[0]) as ExtendedUIComponent;
 
-  // Sync State with URL for deep linking
   const updateParams = (id: number, cat: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('id', id.toString());
@@ -346,13 +340,9 @@ function ComponentsPageContent() {
     if (isMobileFiltersOpen) setIsMobileFiltersOpen(false);
   };
 
-  // Dynamic Meta Tags & Page Title Update
   useEffect(() => {
     if (selectedComponent) {
-      // Cập nhật tiêu đề trình duyệt
       document.title = `${selectedComponent.name} Component - Master UI Platform`;
-      
-      // Cập nhật thẻ meta description để hỗ trợ SEO khi chuyển đổi linh kiện
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
         metaDescription.setAttribute('content', selectedComponent.description);
@@ -368,7 +358,6 @@ function ComponentsPageContent() {
     });
   }, [category, query]);
 
-  // Sidebar Content Component to reuse
   const SidebarContent = () => (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -406,14 +395,11 @@ function ComponentsPageContent() {
           </div>
         </div>
       </div>
-
-      {/* Removed: "Available Components" list from sidebar to avoid double sidebar */}
     </div>
   );
 
   return (
-    <section className="min-h-screen bg-slate-50/30 dark:bg-slate-950">
-      {/* JSON-LD Structured Data for SEO */}
+    <div className="w-full space-y-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -444,236 +430,229 @@ function ComponentsPageContent() {
         }}
       />
 
-      <div className="py-12">
-        <div className="mb-8 space-y-4 text-center lg:mb-16">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Component library</p>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-6xl">
-            Reusable UI Components
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg leading-7 text-slate-600 dark:text-slate-300">
-            Browse, preview, and copy production-ready components for your design system.
-          </p>
+      <div className="mb-8 space-y-4 text-center lg:mb-12">
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Component library</p>
+        <h1 className="text-4xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
+          Reusable UI Components
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg leading-7 text-slate-600 dark:text-slate-300">
+          Browse, preview, and copy production-ready components for your design system.
+        </p>
 
-          <div className="mt-10 flex justify-center">
-            <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
-              <button
-                onClick={() => setViewMode('individual')}
-                className={cn(
-                  "rounded-lg px-4 py-2 text-sm font-bold transition-all",
-                  viewMode === 'individual' 
-                    ? "bg-indigo-600 text-white shadow-md" 
-                    : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
-                )}
-              >
-                Individual
-              </button>
-              <button
-                onClick={() => setViewMode('collections')}
-                className={cn(
-                  "rounded-lg px-4 py-2 text-sm font-bold transition-all",
-                  viewMode === 'collections' 
-                    ? "bg-indigo-600 text-white shadow-md" 
-                    : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
-                )}
-              >
-                Collections
-              </button>
-            </div>
+        <div className="mt-8 flex justify-center">
+          <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900 shadow-sm">
+            <button
+              onClick={() => setViewMode('individual')}
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-bold transition-all",
+                viewMode === 'individual' 
+                  ? "bg-indigo-600 text-white shadow-md" 
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+              )}
+            >
+              Individual
+            </button>
+            <button
+              onClick={() => setViewMode('collections')}
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-bold transition-all",
+                viewMode === 'collections' 
+                  ? "bg-indigo-600 text-white shadow-md" 
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+              )}
+            >
+              Collections
+            </button>
           </div>
         </div>
+      </div>
 
-        {viewMode === 'individual' ? (
-          <>
-            {/* Mobile Filter Trigger & Horizontal Categories */}
-            <div className="sticky top-[64px] z-30 -mx-4 mb-8 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="secondary"
-                  onClick={() => setIsMobileFiltersOpen(true)}
-                  className="shrink-0"
-                >
-                  <Filter size={18} className="mr-2" /> Filters
+      {viewMode === 'individual' ? (
+        <>
+          <div className="sticky top-[64px] z-30 -mx-4 mb-6 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-950/80 lg:hidden">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setIsMobileFiltersOpen(true)}
+                className="shrink-0"
+              >
+                <Filter size={18} className="mr-2" /> Filters
+              </Button>
+              <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
+              <div className="flex flex-1 gap-2 overflow-x-auto pb-1 no-scrollbar">
+                {categories.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      setCategory(option);
+                      updateParams(selectedId, option);
+                    }}
+                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
+                      category === option
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+            <aside className="sticky top-24 hidden h-[calc(100vh-120px)] overflow-y-auto pr-4 lg:block custom-scrollbar">
+              <SidebarContent />
+            </aside>
+
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Selected component</p>
+                  <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{selectedComponent.name}</h2>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-4">
+                    {selectedComponent.difficulty && (
+                      <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>
+                        {selectedComponent.difficulty}
+                      </Badge>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {selectedComponent.tags?.map((tag) => (
+                        <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="mt-4 text-lg leading-7 text-slate-600 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
+                </div>
+                <Button type="button" variant="secondary" onClick={copyCode}>
+                  Copy source
                 </Button>
-                <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
-                <div className="flex flex-1 gap-2 overflow-x-auto pb-1 no-scrollbar">
-                  {categories.map((option) => (
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                  <p className="mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Preview</p>
+                  <div className="space-y-4">
+                    {renderPreview(selectedComponent)}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                  <div className="mb-6 flex items-center gap-3">
                     <button
-                      key={option}
-                      onClick={() => {
-                        setCategory(option);
-                        updateParams(selectedId, option);
-                      }}
-                      className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
-                        category === option
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                      type="button"
+                      onClick={() => setActiveTab('preview')}
+                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                        activeTab === 'preview'
+                          ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
-                      {option}
+                      Preview
                     </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
-              {/* Desktop Sidebar */}
-              <aside className="sticky top-24 hidden h-[calc(100vh-120px)] overflow-y-auto pr-4 lg:block custom-scrollbar">
-                <SidebarContent />
-              </aside>
-
-              <div className="space-y-8">
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Selected component</p>
-                    <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{selectedComponent.name}</h2>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-4">
-                      {selectedComponent.difficulty && (
-                        <Badge variant={selectedComponent.difficulty === 'Hard' ? 'warning' : 'success'}>
-                          {selectedComponent.difficulty}
-                        </Badge>
-                      )}
-                      <div className="flex flex-wrap gap-2">
-                        {selectedComponent.tags?.map((tag) => (
-                          <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <p className="mt-4 text-lg leading-7 text-slate-600 dark:text-slate-400 max-w-2xl font-normal">{selectedComponent.description}</p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('code')}
+                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                        activeTab === 'code'
+                          ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      Code
+                    </button>
                   </div>
-                  <Button type="button" variant="secondary" onClick={copyCode}>
-                    Copy source
-                  </Button>
-                </div>
 
-                {/* Premium Integrated Box: Preview + Code */}
-                <div className="grid gap-8 lg:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
-                    <p className="mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Preview</p>
-                    <div className="space-y-4">
+                  {activeTab === 'preview' ? (
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
                       {renderPreview(selectedComponent)}
                     </div>
-                  </div>
+                  ) : (
+                    <pre className="max-h-[420px] overflow-auto rounded-xl border border-slate-200/80 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800/80">
+                      <code>{selectedComponent.source}</code>
+                    </pre>
+                  )}
+                </div>
+              </div>
 
-                  <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
-                    <div className="mb-6 flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab('preview')}
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
-                          activeTab === 'preview'
-                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        Preview
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab('code')}
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
-                          activeTab === 'code'
-                            ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        Code
-                      </button>
-                    </div>
-
-                    {activeTab === 'preview' ? (
-                      <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-6 dark:border-slate-800/80 dark:bg-slate-950">
-                        {renderPreview(selectedComponent)}
-                      </div>
-                    ) : (
-                      <pre className="max-h-[420px] overflow-auto rounded-xl border border-slate-200/80 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800/80">
-                        <code>{selectedComponent.source}</code>
-                      </pre>
-                    )}
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
+                <div className="mb-8 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                      All components
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{results.length} results available</p>
                   </div>
                 </div>
 
-                {/* Move All components BELOW preview/code block */}
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-8 dark:border-slate-800/80 dark:bg-slate-900">
-                  <div className="mb-8 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                        All components
-                      </p>
-                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{results.length} results available</p>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {results.map((component) => {
-                      const active = component.id === selectedComponent.id;
-                      return (
-                        <div
-                          key={component.id}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => handleSelectComponent(component.id)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              handleSelectComponent(component.id);
-                            }
-                          }}
-                          className={`group rounded-xl border p-4 text-left cursor-pointer transition-all duration-200 ${
-                            active
-                              ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
-                              : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
-                              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
-                            </div>
-                            <span
-                              className={`text-sm transition-transform ${
-                                active
-                                  ? 'text-slate-950 dark:text-white'
-                                  : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
-                              }`}
-                            >
-                              {active ? '✓' : '→'}
-                            </span>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {results.map((component) => {
+                    const active = component.id === selectedComponent.id;
+                    return (
+                      <div
+                        key={component.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleSelectComponent(component.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleSelectComponent(component.id);
+                          }
+                        }}
+                        className={`group rounded-xl border p-4 text-left cursor-pointer transition-all duration-200 ${
+                          active
+                            ? 'border-indigo-500 bg-white shadow-[0_0_30px_rgba(79,70,229,0.2)] dark:border-indigo-400 dark:bg-slate-800'
+                            : 'border-slate-200/80 hover:border-slate-300 hover:shadow-sm dark:border-slate-800/80 dark:hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium text-slate-950 dark:text-white">{component.name}</p>
+                            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{component.category}</p>
                           </div>
-                          <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
-                            {renderPreview(component)}
-                          </div>
+                          <span
+                            className={`text-sm transition-transform ${
+                              active
+                                ? 'text-slate-950 dark:text-white'
+                                : 'text-slate-400 group-hover:translate-x-1 dark:text-slate-600'
+                            }`}
+                          >
+                            {active ? '✓' : '→'}
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="mt-4 overflow-hidden rounded-lg border border-slate-200/80 bg-slate-50 p-3 dark:border-slate-800/80 dark:bg-slate-950">
+                          {renderPreview(component)}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
-          </>
-        ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          </div>
+        </>
+      ) : (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <Suspense fallback={<div className="grid gap-6 md:grid-cols-2"><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /><div className="h-64 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" /></div>}>
             <CuratedCollections />
           </Suspense>
-          </motion.div>
-        )}
-      </div>
+        </motion.div>
+      )}
 
       <Toast message={toastMessage} />
-    </section>
+    </div>
   );
 }
 
 export default function ComponentsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50/30 dark:bg-slate-950 flex items-center justify-center">Loading Library...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-12 text-sm text-slate-500">Loading Library...</div>}>
       <ComponentsPageContent />
     </Suspense>
   );
 }
-
