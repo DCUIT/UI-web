@@ -12,46 +12,40 @@ const sidebarGroups = [
     title: "UI Elements",
     icon: Box,
     items: [
-      { href: '/components?category=Buttons', label: 'Buttons' },
-      { href: '/components?category=Inputs', label: 'Inputs' },
-      { href: '/components?category=Cards', label: 'Cards' },
-      { href: '/components?category=Dialogs', label: 'Dialogs' },
+      { href: '/components?category=UI', label: 'UI' },
+      { href: '/components?category=Form', label: 'Form' },
+      { href: '/components?category=Overlay', label: 'Overlay' },
     ]
   },
   {
     title: "Layout",
     icon: Layout,
     items: [
-      { href: '/components?category=Navbar', label: 'Navbar' },
-      { href: '/components?category=Sidebar', label: 'Sidebar' },
-      { href: '/components?category=Bento Grid', label: 'Bento Grid' },
+      { href: '/components?category=Cards', label: 'Cards' },
+      { href: '/components?category=Navigation', label: 'Navigation' },
+      { href: '/components?category=Table', label: 'Table' },
     ]
   },
   {
     title: "Feedback",
     icon: MessageSquare,
     items: [
-      { href: '/components?category=Toast', label: 'Toast' },
-      { href: '/components?category=Alert', label: 'Alert' },
-      { href: '/components?category=Skeleton', label: 'Skeleton' },
+      { href: '/components?category=Feedback', label: 'Feedback' },
     ]
   },
   {
     title: "Marketing",
     icon: Megaphone,
     items: [
-      { href: '/components?category=Hero', label: 'Hero' },
-      { href: '/components?category=Pricing', label: 'Pricing' },
-      { href: '/components?category=FAQ', label: 'FAQ' },
+      { href: '/components?category=Dashboard', label: 'Dashboard' },
     ]
   },
   {
     title: "App UI",
     icon: Terminal,
     items: [
-      { href: '/templates?type=Dashboard', label: 'Dashboard' },
-      { href: '/templates?type=Ecommerce', label: 'Ecommerce' },
-      { href: '/templates?type=Auth', label: 'Authentication' },
+      { href: '/playground', label: 'Playground' },
+      { href: '/test', label: 'Test UI' },
     ]
   }
 ];
@@ -108,7 +102,7 @@ export default function Sidebar() {
                   <div className="overflow-hidden">
                     <div className="mt-1 flex flex-col gap-0.5 border-l border-slate-100 ml-3.5 pl-3.5 dark:border-slate-800">
                       {group.items.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href.split('?')[0];
                         return (
                           <Link
                             key={item.href}
