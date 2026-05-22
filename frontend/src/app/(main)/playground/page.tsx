@@ -464,7 +464,10 @@ ${cssCode}`;
 
             {/* Encyclopedia */}
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-              <ComponentEncyclopedia component={selectedComponent} />
+              <ComponentEncyclopedia
+                component={selectedComponent}
+                onApplyCode={(code) => setTsxCode(code)}
+              />
             </div>
 
             {/* Copy actions */}

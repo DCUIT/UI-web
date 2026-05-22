@@ -6,6 +6,9 @@ import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/P
 import Editor from '@monaco-editor/react'
 import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react'
 import { Group, Panel, Separator } from "react-resizable-panels"
+import ComponentEncyclopedia from '@/components/common/ComponentEncyclopedia'
+import { COMPONENT_REGISTRY } from '@/lib/registry'
+import { BookOpen } from 'lucide-react'
 
 const defaultAppTsx = `import React, { useState } from 'react';
 import './styles.css';
@@ -238,6 +241,9 @@ export default function MobileUITestPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [activeTab, setActiveTab] = useState<'App.tsx' | 'styles.css'>('App.tsx')
   const [appState, setAppState] = useState<'normal' | 'loading' | 'empty' | 'error'>('normal')
+  const [showEncyclopedia, setShowEncyclopedia] = useState(false)
+  const [encyclopediaCompId, setEncyclopediaCompId] = useState(COMPONENT_REGISTRY[0].id)
+  const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || COMPONENT_REGISTRY[0]
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -398,7 +404,7 @@ root.render(
                   </div>
                 </div>
                 
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 h-48 flex flex-col shrink-0">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex flex-col shrink-0" style={{ minHeight: showEncyclopedia ? '320px' : '192px' }}>
                   <div className="mb-3 flex items-center justify-between shrink-0">
                     <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
@@ -408,6 +414,31 @@ root.render(
                   <div className="flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-console]:h-full [&_.sp-console]:bg-transparent [&_.sp-console]:!border-0">
                     <SandpackConsole standalone resetOnPreviewRestart />
                   </div>
+
+                  {showEncyclopedia && (
+                    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 overflow-y-auto max-h-64">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BookOpen className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Knowledge</span>
+                        <select
+                          value={encyclopediaCompId}
+                          onChange={e => setEncyclopediaCompId(e.target.value)}
+                          className="ml-auto text-[10px] rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 outline-none"
+                        >
+                          {COMPONENT_REGISTRY.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <ComponentEncyclopedia 
+                        component={encyclopediaComponent} 
+                        onApplyCode={(code) => {
+                          setAppTsx(code);
+                          setActiveTab('App.tsx');
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </Panel>
@@ -435,6 +466,12 @@ root.render(
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
                         <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} className="px-2 py-1 text-[10px] font-medium rounded-md bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white transition-all">{theme === 'light' ? '🌙 Dark' : '☀️ Light'}</button>
                       </div>
+                      <button
+                        onClick={() => setShowEncyclopedia(!showEncyclopedia)}
+                        className={`flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-all ${showEncyclopedia ? 'bg-emerald-100 text-emerald-700 shadow-sm dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 hover:text-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800'}`}
+                      >
+                        <BookOpen className="w-3 h-3" /> Knowledge
+                      </button>
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
                         {(['normal', 'loading', 'empty', 'error'] as const).map(state => (
                           <button key={state} onClick={() => setAppState(state)} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all capitalize ${appState === state ? 'bg-indigo-100 text-indigo-700 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>{state}</button>

@@ -8,7 +8,7 @@ type CategoryItem = { name: string; href: string; icon?: LucideIcon }
 type Category = { name: string; items: CategoryItem[] }
 
 const categories: Category[] = [
-  { name: 'Getting Started', items: [{ name: 'Introduction', href: '/', icon: Square }, { name: 'Error Wiki', href: '/errors', icon: BookOpen }] },
+  { name: 'Getting Started', items: [{ name: 'Introduction', href: '/', icon: Square }] },
   { name: 'Components', items: [
     { name: 'Buttons', href: '/components/buttons', icon: Square },
     { name: 'Inputs', href: '/components/inputs', icon: Type },

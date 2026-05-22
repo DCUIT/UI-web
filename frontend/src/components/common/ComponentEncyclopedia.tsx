@@ -12,6 +12,7 @@ import type { ComponentRegistryItem } from '@/lib/registry';
 
 interface Props {
   component: ComponentRegistryItem;
+  onApplyCode?: (code: string) => void;
 }
 
 type Tab = 'anatomy' | 'accessibility' | 'best-practices' | 'recipes';
@@ -23,7 +24,7 @@ const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
   { id: 'recipes', label: 'Recipes', icon: FlaskConical },
 ];
 
-export default function ComponentEncyclopedia({ component }: Props) {
+export default function ComponentEncyclopedia({ component, onApplyCode }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('anatomy');
 
   return (
@@ -66,7 +67,7 @@ export default function ComponentEncyclopedia({ component }: Props) {
           {activeTab === 'anatomy' && <AnatomyTab parts={component.anatomy} />}
           {activeTab === 'accessibility' && <A11yTab items={component.accessibility} />}
           {activeTab === 'best-practices' && <BestPracticesTab items={component.bestPractices} />}
-          {activeTab === 'recipes' && <RecipesTab items={component.recipes} />}
+          {activeTab === 'recipes' && <RecipesTab items={component.recipes} onApply={onApplyCode} />}
         </motion.div>
       </AnimatePresence>
     </section>
@@ -140,7 +141,7 @@ function BestPracticesTab({ items }: { items: ComponentRegistryItem['bestPractic
   );
 }
 
-function RecipesTab({ items }: { items: ComponentRegistryItem['recipes'] }) {
+function RecipesTab({ items, onApply }: { items: ComponentRegistryItem['recipes']; onApply?: (code: string) => void }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
@@ -171,8 +172,18 @@ function RecipesTab({ items }: { items: ComponentRegistryItem['recipes'] }) {
                   <div className="px-3 pb-3 space-y-2">
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">{recipe.description}</p>
                     {recipe.code && (
-                      <div className="rounded-lg bg-slate-950 p-2.5">
-                        <code className="text-[10px] font-mono text-emerald-400 leading-relaxed block whitespace-pre-wrap">{recipe.code}</code>
+                      <div className="relative group/code">
+                        <div className="rounded-lg bg-slate-950 p-2.5">
+                          <code className="text-[10px] font-mono text-emerald-400 leading-relaxed block whitespace-pre-wrap">{recipe.code}</code>
+                        </div>
+                        {onApply && (
+                          <button
+                            onClick={() => onApply(recipe.code || '')}
+                            className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded"
+                          >
+                            Apply to App.tsx
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
