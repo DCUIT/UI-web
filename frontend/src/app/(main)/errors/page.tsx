@@ -246,7 +246,7 @@ export default function ErrorsPage() {
         <div className="p-3 border-b border-slate-200 dark:border-slate-800">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input type="text" placeholder="Search errors..."
+            <input type="text" placeholder="Search errors..." aria-label="Search errors"
               value={search} onChange={e => setSearch(e.target.value)}
               className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-9 pr-3 py-2 text-xs outline-none focus:border-indigo-500 dark:text-white" />
           </div>

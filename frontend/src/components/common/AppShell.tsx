@@ -1,13 +1,10 @@
-import dynamic from 'next/dynamic';
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-import MobileMenu from "@/components/navigation/MobileMenu";
 import ShellClient from "./ShellClient";
 import { SidebarProvider } from "@/components/navigation/SidebarContext";
 import SidebarToggle from "@/components/navigation/SidebarToggle";
 import Sidebar from "@/components/common/Sidebar";
-
-const BottomNavbar = dynamic(() => import("@/components/navigation/BottomNavbar"), { ssr: true });
+import BottomNavbar from "@/components/navigation/BottomNavbar";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (

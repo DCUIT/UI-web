@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Accessibility, AlertTriangle, CheckCircle2, XCircle,
-  Info, Code2, Eye, FileCode, ChevronDown, Copy, Check,
-  AlertCircle, Search
+  FileCode, Check, Copy, AlertTriangle, AlertCircle, Info, RefreshCw, Bug, Eye,
+  Search, XCircle, CheckCircle2, ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react';
@@ -201,6 +201,11 @@ export default function A11yAuditorPage() {
   const [collapsedIssues, setCollapsedIssues] = useState<Set<string>>(new Set());
   const [copied, setCopied] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
+  const { theme: globalTheme, setTheme: setGlobalTheme } = useTheme();
+
+  useEffect(() => {
+    if (globalTheme && globalTheme !== theme) setTheme(globalTheme as 'light' | 'dark');
+  }, [globalTheme]);
 
   const issues = useMemo(() => runAudit(code), [code]);
   const errorCount = issues.filter(i => i.type === 'error').length;
@@ -268,7 +273,7 @@ export default function A11yAuditorPage() {
                 Auto-audit
               </label>
               <button
-                onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+                onClick={() => setGlobalTheme(theme === 'light' ? 'dark' : 'light')}
                 className="rounded px-2 py-1 text-[10px] font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 {theme === 'light' ? '☀️' : '🌙'}

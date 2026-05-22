@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTheme } from 'next-themes';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
 import { Code2, Layout, FileCode, Check, Copy, Sliders, Type, ToggleLeft, Palette, RefreshCw, Package, Search, ChevronRight, Save, Share2, Download, Sparkles, Wand2, Loader2, Activity } from 'lucide-react';
@@ -33,6 +34,12 @@ export default function PlaygroundPage() {
   const [editorTab, setEditorTab] = useState<'tsx' | 'css'>('tsx');
   const [controls, setControls] = useState<Control[]>(() => parsePropsFromSource(DEFAULT_TSX));
   const [showStateTracker, setShowStateTracker] = useState(false);
+  const { theme: globalTheme, setTheme: setGlobalTheme } = useTheme();
+
+  // Sync local theme with next-themes
+  useEffect(() => {
+    if (globalTheme && globalTheme !== theme) setTheme(globalTheme as 'light' | 'dark');
+  }, [globalTheme]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -580,8 +587,7 @@ ${cssCode}`;
                     )}
                     <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
                       <button
-                        onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-                        className="rounded px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        onClick={() => setGlobalTheme(theme === 'light' ? 'dark' : 'light')}
                       >
                         {theme === 'light' ? '☀️ Light' : '🌙 Dark'}
                       </button>

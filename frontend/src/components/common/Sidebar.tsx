@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutGrid, Type, Square, Database, Layers, Code2, Palette, Accessibility, Library, Box, BookOpen, FlaskConical, type LucideIcon } from 'lucide-react'
 import { COMPONENT_REGISTRY, getAllCategories } from '@/lib/registry'
+import { useSidebar } from '@/components/navigation/SidebarContext'
 
 type CategoryItem = { name: string; href: string; icon?: LucideIcon }
 type Category = { name: string; items: CategoryItem[] }
@@ -51,6 +52,28 @@ const categories: Category[] = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { collapsed } = useSidebar()
+
+  if (collapsed) {
+    return (
+      <nav className="space-y-4">
+        {categories.map((category) => (
+          <div key={category.name} className="space-y-1">
+            {category.items.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={item.name}
+                className={`flex items-center justify-center rounded-lg p-2 text-sm font-medium transition-colors ${pathname === item.href ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'}`}
+              >
+                {item.icon && <item.icon size={18} />}
+              </Link>
+            ))}
+          </div>
+        ))}
+      </nav>
+    )
+  }
 
   return (
     <nav className="space-y-6">

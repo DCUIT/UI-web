@@ -12,6 +12,19 @@ import { COMPONENT_REGISTRY } from '@/lib/registry'
 import { BookOpen } from 'lucide-react'
 import type { ComponentRegistryItem } from '@/lib/registry'
 
+const LS_PREFIX = 'sandbox-files-'
+const FIRST_COMPONENT = COMPONENT_REGISTRY[0]
+const FALLBACK_ID = FIRST_COMPONENT?.id ?? 'default-sandbox'
+
+function loadFiles(id: string): Record<string, string> | null {
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + id)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
 const IMPORTS = `import React, { useState } from 'react';
 import './styles.css';
 
@@ -45,54 +58,58 @@ function MobileSandboxContent() {
 
   // Khởi tạo state dựa trên URL id nếu có
   const [encyclopediaCompId, setEncyclopediaCompId] = useState(() => {
-    return (urlId && COMPONENT_REGISTRY.some(c => c.id === urlId)) ? urlId : COMPONENT_REGISTRY[0].id;
+    return (urlId && COMPONENT_REGISTRY.some(c => c.id === urlId)) ? urlId : FALLBACK_ID;
   });
 
-  const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || COMPONENT_REGISTRY[0];
+  const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || (FIRST_COMPONENT ?? COMPONENT_REGISTRY[0]);
 
-  const [appTsx, setAppTsx] = useState(() => {
-    if (typeof window === 'undefined') return getEditorCode(encyclopediaComponent);
-    return localStorage.getItem(`sandbox-app-${encyclopediaCompId}`) || getEditorCode(encyclopediaComponent);
-  });
-  const [stylesCss, setStylesCss] = useState(() => {
-    if (typeof window === 'undefined') return getCssCode(encyclopediaComponent);
-    return localStorage.getItem(`sandbox-style-${encyclopediaCompId}`) || getCssCode(encyclopediaComponent);
+  // Khởi tạo hệ thống tệp tin động
+  const [files, setFiles] = useState<Record<string, string>>(() => {
+    const defaultFiles = {
+      'App.tsx': getEditorCode(encyclopediaComponent),
+      'styles.css': getCssCode(encyclopediaComponent)
+    };
+    return loadFiles(encyclopediaCompId) || defaultFiles;
   });
 
-  const [debouncedAppTsx, setDebouncedAppTsx] = useState(appTsx)
-  const [debouncedStylesCss, setDebouncedStylesCss] = useState(stylesCss)
+  const [debouncedFiles, setDebouncedFiles] = useState(files)
 
   const [device, setDevice] = useState<DeviceType>('iphone')
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [activeTab, setActiveTab] = useState<'App.tsx' | 'styles.css'>('App.tsx')
+  const [activeTab, setActiveTab] = useState<string>('App.tsx')
   const [appState, setAppState] = useState<'normal' | 'loading' | 'empty' | 'error'>('normal')
   const [showEncyclopedia, setShowEncyclopedia] = useState(false)
-  const isCodeModified = appTsx !== getEditorCode(encyclopediaComponent) || stylesCss !== getCssCode(encyclopediaComponent)
+
+  const isCodeModified = JSON.stringify(files) !== JSON.stringify({
+    'App.tsx': getEditorCode(encyclopediaComponent),
+    'styles.css': getCssCode(encyclopediaComponent)
+  });
 
   // Đồng bộ hóa khi URL thay đổi (ví dụ nhấn từ Sidebar)
   useEffect(() => {
-    if (urlId && urlId !== encyclopediaCompId) {
-      const newComponent = COMPONENT_REGISTRY.find(c => c.id === urlId);
-      if (newComponent) {
-        // Nếu code đã bị sửa, ta hỏi người dùng trước khi ghi đè
-        if (isCodeModified) {
-          const confirmed = window.confirm('Bạn đang có thay đổi chưa lưu. Chuyển sang linh kiện mới sẽ làm mất các thay đổi này?');
-          if (!confirmed) return;
-        }
-        setEncyclopediaCompId(urlId);
-        setAppTsx(getEditorCode(newComponent));
-        setStylesCss(getCssCode(newComponent));
-      }
+    if (!urlId || urlId === encyclopediaCompId) return;
+    const newComponent = COMPONENT_REGISTRY.find(c => c.id === urlId);
+    if (!newComponent) return;
+
+    if (isCodeModified) {
+      const confirmed = window.confirm('Bạn đang có thay đổi chưa lưu. Chuyển sang linh kiện mới sẽ làm mất các thay đổi này?');
+      if (!confirmed) return;
     }
-  }, [urlId, isCodeModified, encyclopediaCompId]);
+
+    setEncyclopediaCompId(urlId);
+    setFiles(loadFiles(urlId) || {
+      'App.tsx': getEditorCode(newComponent),
+      'styles.css': getCssCode(newComponent)
+    });
+    setActiveTab('App.tsx');
+  }, [urlId, encyclopediaCompId]);
 
   // Persist code to localStorage on change
   useEffect(() => {
     if (!isCodeModified) return
-    localStorage.setItem(`sandbox-app-${encyclopediaCompId}`, appTsx)
-    localStorage.setItem(`sandbox-style-${encyclopediaCompId}`, stylesCss)
-  }, [appTsx, stylesCss, encyclopediaCompId, isCodeModified])
+    localStorage.setItem(LS_PREFIX + encyclopediaCompId, JSON.stringify(files))
+  }, [files, encyclopediaCompId, isCodeModified])
 
   const handleComponentChange = useCallback((newId: string) => {
     if (newId === encyclopediaCompId) return;
@@ -101,25 +118,26 @@ function MobileSandboxContent() {
 
     if (isCodeModified) {
       const confirmed = window.confirm(
-        'You have modified the code. Switching components will discard your changes. Continue?'
+        'Bạn đã thay đổi mã nguồn. Việc chuyển đổi linh kiện sẽ làm mất các thay đổi này. Bạn có muốn tiếp tục không?'
       );
       if (!confirmed) return;
     }
 
     setEncyclopediaCompId(newId);
     router.push(`/test/mobile?id=${newId}`);
-    setAppTsx(getEditorCode(newComponent));
-    setStylesCss(getCssCode(newComponent));
+    setFiles(loadFiles(newId) || {
+      'App.tsx': getEditorCode(newComponent),
+      'styles.css': getCssCode(newComponent)
+    });
     setActiveTab('App.tsx');
   }, [encyclopediaCompId, isCodeModified, router]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedAppTsx(appTsx)
-      setDebouncedStylesCss(stylesCss)
+      setDebouncedFiles(files)
     }, 500)
     return () => clearTimeout(timer)
-  }, [appTsx, stylesCss])
+  }, [files])
 
 
 
@@ -152,10 +170,11 @@ function MobileSandboxContent() {
             onClick={() => {
               const confirmed = window.confirm('Bạn có chắc muốn Reset code về mặc định không?');
               if (!confirmed) return;
-              localStorage.removeItem(`sandbox-app-${encyclopediaCompId}`);
-              localStorage.removeItem(`sandbox-style-${encyclopediaCompId}`);
-              setAppTsx(getEditorCode(encyclopediaComponent));
-              setStylesCss(getCssCode(encyclopediaComponent));
+              localStorage.removeItem(LS_PREFIX + encyclopediaCompId);
+              setFiles({
+                'App.tsx': getEditorCode(encyclopediaComponent),
+                'styles.css': getCssCode(encyclopediaComponent)
+              });
             }}
             className="text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors"
           >
@@ -185,8 +204,7 @@ function MobileSandboxContent() {
             template="react-ts" 
             theme={theme === 'dark' ? 'dark' : 'light'}
             files={{
-              '/App.tsx': debouncedAppTsx,
-              '/styles.css': debouncedStylesCss,
+              ...Object.fromEntries(Object.entries(debouncedFiles).map(([k, v]) => [`/${k}`, v])),
               '/index.tsx': {
                 code: `import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -232,11 +250,17 @@ root.render(
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col overflow-hidden">
                   <div className="mb-4 flex items-center justify-between gap-3 shrink-0 p-4 pb-0">
                     <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
-                      <button onClick={() => setActiveTab('App.tsx')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'App.tsx' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>App.tsx</button>
-                      <button onClick={() => setActiveTab('styles.css')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'styles.css' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>styles.css</button>
+                      {Object.keys(files).map(fileName => (
+                        <button 
+                          key={fileName}
+                          onClick={() => setActiveTab(fileName)} 
+                          className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === fileName ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>
+                          {fileName}
+                        </button>
+                      ))}
                     </div>
                     <button 
-                      onClick={() => copyToClipboard(activeTab === 'App.tsx' ? appTsx : stylesCss, activeTab)}
+                      onClick={() => copyToClipboard(files[activeTab], activeTab)}
                       className={`text-xs px-3 py-2 rounded-lg transition-colors font-medium flex items-center gap-1 ${
                         copiedTab === activeTab 
                         ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
@@ -258,10 +282,9 @@ root.render(
                         height="100%"
                         language={activeTab === 'styles.css' ? 'css' : 'typescriptreact'}
                         theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                        value={activeTab === 'App.tsx' ? appTsx : stylesCss}
+                        value={files[activeTab]}
                         onChange={(value?: string) => {
-                          if (activeTab === 'App.tsx') setAppTsx(value || '')
-                          if (activeTab === 'styles.css') setStylesCss(value || '')
+                          setFiles(prev => ({ ...prev, [activeTab]: value || '' }))
                         }}
                         options={{
                           minimap: { enabled: false },
@@ -315,7 +338,7 @@ root.render(
                       <ComponentEncyclopedia 
                         component={encyclopediaComponent} 
                         onApplyCode={(code) => {
-                          setAppTsx(code);
+                          setFiles(prev => ({ ...prev, 'App.tsx': code }));
                           setActiveTab('App.tsx');
                         }}
                       />
@@ -384,4 +407,3 @@ root.render(
     </div>
   )
 }
-

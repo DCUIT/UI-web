@@ -61,6 +61,7 @@ export default function Table<T>({ data, columns, title }: TableProps<T>) {
             <input
               type="text"
               placeholder="Search data..."
+              aria-label="Search data"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-950 dark:text-white sm:w-64"

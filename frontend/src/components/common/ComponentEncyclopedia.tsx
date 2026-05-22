@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  BookOpen, Puzzle, Accessibility, ThumbsUp, ListChecks,
+  BookOpen, Puzzle, Accessibility, ThumbsUp,
   ChevronDown, Code2, CheckCircle2, XCircle, MinusCircle,
   Lightbulb, Ban, FlaskConical
 } from 'lucide-react';
