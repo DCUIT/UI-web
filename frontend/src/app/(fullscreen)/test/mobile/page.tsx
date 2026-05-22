@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
@@ -9,225 +9,25 @@ import { Group, Panel, Separator } from "react-resizable-panels"
 import ComponentEncyclopedia from '@/components/common/ComponentEncyclopedia'
 import { COMPONENT_REGISTRY } from '@/lib/registry'
 import { BookOpen } from 'lucide-react'
+import type { ComponentRegistryItem } from '@/lib/registry'
 
-const defaultAppTsx = `import React, { useState } from 'react';
+const IMPORTS = `import React, { useState } from 'react';
 import './styles.css';
 
-export default function App({ simulatedState = 'normal' }) {
-  const [tasks, setTasks] = useState(12);
-  const [messages, setMessages] = useState(5);
-  const [isStarted, setIsStarted] = useState(false);
-
-  const handleStart = () => {
-    setIsStarted(true);
-    setTimeout(() => setIsStarted(false), 2000);
-  };
-
-  if (simulatedState === 'loading') {
-    return (
-      <div className="mobile-app" style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <div className="spinner"></div>
-        <p style={{ marginTop: 16, color: '#64748b' }}>Đang tải dữ liệu...</p>
-      </div>
-    );
-  }
-
-  if (simulatedState === 'error') {
-    return (
-      <div className="mobile-app" style={{ justifyContent: 'center', alignItems: 'center', padding: 24, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
-        <h3 style={{ margin: '0 0 8px' }}>Lỗi kết nối</h3>
-        <p style={{ color: '#64748b', margin: '0 0 24px' }}>Không thể tải dữ liệu. Vui lòng thử lại sau.</p>
-        <button className="primary-btn" style={{ width: 'auto', padding: '12px 24px' }}>Thử lại</button>
-      </div>
-    );
-  }
-
-  if (simulatedState === 'empty') {
-    return (
-      <div className="mobile-app" style={{ justifyContent: 'center', alignItems: 'center', padding: 24, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-        <h3 style={{ margin: '0 0 8px' }}>Chưa có dữ liệu</h3>
-        <p style={{ color: '#64748b', margin: '0 0 24px' }}>Bạn chưa có task hoặc tin nhắn nào mới.</p>
-        <button className="primary-btn" style={{ width: 'auto', padding: '12px 24px' }}>Tạo Task Đầu Tiên</button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mobile-app">
-      <header className="app-header">
-        <div className="menu-icon">☰</div>
-        <h2>My React App</h2>
-        <div className="profile-icon">👤</div>
-      </header>
-      <main className="app-content">
-        <div className="welcome-card">
-          <h3>Welcome back!</h3>
-          <p>Here is your daily summary.</p>
-        </div>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <h4>Tasks</h4>
-            <p>{tasks}</p>
-          </div>
-          <div className="stat-card">
-            <h4>Messages</h4>
-            <p>{messages}</p>
-          </div>
-        </div>
-        <button 
-          onClick={handleStart}
-          className="primary-btn"
-          style={{ background: isStarted ? '#22c55e' : '#0f172a' }}
-        >
-          {isStarted ? 'Task Started!' : 'Start New Task'}
-        </button>
-      </main>
-      <nav className="bottom-nav">
-        <div className="nav-item active">🏠</div>
-        <div className="nav-item">🔍</div>
-        <div className="nav-item">🔔</div>
-        <div className="nav-item">⚙️</div>
-      </nav>
-    </div>
-  );
-}
 `;
 
-const defaultStylesCss = `body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f1f5f9;
-  color: #0f172a;
-  -webkit-font-smoothing: antialiased;
+function getEditorCode(component: ComponentRegistryItem): string {
+  const body = component.tsx.startsWith('export') ? component.tsx : `export default ${component.tsx}`;
+  return IMPORTS + body;
 }
 
-.mobile-app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #f8fafc;
+function getCssCode(component: ComponentRegistryItem): string {
+  return component.css || '/* No styles needed */';
 }
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.app-header h2 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.app-content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.welcome-card {
-  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-  color: white;
-  padding: 24px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-}
-
-.welcome-card h3 {
-  margin: 0 0 8px 0;
-  font-size: 1.4rem;
-}
-
-.welcome-card p {
-  margin: 0;
-  opacity: 0.9;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: white;
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-}
-
-.stat-card h4 {
-  margin: 0 0 8px 0;
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.stat-card p {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.primary-btn {
-  width: 100%;
-  border: none;
-  border-radius: 16px;
-  padding: 16px;
-  background: #0f172a;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-
-.primary-btn:active {
-  transform: scale(0.98);
-}
-
-.bottom-nav {
-  display: flex;
-  justify-content: space-around;
-  padding: 16px;
-  background: white;
-  border-top: 1px solid #e2e8f0;
-  padding-bottom: env(safe-area-inset-bottom, 16px);
-}
-
-.nav-item {
-  font-size: 1.5rem;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-}
-
-.nav-item.active {
-  opacity: 1;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #e2e8f0;
-  border-top: 4px solid #4f46e5;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-`
+const initialComponent = COMPONENT_REGISTRY[0];
+const defaultAppTsx = getEditorCode(initialComponent);
+const defaultStylesCss = getCssCode(initialComponent);
 
 export default function MobileUITestPage() {
   const [appTsx, setAppTsx] = useState(defaultAppTsx)
@@ -244,6 +44,25 @@ export default function MobileUITestPage() {
   const [showEncyclopedia, setShowEncyclopedia] = useState(false)
   const [encyclopediaCompId, setEncyclopediaCompId] = useState(COMPONENT_REGISTRY[0].id)
   const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || COMPONENT_REGISTRY[0]
+  const isCodeModified = appTsx !== getEditorCode(encyclopediaComponent) || stylesCss !== getCssCode(encyclopediaComponent)
+
+  const handleComponentChange = useCallback((newId: string) => {
+    if (newId === encyclopediaCompId) return;
+    const newComponent = COMPONENT_REGISTRY.find(c => c.id === newId);
+    if (!newComponent) return;
+
+    if (isCodeModified) {
+      const confirmed = window.confirm(
+        'You have modified the code. Switching components will discard your changes. Continue?'
+      );
+      if (!confirmed) return;
+    }
+
+    setEncyclopediaCompId(newId);
+    setAppTsx(getEditorCode(newComponent));
+    setStylesCss(getCssCode(newComponent));
+    setActiveTab('App.tsx');
+  }, [encyclopediaCompId, appTsx, stylesCss, encyclopediaComponent]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -282,8 +101,8 @@ export default function MobileUITestPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
-              setAppTsx(defaultAppTsx)
-              setStylesCss(defaultStylesCss)
+              setAppTsx(getEditorCode(encyclopediaComponent))
+              setStylesCss(getCssCode(encyclopediaComponent))
             }}
             className="text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors"
           >
@@ -353,9 +172,9 @@ root.render(
               }
             }}
           >
-          <Group orientation="horizontal" className="h-full w-full xl:flex" style={{ minHeight: '600px' }}>
+          <Group orientation="horizontal" key={`layout-${showEncyclopedia}`} className="h-full w-full xl:flex" style={{ minHeight: '600px' }}>
             {/* Editor + Console Panel */}
-            <Panel defaultSize={44} minSize={25}>
+            <Panel defaultSize={showEncyclopedia ? 30 : 44} minSize={20}>
               <div className="flex flex-col gap-4 h-full p-4">
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col overflow-hidden">
                   <div className="mb-4 flex items-center justify-between gap-3 shrink-0 p-4 pb-0">
@@ -404,7 +223,7 @@ root.render(
                   </div>
                 </div>
                 
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex flex-col shrink-0" style={{ minHeight: showEncyclopedia ? '320px' : '192px' }}>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex flex-col shrink-0" style={{ minHeight: '192px' }}>
                   <div className="mb-3 flex items-center justify-between shrink-0">
                     <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
@@ -414,22 +233,32 @@ root.render(
                   <div className="flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-console]:h-full [&_.sp-console]:bg-transparent [&_.sp-console]:!border-0">
                     <SandpackConsole standalone resetOnPreviewRestart />
                   </div>
+                </div>
+              </div>
+            </Panel>
 
-                  {showEncyclopedia && (
-                    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 overflow-y-auto max-h-64">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Knowledge</span>
-                        <select
-                          value={encyclopediaCompId}
-                          onChange={e => setEncyclopediaCompId(e.target.value)}
-                          className="ml-auto text-[10px] rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 outline-none"
-                        >
-                          {COMPONENT_REGISTRY.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
-                          ))}
-                        </select>
-                      </div>
+            {/* Encyclopedia Panel (3rd panel, full height) */}
+            {showEncyclopedia && (
+              <Separator className="hidden xl:block w-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-col-resize shrink-0" />
+            )}
+            {showEncyclopedia && (
+              <Panel defaultSize={22} minSize={15}>
+                <div className="h-full flex flex-col p-4">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col overflow-hidden">
+                    <div className="flex items-center gap-2 p-4 pb-0 shrink-0">
+                      <BookOpen className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Knowledge</span>
+                      <select
+                        value={encyclopediaCompId}
+                        onChange={e => handleComponentChange(e.target.value)}
+                        className="ml-auto text-[10px] rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 outline-none"
+                      >
+                        {COMPONENT_REGISTRY.map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex-1 overflow-y-auto px-4 pb-4 pt-3">
                       <ComponentEncyclopedia 
                         component={encyclopediaComponent} 
                         onApplyCode={(code) => {
@@ -438,15 +267,15 @@ root.render(
                         }}
                       />
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </Panel>
+              </Panel>
+            )}
 
             <Separator className="hidden xl:block w-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-col-resize shrink-0" />
 
             {/* Preview Panel */}
-            <Panel defaultSize={56} minSize={25}>
+            <Panel defaultSize={showEncyclopedia ? 48 : 56} minSize={25}>
               <div className="h-full flex flex-col p-4">
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950 flex-1 flex flex-col overflow-hidden">
                   <div className="flex flex-wrap items-center justify-between gap-2 shrink-0 p-4 pb-0">

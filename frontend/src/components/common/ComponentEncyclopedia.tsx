@@ -172,15 +172,17 @@ function RecipesTab({ items, onApply }: { items: ComponentRegistryItem['recipes'
                   <div className="px-3 pb-3 space-y-2">
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">{recipe.description}</p>
                     {recipe.code && (
-                      <div className="relative group/code">
+                      <div className="relative group/code mt-2">
                         <div className="rounded-lg bg-slate-950 p-2.5">
                           <code className="text-[10px] font-mono text-emerald-400 leading-relaxed block whitespace-pre-wrap">{recipe.code}</code>
                         </div>
                         {onApply && (
                           <button
                             onClick={() => onApply(recipe.code || '')}
-                            className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded"
+                            title="Chèn mã này vào App.tsx"
+                            className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-all bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] font-bold px-2 py-1.5 rounded-md shadow-lg shadow-emerald-900/20 flex items-center gap-1"
                           >
+                            <Code2 className="w-3 h-3" />
                             Apply to App.tsx
                           </button>
                         )}
