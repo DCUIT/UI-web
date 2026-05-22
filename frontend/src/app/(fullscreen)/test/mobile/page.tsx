@@ -5,6 +5,7 @@ import Link from 'next/link'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
 import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react'
+import { Group, Panel, Separator } from "react-resizable-panels"
 
 const defaultAppTsx = `import React, { useState } from 'react';
 import './styles.css';
@@ -320,153 +321,144 @@ root.render(
   </StrictMode>
 );`,
                 hidden: true
+              },
+              '/index.html': {
+                code: `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>`,
+                hidden: true
               }
             }}
             customSetup={{
-              dependencies: { 'lucide-react': 'latest' }
+              dependencies: {
+                'lucide-react': 'latest',
+                'framer-motion': 'latest',
+                'clsx': 'latest',
+                'tailwind-merge': 'latest'
+              }
             }}
           >
-          <div className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr] h-full max-w-[1600px] mx-auto">
-            <div className="space-y-4 flex flex-col h-full min-h-[600px]">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col min-h-[500px]">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
-                  <button onClick={() => setActiveTab('App.tsx')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'App.tsx' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>App.tsx</button>
-                  <button onClick={() => setActiveTab('styles.css')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'styles.css' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>styles.css</button>
-                </div>
-                <button 
-                  onClick={() => copyToClipboard(activeTab === 'App.tsx' ? appTsx : stylesCss, activeTab)}
-                  className={`text-xs px-3 py-2 rounded-lg transition-colors font-medium flex items-center gap-1 ${
-                    copiedTab === activeTab 
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                    : 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  {copiedTab === activeTab ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  )}
-                  {copiedTab === activeTab ? 'Copied!' : `Copy ${activeTab}`}
-                </button>
-              </div>
-              
-              <div className="flex-1 w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] min-h-[500px]">
-                <Editor
-                  height="100%"
-                  language={activeTab === 'styles.css' ? 'css' : 'typescriptreact'}
-                  theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                  value={activeTab === 'App.tsx' ? appTsx : stylesCss}
-                  onChange={(value?: string) => {
-                    if (activeTab === 'App.tsx') setAppTsx(value || '')
-                    if (activeTab === 'styles.css') setStylesCss(value || '')
-                  }}
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 14,
-                    padding: { top: 16 },
-                    scrollBeyondLastLine: false,
-                    wordWrap: 'on',
-                    tabSize: 2
-                  }}
-                />
-              </div>
-            </div>
-            
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 h-64 flex flex-col shrink-0">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                  Console & Errors
-                </h3>
-              </div>
-              <div className="flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-console]:h-full [&_.sp-console]:bg-transparent [&_.sp-console]:!border-0">
-                <SandpackConsole standalone resetOnPreviewRestart />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-950 dark:shadow-none flex flex-col items-center">
-              <div className="mb-6 flex w-full flex-col xl:flex-row xl:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Xem trước thiết bị Mobile</h2>
+          <Group orientation="horizontal" className="h-full w-full xl:flex" style={{ minHeight: '600px' }}>
+            {/* Editor + Console Panel */}
+            <Panel defaultSize={44} minSize={25}>
+              <div className="flex flex-col gap-4 h-full p-4">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 flex-1 flex flex-col overflow-hidden">
+                  <div className="mb-4 flex items-center justify-between gap-3 shrink-0 p-4 pb-0">
+                    <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
+                      <button onClick={() => setActiveTab('App.tsx')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'App.tsx' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>App.tsx</button>
+                      <button onClick={() => setActiveTab('styles.css')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'styles.css' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>styles.css</button>
+                    </div>
+                    <button 
+                      onClick={() => copyToClipboard(activeTab === 'App.tsx' ? appTsx : stylesCss, activeTab)}
+                      className={`text-xs px-3 py-2 rounded-lg transition-colors font-medium flex items-center gap-1 ${
+                        copiedTab === activeTab 
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                        : 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {copiedTab === activeTab ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      )}
+                      {copiedTab === activeTab ? 'Copied!' : `Copy ${activeTab}`}
+                    </button>
+                  </div>
+                  
+                  <div className="flex-1 overflow-hidden px-4 pb-4">
+                    <div className="h-full w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e]">
+                      <Editor
+                        height="100%"
+                        language={activeTab === 'styles.css' ? 'css' : 'typescriptreact'}
+                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                        value={activeTab === 'App.tsx' ? appTsx : stylesCss}
+                        onChange={(value?: string) => {
+                          if (activeTab === 'App.tsx') setAppTsx(value || '')
+                          if (activeTab === 'styles.css') setStylesCss(value || '')
+                        }}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          padding: { top: 16 },
+                          scrollBeyondLastLine: false,
+                          wordWrap: 'on',
+                          tabSize: 2
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
-                    <button
-                      onClick={() => setDevice('iphone')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${device === 'iphone' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                    >
-                      iPhone 15
-                    </button>
-                    <button
-                      onClick={() => setDevice('android')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${device === 'android' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                    >
-                      Pixel
-                    </button>
-                    <button
-                      onClick={() => setDevice('ipad')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${device === 'ipad' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                    >
-                      iPad
-                    </button>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 h-48 flex flex-col shrink-0">
+                  <div className="mb-3 flex items-center justify-between shrink-0">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                      Console & Errors
+                    </h3>
                   </div>
-                  
-                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
-                    <button
-                      onClick={() => setOrientation('portrait')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${orientation === 'portrait' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                    >
-                      Dọc
-                    </button>
-                    <button
-                      onClick={() => setOrientation('landscape')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${orientation === 'landscape' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                    >
-                      Ngang
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
-                    <button
-                      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white transition-all"
-                    >
-                      {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 pl-2 pr-1 uppercase tracking-wider hidden sm:inline">State</span>
-                    {(['normal', 'loading', 'empty', 'error'] as const).map(state => (
-                      <button
-                        key={state}
-                        onClick={() => setAppState(state)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all capitalize ${appState === state ? 'bg-indigo-100 text-indigo-700 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                      >
-                        {state}
-                      </button>
-                    ))}
+                  <div className="flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-console]:h-full [&_.sp-console]:bg-transparent [&_.sp-console]:!border-0">
+                    <SandpackConsole standalone resetOnPreviewRestart />
                   </div>
                 </div>
               </div>
-              <div className={`flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-[850px] transition-colors ${theme === 'dark' ? '!bg-slate-800/80' : ''}`}>
-                <PhoneFrame device={device} orientation={orientation} theme={theme}>
-                  <div className="h-full w-full bg-white [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-preview-container]:h-full [&_.sp-preview-iframe]:!h-full">
-                    <SandpackPreview 
-                      showOpenInCodeSandbox={false} 
-                      showRefreshButton={false} 
-                      style={{ height: '100%', border: 'none' }} 
-                    />
+            </Panel>
+
+            <Separator className="hidden xl:block w-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-col-resize shrink-0" />
+
+            {/* Preview Panel */}
+            <Panel defaultSize={56} minSize={25}>
+              <div className="h-full flex flex-col p-4">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950 flex-1 flex flex-col overflow-hidden">
+                  <div className="flex flex-wrap items-center justify-between gap-2 shrink-0 p-4 pb-0">
+                    <div>
+                      <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Xem trước thiết bị Mobile</h2>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
+                        <button onClick={() => setDevice('iphone')} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all ${device === 'iphone' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>iPhone 15</button>
+                        <button onClick={() => setDevice('android')} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all ${device === 'android' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>Pixel</button>
+                        <button onClick={() => setDevice('ipad')} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all ${device === 'ipad' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>iPad</button>
+                      </div>
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
+                        <button onClick={() => setOrientation('portrait')} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all ${orientation === 'portrait' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>Dọc</button>
+                        <button onClick={() => setOrientation('landscape')} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all ${orientation === 'landscape' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>Ngang</button>
+                      </div>
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
+                        <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} className="px-2 py-1 text-[10px] font-medium rounded-md bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white transition-all">{theme === 'light' ? '🌙 Dark' : '☀️ Light'}</button>
+                      </div>
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
+                        {(['normal', 'loading', 'empty', 'error'] as const).map(state => (
+                          <button key={state} onClick={() => setAppState(state)} className={`px-2 py-1 text-[10px] font-medium rounded-md transition-all capitalize ${appState === state ? 'bg-indigo-100 text-indigo-700 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>{state}</button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </PhoneFrame>
+                  <div className="flex-1 flex items-center justify-center overflow-auto p-4">
+                    <div className={`flex justify-center bg-slate-100 dark:bg-slate-900/50 p-8 rounded-3xl overflow-auto w-full max-h-full transition-colors ${theme === 'dark' ? '!bg-slate-800/80' : ''}`}>
+                      <PhoneFrame device={device} orientation={orientation} theme={theme}>
+                        <div className="h-full w-full bg-white [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-preview-container]:h-full [&_.sp-preview-iframe]:!h-full">
+                          <SandpackPreview 
+                            showOpenInCodeSandbox={false} 
+                            showRefreshButton={false} 
+                            style={{ height: '100%', border: 'none' }} 
+                          />
+                        </div>
+                      </PhoneFrame>
+                    </div>
+                  </div>
+                </div>
               </div>
-              </div>
-            </div>
-          </div>
+            </Panel>
+          </Group>
           </SandpackProvider>
         </main>
       </div>

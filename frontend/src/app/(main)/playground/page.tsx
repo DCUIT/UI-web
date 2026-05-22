@@ -7,6 +7,7 @@ import { Code2, Layout, FileCode, Check, Copy, Sliders, Type, ToggleLeft, Palett
 import Editor from '@monaco-editor/react';
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react';
+import ComponentEncyclopedia from '@/components/common/ComponentEncyclopedia';
 import { COMPONENT_REGISTRY, ComponentRegistryItem, DEFAULT_TSX, DEFAULT_CSS } from '@/lib/registry';
 import { parsePropsFromSource, generateEntryPoint, Control } from '@/lib/props-parser';
 
@@ -446,6 +447,11 @@ ${cssCode}`;
                 ))}
               </div>
             </section>
+
+            {/* Encyclopedia */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+              <ComponentEncyclopedia component={selectedComponent} />
+            </div>
 
             {/* Copy actions */}
             <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">

@@ -2,9 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Type, Square, Database, Layers } from 'lucide-react'
+import { LayoutGrid, Type, Square, Database, Layers, type LucideIcon } from 'lucide-react'
 
-const categories = [
+type CategoryItem = { name: string; href: string; icon?: LucideIcon }
+type Category = { name: string; items: CategoryItem[] }
+
+const categories: Category[] = [
   { name: 'Getting Started', items: [{ name: 'Introduction', href: '/' }, { name: 'Installation', href: '/docs' }] },
   { name: 'Components', items: [
     { name: 'Buttons', href: '/components/buttons', icon: Square },
