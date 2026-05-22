@@ -1,17 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
-import { Code2, Layout, Terminal, FileCode, Check, Copy, Smartphone, RotateCcw, Sliders, Type, ToggleLeft, Palette, RefreshCw, Info, Package, Zap, ShieldCheck, Search, ChevronRight, Save, Share2, Download, Sparkles, Wand2, Loader2 } from 'lucide-react';
-import * as Babel from '@babel/standalone';
+import { Code2, Layout, FileCode, Check, Copy, Sliders, Type, ToggleLeft, Palette, RefreshCw, Package, Search, ChevronRight, Save, Share2, Download, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { Group, Panel, Separator } from "react-resizable-panels";
-import { COMPONENT_REGISTRY, ComponentRegistryItem, Control, DEFAULT_TSX, DEFAULT_CSS } from '@/lib/registry';
+import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react';
+import { COMPONENT_REGISTRY, ComponentRegistryItem, DEFAULT_TSX, DEFAULT_CSS } from '@/lib/registry';
+import { parsePropsFromSource, generateEntryPoint, Control } from '@/lib/props-parser';
 
 type Device = 'desktop' | 'mobile';
 type Orientation = 'portrait' | 'landscape';
-type LogEntry = { type: 'log' | 'error'; content: string; timestamp: string };
 
 export default function PlaygroundPage() {
   const [selectedComponent, setSelectedComponent] = useState<ComponentRegistryItem>(COMPONENT_REGISTRY[0]);
@@ -21,8 +21,6 @@ export default function PlaygroundPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [device, setDevice] = useState<Device>('mobile');
   const [orientation, setOrientation] = useState<Orientation>('portrait');
-  const [srcDoc, setSrcDoc] = useState('');
-  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isCopied, setIsCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isShared, setIsShared] = useState(false);
@@ -30,29 +28,23 @@ export default function PlaygroundPage() {
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [editorTab, setEditorTab] = useState<'tsx' | 'css'>('tsx');
-  
-  // Mẫu controls khởi tạo cho component mặc định
-  const [controls, setControls] = useState<Control[]>(COMPONENT_REGISTRY[0].controls);
+  const [controls, setControls] = useState<Control[]>(() => parsePropsFromSource(DEFAULT_TSX));
 
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  // 1. Load shared state or drafts on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sharedData = params.get('share');
 
     if (sharedData) {
       try {
-        // Giải mã Base64 an toàn cho Unicode
         const decoded = JSON.parse(decodeURIComponent(escape(window.atob(sharedData))));
         const comp = COMPONENT_REGISTRY.find(c => c.id === decoded.componentId) || COMPONENT_REGISTRY[0];
-        
+
         setSelectedComponent(comp);
         setTsxCode(decoded.tsx);
         setCssCode(decoded.css);
-        setControls(decoded.controls);
-        
-        // Xóa query param để URL sạch sẽ sau khi load
+        const parsed = parsePropsFromSource(decoded.tsx);
+        setControls(parsed.length > 0 ? parsed : decoded.controls);
+
         window.history.replaceState({}, document.title, window.location.pathname);
         return;
       } catch (e) {
@@ -65,147 +57,66 @@ export default function PlaygroundPage() {
       try {
         const parsed = JSON.parse(savedDraft);
         const comp = COMPONENT_REGISTRY.find(c => c.id === parsed.componentId) || COMPONENT_REGISTRY[0];
-        
+
         setSelectedComponent(comp);
         setTsxCode(parsed.tsx || comp.tsx);
         setCssCode(parsed.css || comp.css);
-        setControls(parsed.controls || comp.controls);
+        setControls(parsePropsFromSource(parsed.tsx || comp.tsx));
       } catch (e) {
         console.error("Failed to parse playground draft", e);
       }
     }
   }, []);
 
-  // 2. Auto-save drafts on change
   useEffect(() => {
     setIsSaving(true);
     const draft = {
       tsx: tsxCode,
       css: cssCode,
-      controls: controls,
       componentId: selectedComponent.id
     };
     localStorage.setItem('ui-platform-playground-draft', JSON.stringify(draft));
     const timer = setTimeout(() => setIsSaving(false), 1000);
     return () => clearTimeout(timer);
-  }, [tsxCode, cssCode, controls, selectedComponent.id]);
+  }, [tsxCode, cssCode, selectedComponent.id]);
 
-  // Hàm tải linh kiện mới
   const loadComponent = (component: ComponentRegistryItem) => {
     setSelectedComponent(component);
     setTsxCode(component.tsx);
     setCssCode(component.css);
-    setControls(component.controls);
-    setLogs([]); // Clear logs khi đổi component
+    setControls(parsePropsFromSource(component.tsx));
   };
 
-  // Filter linh kiện dựa trên search
   const filteredRegistry = useMemo(() => {
-    return COMPONENT_REGISTRY.filter(c => 
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    return COMPONENT_REGISTRY.filter(c =>
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
 
-  // Theme sync với class trên html/body (đang do next-themes quản lý)
   useEffect(() => {
     const isDark = theme === 'dark';
     document.documentElement.classList.toggle('dark', isDark);
-    // Thông báo cho iframe nếu cần (trong srcDoc script đã tự xử lý cơ bản qua class dark)
   }, [theme]);
 
   const deviceDims = useMemo(() => {
     if (device === 'desktop') return { w: 900, h: 600 };
-    // mobile frame
     return orientation === 'portrait'
       ? { w: 390, h: 740 }
       : { w: 740, h: 390 };
   }, [device, orientation]);
 
-  // Logic biên dịch và cập nhật Sandbox
-  const updateSandbox = () => {
-    try {
-      // Biên dịch code TSX sang JS (ES5) dùng Babel Standalone
-      const result = Babel.transform(tsxCode, {
-        presets: ['react', 'typescript'],
-        filename: 'playground.tsx',
-      });
+  const entryPointCode = useMemo(() => generateEntryPoint(controls), [controls]);
 
-      const compiledCode = result.code;
-      
-      // Chuyển mảng controls thành object props
-      const currentProps = controls.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.value }), {});
-      const propsJson = JSON.stringify(currentProps);
-
-      const doc = `
-        <!DOCTYPE html>
-        <html class="${theme}">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-            <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <script>
-              tailwind.config = { darkMode: 'class' };
-            </script>
-            <style>
-              ${cssCode}
-              body { margin: 0; padding: 0; background-color: transparent; }
-            </style>
-          </head>
-          <body>
-            <div id="root"></div>
-            <script>
-              // Capture console
-              const originalLog = console.log;
-              const originalError = console.error;
-              const send = (type, args) => {
-                window.parent.postMessage({ 
-                  type: 'sandbox-log', 
-                  logType: type, 
-                  data: args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ') 
-                }, '*');
-              };
-
-              console.log = (...args) => { send('log', args); originalLog(...args); };
-              console.error = (...args) => { send('error', args); originalError(...args); };
-              window.onerror = (msg) => { send('error', [msg]); };
-
-              try {
-                ${compiledCode}
-                const root = ReactDOM.createRoot(document.getElementById('root'));
-                if (typeof App !== 'undefined') {
-                  const props = ${propsJson};
-                  root.render(React.createElement(App, props));
-                } else {
-                  console.error("Function 'App' is missing. Please define 'function App() { ... }'");
-                }
-              } catch (err) {
-                console.error(err.message);
-              }
-            </script>
-          </body>
-        </html>
-      `;
-      setSrcDoc(doc);
-    } catch (err: any) {
-      // Lỗi biên dịch (syntax error)
-      setLogs(prev => [{ 
-        type: 'error' as const, 
-        content: `Compiler Error: ${err.message}`, 
-        timestamp: new Date().toLocaleTimeString() 
-      }, ...prev].slice(0, 20));
+  const sandpackFiles = useMemo(() => ({
+    '/App.tsx': tsxCode,
+    '/styles.css': cssCode,
+    '/index.tsx': {
+      code: entryPointCode,
+      hidden: true
     }
-  };
+  }), [tsxCode, cssCode, entryPointCode]);
 
-  // Debounce re-render 800ms
-  useEffect(() => {
-    const timer = setTimeout(updateSandbox, 800);
-    return () => clearTimeout(timer);
-  }, [tsxCode, cssCode, theme, controls]);
-
-  // Dữ liệu cấu trúc SEO (JSON-LD)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -219,21 +130,6 @@ export default function PlaygroundPage() {
       "priceCurrency": "USD"
     }
   };
-
-  // Lắng nghe message từ sandbox
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === 'sandbox-log') {
-        setLogs(prev => [{
-          type: event.data.logType,
-          content: event.data.data,
-          timestamp: new Date().toLocaleTimeString()
-        }, ...prev].slice(0, 20));
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
 
   const copyFullComponent = async () => {
     const content = `/** TSX **/\n${tsxCode}\n\n/** CSS **/\n${cssCode}`;
@@ -249,15 +145,14 @@ export default function PlaygroundPage() {
       controls: controls,
       componentId: selectedComponent.id
     };
-    // Mã hóa Base64 an toàn cho Unicode
     const jsonString = JSON.stringify(data);
     const encoded = window.btoa(
-      encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (match, p1) => 
+      encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (match, p1) =>
         String.fromCharCode(parseInt(p1, 16))
       )
     );
     const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encoded}`;
-    
+
     await navigator.clipboard.writeText(shareUrl);
     setIsShared(true);
     setTimeout(() => setIsShared(false), 2000);
@@ -287,7 +182,7 @@ ${cssCode}`;
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     setTimeout(() => setIsExporting(false), 1500);
   };
 
@@ -296,14 +191,13 @@ ${cssCode}`;
   };
 
   const resetControls = () => {
-    setControls(selectedComponent.controls);
+    setControls(parsePropsFromSource(tsxCode));
   };
 
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) return;
-    
+
     setIsGenerating(true);
-    // Giả lập gọi API AI (sau này bạn có thể thay bằng fetch tới OpenAI/Gemini)
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     let generatedCode = "";
@@ -318,163 +212,139 @@ ${cssCode}`;
     }
 
     setTsxCode(generatedCode);
+    setControls(parsePropsFromSource(generatedCode));
     setAiPrompt('');
     setIsGenerating(false);
-    
-    // Thông báo cho Console
-    setLogs(prev => [{
-      type: 'log',
-      content: `✨ AI has generated a new component based on: "${prompt}"`,
-      timestamp: new Date().toLocaleTimeString()
-    }, ...prev]);
   };
 
   return (
-    <div className="w-full space-y-6 p-6">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+    <SandpackProvider
+      template="react-ts"
+      theme={theme === 'dark' ? 'dark' : 'light'}
+      files={sandpackFiles}
+      customSetup={{
+        dependencies: {
+          'lucide-react': 'latest',
+          'framer-motion': 'latest',
+          'clsx': 'latest'
+        }
+      }}
+    >
+      <div className="w-full space-y-6 p-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
 
-      {/* Toolbar: functional controls only */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          {isSaving && (
-            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse" role="status" aria-live="polite">
-              <Save className="w-3 h-3" /> SAVED
-            </span>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="secondary" onClick={sharePlayground} className="gap-2 rounded-lg h-8 text-xs" aria-label="Share this playground">
-            {isShared ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
-            {isShared ? 'Copied!' : 'Share'}
-          </Button>
-          <Button variant="secondary" onClick={exportComponent} className="gap-2 rounded-lg h-8 text-xs" disabled={isExporting} aria-label="Export component as TSX file">
-            <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
-            {isExporting ? '...' : 'Export'}
-          </Button>
-          <ThemeToggle />
-          <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Device</span>
-            <button type="button" onClick={() => setDevice('desktop')} aria-pressed={device === 'desktop'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Desktop</button>
-            <button type="button" onClick={() => setDevice('mobile')} aria-pressed={device === 'mobile'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Mobile</button>
-          </div>
-          <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Orient</span>
-            <button type="button" onClick={() => setOrientation('portrait')} aria-pressed={orientation === 'portrait'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Portrait</button>
-            <button type="button" onClick={() => setOrientation('landscape')} aria-pressed={orientation === 'landscape'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Landscape</button>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        {/* Left controls */}
-        <aside className="h-fit space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950" aria-label="Playground controls">
-          {/* AI Magic Prompt */}
-          <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">AI Magic Prompt</h2>
-            </div>
-            <div className="relative group">
-              <textarea
-                id="ai-prompt-input"
-                aria-label="Describe the component you want to generate"
-                placeholder="Mô tả linh kiện bạn muốn tạo..."
-                value={aiPrompt}
-                onChange={(e) => setAiPrompt(e.target.value)}
-                className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 p-3 text-[11px] font-medium outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white resize-none"
-              />
-              <button 
-                onClick={handleAIGenerate}
-                disabled={isGenerating || !aiPrompt.trim()}
-                className="absolute bottom-2 right-2 p-2 rounded-lg bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all disabled:opacity-50 disabled:scale-100 active:scale-90"
-                aria-label="Generate component with AI"
-              >
-                {isGenerating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Wand2 className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-            <p className="text-[9px] text-slate-400 italic">Ví dụ: "Tạo một card giới thiệu sản phẩm mượt mà"</p>
-          </section>
-
-          {/* Component Search & Selection */}
-          <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input 
-                type="text"
-                aria-label="Search components by name or category"
-                placeholder="Search components..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-              />
-            </div>
-            
-            {searchTerm && (
-              <div className="max-h-40 overflow-y-auto rounded-xl border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 z-20">
-                {filteredRegistry.length > 0 ? (
-                  filteredRegistry.map(comp => (
-                    <button
-                      key={comp.id}
-                      onClick={() => {
-                        loadComponent(comp);
-                        setSearchTerm('');
-                      }}
-                      className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors border-b last:border-0 border-slate-50 dark:border-slate-900"
-                    >
-                      <div>
-                        <p className="text-[11px] font-bold text-slate-900 dark:text-white">{comp.name}</p>
-                        <p className="text-[9px] text-slate-400 uppercase">{comp.category}</p>
-                      </div>
-                      <ChevronRight className="w-3 h-3 text-slate-300" />
-                    </button>
-                  ))
-                ) : (
-                  <p className="p-3 text-[10px] text-slate-400 text-center italic">No components found</p>
-                )}
-              </div>
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {isSaving && (
+              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 animate-pulse" role="status" aria-live="polite">
+                <Save className="w-3 h-3" /> SAVED
+              </span>
             )}
-          </section>
+          </div>
 
-          {/* Metadata & Dependencies */}
-          <section className="space-y-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Info className="w-4 h-4 text-indigo-600" />
-                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Info</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Category</p>
-                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{selectedComponent.category}</p>
-                </div>
-                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Responsive</p>
-                  <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
-                    <Zap className="w-3 h-3" /> {selectedComponent.metadata.responsive}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Dark Mode</p>
-                  <p className="text-xs font-semibold text-indigo-600 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3" /> {selectedComponent.metadata.darkMode}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-slate-50 p-2 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Complexity</p>
-                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{selectedComponent.metadata.complexity}</p>
-                </div>
-              </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="secondary" onClick={sharePlayground} className="gap-2 rounded-lg h-8 text-xs" aria-label="Share this playground">
+              {isShared ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
+              {isShared ? 'Copied!' : 'Share'}
+            </Button>
+            <Button variant="secondary" onClick={exportComponent} className="gap-2 rounded-lg h-8 text-xs" disabled={isExporting} aria-label="Export component as TSX file">
+              <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
+              {isExporting ? '...' : 'Export'}
+            </Button>
+            <ThemeToggle />
+            <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
+              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Device</span>
+              <button type="button" onClick={() => setDevice('desktop')} aria-pressed={device === 'desktop'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Desktop</button>
+              <button type="button" onClick={() => setDevice('mobile')} aria-pressed={device === 'mobile'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Mobile</button>
             </div>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
+              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Orient</span>
+              <button type="button" onClick={() => setOrientation('portrait')} aria-pressed={orientation === 'portrait'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Portrait</button>
+              <button type="button" onClick={() => setOrientation('landscape')} aria-pressed={orientation === 'landscape'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Landscape</button>
+            </div>
+          </div>
+        </div>
 
-            <div className="space-y-3 pt-2">
+        <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+          {/* Left controls */}
+          <aside className="h-fit space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950" aria-label="Playground controls">
+            {/* AI Magic Prompt */}
+            <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">AI Magic Prompt</h2>
+              </div>
+              <div className="relative group">
+                <textarea
+                  id="ai-prompt-input"
+                  aria-label="Describe the component you want to generate"
+                  placeholder="Mô tả linh kiện bạn muốn tạo..."
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 p-3 text-[11px] font-medium outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white resize-none"
+                />
+                <button
+                  onClick={handleAIGenerate}
+                  disabled={isGenerating || !aiPrompt.trim()}
+                  className="absolute bottom-2 right-2 p-2 rounded-lg bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all disabled:opacity-50 disabled:scale-100 active:scale-90"
+                  aria-label="Generate component with AI"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              <p className="text-[9px] text-slate-400 italic">Ví dụ: &quot;Tạo một card giới thiệu sản phẩm mượt mà&quot;</p>
+            </section>
+
+            {/* Component Search & Selection */}
+            <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  aria-label="Search components by name or category"
+                  placeholder="Search components..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                />
+              </div>
+
+              {searchTerm && (
+                <div className="max-h-40 overflow-y-auto rounded-xl border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 z-20">
+                  {filteredRegistry.length > 0 ? (
+                    filteredRegistry.map(comp => (
+                      <button
+                        key={comp.id}
+                        onClick={() => {
+                          loadComponent(comp);
+                          setSearchTerm('');
+                        }}
+                        className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors border-b last:border-0 border-slate-50 dark:border-slate-900"
+                      >
+                        <div>
+                          <p className="text-[11px] font-bold text-slate-900 dark:text-white">{comp.name}</p>
+                          <p className="text-[9px] text-slate-400 uppercase">{comp.category}</p>
+                        </div>
+                        <ChevronRight className="w-3 h-3 text-slate-300" />
+                      </button>
+                    ))
+                  ) : (
+                    <p className="p-3 text-[10px] text-slate-400 text-center italic">No components found</p>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Dependencies */}
+            <section className="space-y-3 pb-4 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <Package className="w-4 h-4 text-indigo-600" />
                 <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Dependencies</p>
@@ -486,7 +356,7 @@ ${cssCode}`;
                   </span>
                 ))}
               </div>
-              <button 
+              <button
                 onClick={async () => {
                   await navigator.clipboard.writeText(`npm install ${selectedComponent.dependencies.join(' ')}`);
                 }}
@@ -495,260 +365,246 @@ ${cssCode}`;
               >
                 <Copy className="w-3 h-3" /> Copy Install Command
               </button>
-            </div>
-          </section>
+            </section>
 
-          <section aria-labelledby="props-controls-title">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-indigo-600" />
-                <h2 id="props-controls-title" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Props</h2>
+            {/* Auto-extracted Props Controls */}
+            <section aria-labelledby="props-controls-title">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-indigo-600" />
+                  <h2 id="props-controls-title" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Component Props</h2>
+                </div>
+                <button
+                  onClick={resetControls}
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors"
+                  title="Reset Controls"
+                  aria-label="Reset all controls to default"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <button 
-                onClick={resetControls}
-                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors"
-                title="Reset Controls"
-                aria-label="Reset all controls to default"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              {controls.map((control) => (
-                <div key={control.id} className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase ml-1 flex items-center gap-1.5">
-                    {control.type === 'text' && <Type className="w-3 h-3" />}
-                    {control.type === 'color' && <Palette className="w-3 h-3" />}
-                    {control.type === 'boolean' && <ToggleLeft className="w-3 h-3" />}
-                    {control.label}
-                  </label>
-                  
-                  {control.type === 'text' ? (
-                    <input 
-                      type="text"
-                      value={control.value}
-                      aria-label={`Change ${control.label}`}
-                      onChange={(e) => updateControl(control.id, e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
-                  ) : control.type === 'color' ? (
-                    <div className="flex items-center gap-2">
-                      <div className="relative flex-1">
-                        <input 
-                          type="text"
+
+              {controls.length === 0 && (
+                <p className="text-[10px] text-slate-400 italic text-center py-4">
+                  No props detected. Add destructured params to your <code className="font-mono">App</code> function.
+                </p>
+              )}
+
+              <div className="space-y-4">
+                {controls.map((control) => (
+                  <div key={control.id} className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase ml-1 flex items-center gap-1.5">
+                      {control.type === 'text' && <Type className="w-3 h-3" />}
+                      {control.type === 'color' && <Palette className="w-3 h-3" />}
+                      {control.type === 'boolean' && <ToggleLeft className="w-3 h-3" />}
+                      {control.label}
+                    </label>
+
+                    {control.type === 'text' ? (
+                      <input
+                        type="text"
+                        value={control.value}
+                        aria-label={`Change ${control.label}`}
+                        onChange={(e) => updateControl(control.id, e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                      />
+                    ) : control.type === 'color' ? (
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            value={control.value}
+                            aria-label={`Hex color for ${control.label}`}
+                            onChange={(e) => updateControl(control.id, e.target.value)}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-2 text-xs font-mono outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                          />
+                          <div
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-white/20 shadow-sm"
+                            style={{ backgroundColor: control.value }}
+                          />
+                        </div>
+                        <input
+                          type="color"
                           value={control.value}
-                          aria-label={`Hex color for ${control.label}`}
+                          aria-label={`Pick color for ${control.label}`}
                           onChange={(e) => updateControl(control.id, e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-2 text-xs font-mono outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                        />
-                        <div 
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-white/20 shadow-sm"
-                          style={{ backgroundColor: control.value }}
+                          className="h-8 w-8 cursor-pointer rounded-lg border-none bg-transparent"
                         />
                       </div>
-                      <input 
-                        type="color"
-                        value={control.value}
-                        aria-label={`Pick color for ${control.label}`}
-                        onChange={(e) => updateControl(control.id, e.target.value)}
-                        className="h-8 w-8 cursor-pointer rounded-lg border-none bg-transparent"
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => updateControl(control.id, !control.value)}
-                      aria-pressed={control.value}
-                      aria-label={`Toggle ${control.label}`}
-                      className={`flex h-8 w-full items-center justify-between rounded-xl border px-3 transition-all ${control.value ? 'border-indigo-500/50 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300' : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900'}`}
-                    >
-                      <span className="text-[10px] font-bold">{control.value ? 'ENABLED' : 'DISABLED'}</span>
-                      <div className={`h-4 w-4 rounded-full transition-all ${control.value ? 'translate-x-0 bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Copy</p>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={async () => {
-                await navigator.clipboard.writeText(tsxCode);
-              }}
-              aria-label="Copy TSX code to clipboard"
-              className="w-full justify-start gap-2"
-            >
-              <Code2 className="w-4 h-4" />
-              Copy TSX
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={copyFullComponent}
-              aria-label="Copy component code and styles to clipboard"
-              className="w-full justify-start gap-2"
-            >
-              {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {isCopied ? 'Copied All!' : 'Copy full component'}
-            </Button>
-          </div>
-
-          <div className="flex flex-col h-[300px] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-100/50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Console</span>
+                    ) : (
+                      <button
+                        onClick={() => updateControl(control.id, !control.value)}
+                        aria-pressed={control.value}
+                        aria-label={`Toggle ${control.label}`}
+                        className={`flex h-8 w-full items-center justify-between rounded-xl border px-3 transition-all ${control.value ? 'border-indigo-500/50 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300' : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900'}`}
+                      >
+                        <span className="text-[10px] font-bold">{control.value ? 'ENABLED' : 'DISABLED'}</span>
+                        <div className={`h-4 w-4 rounded-full transition-all ${control.value ? 'translate-x-0 bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-              <button 
-                onClick={() => setLogs([])}
-                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"
-                aria-label="Clear console logs"
+            </section>
+
+            {/* Copy actions */}
+            <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Copy</p>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(tsxCode);
+                }}
+                aria-label="Copy TSX code to clipboard"
+                className="w-full justify-start gap-2"
               >
-                <RotateCcw className="w-3 h-3 text-slate-500" />
-              </button>
+                <Code2 className="w-4 h-4" />
+                Copy TSX
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={copyFullComponent}
+                aria-label="Copy component code and styles to clipboard"
+                className="w-full justify-start gap-2"
+              >
+                {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {isCopied ? 'Copied All!' : 'Copy full component'}
+              </Button>
             </div>
-            <div className="flex-1 overflow-auto p-2 font-mono text-[11px] space-y-1">
-              {logs.length === 0 && (
-                <p className="text-slate-400 italic text-center mt-4">No logs yet...</p>
-              )}
-              {logs.map((log, idx) => (
-                <div key={idx} className={`p-1.5 rounded border-l-2 ${log.type === 'error' ? 'bg-red-50 text-red-600 border-red-500 dark:bg-red-950/20' : 'bg-slate-100 text-slate-700 border-slate-400 dark:bg-slate-800 dark:text-slate-300'}`}>
-                  <div className="flex justify-between items-center opacity-60 mb-0.5">
-                    <span className="font-bold uppercase text-[9px]">{log.type}</span>
-                    <span>{log.timestamp}</span>
-                  </div>
-                  <div className="whitespace-pre-wrap break-words">{log.content}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
+          </aside>
 
-        {/* Main */}
-        <div className="flex flex-col gap-4">
-          <Group orientation="horizontal" className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 overflow-hidden" style={{ minHeight: '560px' }}>
-            {/* Editor Panel */}
-            <Panel defaultSize={55} minSize={25}>
-              <div className="h-full flex flex-col bg-white dark:bg-slate-950">
-                <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 px-3 py-0 shrink-0">
-                  <button
-                    onClick={() => setEditorTab('tsx')}
-                    className={`px-3 py-2.5 text-xs font-semibold transition border-b-2 ${editorTab === 'tsx' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-                  >
-                    <span className="flex items-center gap-1.5"><Code2 className="w-3.5 h-3.5" /> TSX</span>
-                  </button>
-                  <button
-                    onClick={() => setEditorTab('css')}
-                    className={`px-3 py-2.5 text-xs font-semibold transition border-b-2 ${editorTab === 'css' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-                  >
-                    <span className="flex items-center gap-1.5"><Layout className="w-3.5 h-3.5" /> CSS</span>
-                  </button>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  {editorTab === 'tsx' ? (
-                    <Editor
-                      height="100%"
-                      defaultLanguage="typescript"
-                      path="playground.tsx"
-                      value={tsxCode}
-                      theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                      onChange={(val?: string) => setTsxCode(val || '')}
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        lineNumbers: 'on',
-                        roundedSelection: true,
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                      }}
-                    />
-                  ) : (
-                    <Editor
-                      height="100%"
-                      defaultLanguage="css"
-                      path="style.css"
-                      value={cssCode}
-                      theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                      onChange={(val?: string) => setCssCode(val || '')}
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        lineNumbers: 'on',
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            </Panel>
-
-            <Separator className="w-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-col-resize shrink-0" />
-
-            {/* Preview Panel */}
-            <Panel defaultSize={45} minSize={25}>
-              <div className="h-full flex flex-col bg-white dark:bg-slate-950">
-                <div className="flex items-center justify-end gap-2 border-b border-slate-200 dark:border-slate-800 px-3 py-2 shrink-0">
-                  <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
-                    <span className="text-[9px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Device</span>
-                    <button type="button" onClick={() => setDevice('desktop')} aria-pressed={device === 'desktop'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Desktop</button>
-                    <button type="button" onClick={() => setDevice('mobile')} aria-pressed={device === 'mobile'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Mobile</button>
-                  </div>
-                  {device === 'mobile' && (
-                    <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
-                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Orient</span>
-                      <button type="button" onClick={() => setOrientation('portrait')} aria-pressed={orientation === 'portrait'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Portrait</button>
-                      <button type="button" onClick={() => setOrientation('landscape')} aria-pressed={orientation === 'landscape'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Landscape</button>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
+          {/* Main */}
+          <div className="flex flex-col gap-4">
+            <Group orientation="horizontal" className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 overflow-hidden" style={{ minHeight: '560px' }}>
+              {/* Editor Panel */}
+              <Panel defaultSize={55} minSize={25}>
+                <div className="h-full flex flex-col bg-white dark:bg-slate-950">
+                  <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 px-3 py-0 shrink-0">
                     <button
-                      onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-                      className="rounded px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                      onClick={() => setEditorTab('tsx')}
+                      className={`px-3 py-2.5 text-xs font-semibold transition border-b-2 ${editorTab === 'tsx' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                     >
-                      {theme === 'light' ? '☀️ Light' : '🌙 Dark'}
+                      <span className="flex items-center gap-1.5"><Code2 className="w-3.5 h-3.5" /> TSX</span>
+                    </button>
+                    <button
+                      onClick={() => setEditorTab('css')}
+                      className={`px-3 py-2.5 text-xs font-semibold transition border-b-2 ${editorTab === 'css' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                    >
+                      <span className="flex items-center gap-1.5"><Layout className="w-3.5 h-3.5" /> CSS</span>
                     </button>
                   </div>
-                </div>
-                <div className="flex-1 flex items-center justify-center overflow-auto bg-slate-50/50 dark:bg-slate-900/50 p-4">
-                  <div className={device === 'mobile' ? `relative rounded-[2.5rem] border-[8px] border-slate-800 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-950 transition-all duration-300 overflow-hidden` : `w-full h-full flex items-center justify-center`}
-                       style={device === 'mobile' ? { width: deviceDims.w, maxWidth: '100%', height: deviceDims.h } : {}}>
-                    <iframe
-                      ref={iframeRef}
-                      srcDoc={srcDoc}
-                      className={device === 'mobile' ? "h-full w-full bg-transparent" : "h-full w-full bg-transparent rounded-xl border border-slate-200 dark:border-slate-800"}
-                      title="Playground Preview"
-                      sandbox="allow-popups-to-escape-sandbox allow-scripts allow-same-origin"
-                    />
+                  <div className="flex-1 overflow-hidden">
+                    {editorTab === 'tsx' ? (
+                      <Editor
+                        height="100%"
+                        defaultLanguage="typescript"
+                        path="playground.tsx"
+                        value={tsxCode}
+                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                        onChange={(val?: string) => {
+                          setTsxCode(val || '');
+                          setControls(parsePropsFromSource(val || ''));
+                        }}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          lineNumbers: 'on',
+                          roundedSelection: true,
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true,
+                        }}
+                      />
+                    ) : (
+                      <Editor
+                        height="100%"
+                        defaultLanguage="css"
+                        path="style.css"
+                        value={cssCode}
+                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                        onChange={(val?: string) => setCssCode(val || '')}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          lineNumbers: 'on',
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true,
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
-              </div>
-            </Panel>
-          </Group>
+              </Panel>
 
-          {/* Usage Section */}
-          <details className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 group">
-            <summary className="flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 transition-colors select-none">
-              <FileCode className="w-4 h-4" />
-              Usage
-              <ChevronRight className="w-3.5 h-3.5 ml-auto transition-transform group-open:rotate-90" />
-            </summary>
-            <div className="border-t border-slate-200 dark:border-slate-800 px-5 py-4">
-              <pre className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
-                {(() => {
-                  const componentPascalName = selectedComponent.name.replace(/\s+/g, '');
-                  const propsString = controls.map(c => {
-                    if (c.type === 'boolean') {
-                      return `      ${c.id}={${c.value}}`;
-                    }
-                    return `      ${c.id}="${c.value}"`;
-                  }).join('\n');
+              <Separator className="w-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-col-resize shrink-0" />
 
-                  return `// Example Usage
+              {/* Preview Panel */}
+              <Panel defaultSize={45} minSize={25}>
+                <div className="h-full flex flex-col bg-white dark:bg-slate-950">
+                  <div className="flex items-center justify-end gap-2 border-b border-slate-200 dark:border-slate-800 px-3 py-2 shrink-0">
+                    <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
+                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Device</span>
+                      <button type="button" onClick={() => setDevice('desktop')} aria-pressed={device === 'desktop'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Desktop</button>
+                      <button type="button" onClick={() => setDevice('mobile')} aria-pressed={device === 'mobile'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'mobile' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Mobile</button>
+                    </div>
+                    {device === 'mobile' && (
+                      <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
+                        <span className="text-[9px] font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Orient</span>
+                        <button type="button" onClick={() => setOrientation('portrait')} aria-pressed={orientation === 'portrait'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'portrait' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Portrait</button>
+                        <button type="button" onClick={() => setOrientation('landscape')} aria-pressed={orientation === 'landscape'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${orientation === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Landscape</button>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-800 px-1.5 py-0.5">
+                      <button
+                        onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+                        className="rounded px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                      >
+                        {theme === 'light' ? '☀️ Light' : '🌙 Dark'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center overflow-auto bg-slate-50/50 dark:bg-slate-900/50 p-4">
+                    <div
+                      className={
+                        device === 'mobile'
+                          ? `relative rounded-[2.5rem] border-[8px] border-slate-800 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-950 transition-all duration-300 overflow-hidden`
+                          : `w-full h-full flex items-center justify-center`
+                      }
+                      style={device === 'mobile' ? { width: deviceDims.w, maxWidth: '100%', height: deviceDims.h } : {}}
+                    >
+                      <div className={device === 'mobile' ? "h-full w-full" : "h-full w-full [&_.sp-wrapper]:h-full [&_.sp-layout]:h-full [&_.sp-preview-container]:h-full [&_.sp-preview-iframe]:!h-full"}>
+                        <SandpackPreview
+                          showOpenInCodeSandbox={false}
+                          showRefreshButton={false}
+                          style={{ height: '100%', border: 'none' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+            </Group>
+
+            {/* Usage Section */}
+            <details className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 group">
+              <summary className="flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 transition-colors select-none">
+                <FileCode className="w-4 h-4" />
+                Usage
+                <ChevronRight className="w-3.5 h-3.5 ml-auto transition-transform group-open:rotate-90" />
+              </summary>
+              <div className="border-t border-slate-200 dark:border-slate-800 px-5 py-4">
+                <pre className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
+                  {(() => {
+                    const componentPascalName = selectedComponent.name.replace(/\s+/g, '');
+                    const propsString = controls.map(c => {
+                      if (c.type === 'boolean') {
+                        return `      ${c.id}={${c.value}}`;
+                      }
+                      return `      ${c.id}="${c.value}"`;
+                    }).join('\n');
+
+                    return `// Example Usage
 import ${componentPascalName} from '@/components/${componentPascalName}';
 
 export default function Page() {
@@ -758,12 +614,13 @@ ${propsString}
     />
   );
 }`;
-                })()}
-              </pre>
-            </div>
-          </details>
+                  })()}
+                </pre>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
-    </div>
+    </SandpackProvider>
   );
 }
