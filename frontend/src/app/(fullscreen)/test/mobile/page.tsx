@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
 import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react'
@@ -30,27 +30,37 @@ function getCssCode(component: ComponentRegistryItem): string {
   return component.css || '/* No styles needed */';
 }
 
-const initialComponent = COMPONENT_REGISTRY[0];
-const defaultAppTsx = getEditorCode(initialComponent);
-const defaultStylesCss = getCssCode(initialComponent);
-
 export default function MobileUITestPage() {
   return (
-    <Suspense fallback={<div>Loading Sandbox...</div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-500">Loading Sandbox...</div>}>
       <MobileSandboxContent />
     </Suspense>
   )
 }
 
 function MobileSandboxContent() {
+  const router = useRouter()
   const searchParams = useSearchParams()
-  const componentIdFromUrl = searchParams.get('id')
+  const urlId = searchParams.get('id')
 
-  const [appTsx, setAppTsx] = useState(defaultAppTsx)
-  const [stylesCss, setStylesCss] = useState(defaultStylesCss)
+  // Khởi tạo state dựa trên URL id nếu có
+  const [encyclopediaCompId, setEncyclopediaCompId] = useState(() => {
+    return (urlId && COMPONENT_REGISTRY.some(c => c.id === urlId)) ? urlId : COMPONENT_REGISTRY[0].id;
+  });
 
-  const [debouncedAppTsx, setDebouncedAppTsx] = useState(defaultAppTsx)
-  const [debouncedStylesCss, setDebouncedStylesCss] = useState(defaultStylesCss)
+  const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || COMPONENT_REGISTRY[0];
+
+  const [appTsx, setAppTsx] = useState(() => {
+    if (typeof window === 'undefined') return getEditorCode(encyclopediaComponent);
+    return localStorage.getItem(`sandbox-app-${encyclopediaCompId}`) || getEditorCode(encyclopediaComponent);
+  });
+  const [stylesCss, setStylesCss] = useState(() => {
+    if (typeof window === 'undefined') return getCssCode(encyclopediaComponent);
+    return localStorage.getItem(`sandbox-style-${encyclopediaCompId}`) || getCssCode(encyclopediaComponent);
+  });
+
+  const [debouncedAppTsx, setDebouncedAppTsx] = useState(appTsx)
+  const [debouncedStylesCss, setDebouncedStylesCss] = useState(stylesCss)
 
   const [device, setDevice] = useState<DeviceType>('iphone')
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
@@ -58,17 +68,24 @@ function MobileSandboxContent() {
   const [activeTab, setActiveTab] = useState<'App.tsx' | 'styles.css'>('App.tsx')
   const [appState, setAppState] = useState<'normal' | 'loading' | 'empty' | 'error'>('normal')
   const [showEncyclopedia, setShowEncyclopedia] = useState(false)
-  const [encyclopediaCompId, setEncyclopediaCompId] = useState(COMPONENT_REGISTRY[0].id)
-  const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || COMPONENT_REGISTRY[0]
   const isCodeModified = appTsx !== getEditorCode(encyclopediaComponent) || stylesCss !== getCssCode(encyclopediaComponent)
 
-  // Load saved code from localStorage for current component
+  // Đồng bộ hóa khi URL thay đổi (ví dụ nhấn từ Sidebar)
   useEffect(() => {
-    const savedApp = localStorage.getItem(`sandbox-app-${encyclopediaCompId}`)
-    const savedStyle = localStorage.getItem(`sandbox-style-${encyclopediaCompId}`)
-    if (savedApp) setAppTsx(savedApp)
-    if (savedStyle) setStylesCss(savedStyle)
-  }, [encyclopediaCompId])
+    if (urlId && urlId !== encyclopediaCompId) {
+      const newComponent = COMPONENT_REGISTRY.find(c => c.id === urlId);
+      if (newComponent) {
+        // Nếu code đã bị sửa, ta hỏi người dùng trước khi ghi đè
+        if (isCodeModified) {
+          const confirmed = window.confirm('Bạn đang có thay đổi chưa lưu. Chuyển sang linh kiện mới sẽ làm mất các thay đổi này?');
+          if (!confirmed) return;
+        }
+        setEncyclopediaCompId(urlId);
+        setAppTsx(getEditorCode(newComponent));
+        setStylesCss(getCssCode(newComponent));
+      }
+    }
+  }, [urlId, isCodeModified, encyclopediaCompId]);
 
   // Persist code to localStorage on change
   useEffect(() => {
@@ -76,13 +93,6 @@ function MobileSandboxContent() {
     localStorage.setItem(`sandbox-app-${encyclopediaCompId}`, appTsx)
     localStorage.setItem(`sandbox-style-${encyclopediaCompId}`, stylesCss)
   }, [appTsx, stylesCss, encyclopediaCompId, isCodeModified])
-
-  // Handle component from URL query param
-  useEffect(() => {
-    if (componentIdFromUrl && COMPONENT_REGISTRY.some(c => c.id === componentIdFromUrl)) {
-      setEncyclopediaCompId(componentIdFromUrl)
-    }
-  }, [])
 
   const handleComponentChange = useCallback((newId: string) => {
     if (newId === encyclopediaCompId) return;
@@ -97,10 +107,11 @@ function MobileSandboxContent() {
     }
 
     setEncyclopediaCompId(newId);
+    router.push(`/test/mobile?id=${newId}`);
     setAppTsx(getEditorCode(newComponent));
     setStylesCss(getCssCode(newComponent));
     setActiveTab('App.tsx');
-  }, [encyclopediaCompId, appTsx, stylesCss, encyclopediaComponent]);
+  }, [encyclopediaCompId, isCodeModified, router]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -139,8 +150,12 @@ function MobileSandboxContent() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
-              setAppTsx(getEditorCode(encyclopediaComponent))
-              setStylesCss(getCssCode(encyclopediaComponent))
+              const confirmed = window.confirm('Bạn có chắc muốn Reset code về mặc định không?');
+              if (!confirmed) return;
+              localStorage.removeItem(`sandbox-app-${encyclopediaCompId}`);
+              localStorage.removeItem(`sandbox-style-${encyclopediaCompId}`);
+              setAppTsx(getEditorCode(encyclopediaComponent));
+              setStylesCss(getCssCode(encyclopediaComponent));
             }}
             className="text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors"
           >
@@ -369,3 +384,4 @@ root.render(
     </div>
   )
 }
+
