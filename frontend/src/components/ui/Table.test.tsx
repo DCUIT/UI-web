@@ -54,7 +54,8 @@ describe("Table Component", () => {
     const searchInput = screen.getByPlaceholderText(/search data/i)
     fireEvent.change(searchInput, { target: { value: "UnknownItem" } })
     
-    // Dựa trên Table.tsx hiện tại, nó filter array rỗng. 
-    // Bạn có thể bổ sung logic UI "No results" vào Table.tsx để test case này pass.
+    expect(screen.getByText("No results found")).toBeInTheDocument()
+    expect(screen.queryByText("Zebra")).not.toBeInTheDocument()
+    expect(screen.queryByText("Apple")).not.toBeInTheDocument()
   })
 })

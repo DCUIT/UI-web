@@ -5,7 +5,7 @@ import MobileMenu from "@/components/navigation/MobileMenu";
 import ShellClient from "./ShellClient";
 import { SidebarProvider } from "@/components/navigation/SidebarContext";
 import SidebarToggle from "@/components/navigation/SidebarToggle";
-import Sidebar from "@/components/navigation/Sidebar";
+import Sidebar from "@/components/common/Sidebar";
 
 const BottomNavbar = dynamic(() => import("@/components/navigation/BottomNavbar"), { ssr: true });
 

@@ -97,23 +97,35 @@ export default function Table<T>({ data, columns, title }: TableProps<T>) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {filteredData.map((item, idx) => (
-                <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                  {columns.map((col) => (
-                    <td key={String(col.key)} className="whitespace-nowrap px-6 py-4 text-slate-700 dark:text-slate-300">
-                      {col.render ? col.render(item[col.key], item) : String(item[col.key])}
+              {filteredData.length > 0 ? (
+                filteredData.map((item, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                    {columns.map((col) => (
+                      <td key={String(col.key)} className="whitespace-nowrap px-6 py-4 text-slate-700 dark:text-slate-300">
+                        {col.render ? col.render(item[col.key], item) : String(item[col.key])}
+                      </td>
+                    ))}
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-colors"
+                        aria-label="More options"
+                      >
+                        <MoreVertical size={16} className="text-slate-400" />
+                      </button>
                     </td>
-                  ))}
-                  <td className="px-6 py-4 text-right">
-                    <button 
-                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-colors"
-                      aria-label="More options"
-                    >
-                      <MoreVertical size={16} className="text-slate-400" />
-                    </button>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length + 1} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                    <div className="flex flex-col items-center gap-2">
+                      <Search size={24} className="opacity-40" />
+                      <p className="text-sm font-medium">No results found</p>
+                      <p className="text-xs">Try adjusting your search query</p>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

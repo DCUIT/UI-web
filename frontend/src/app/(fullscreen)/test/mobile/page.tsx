@@ -248,11 +248,15 @@ export default function MobileUITestPage() {
 
 
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-      .then(() => alert('Đã sao chép vào clipboard!'))
-      .catch(err => console.error('Failed to copy: ', err))
-  }
+  const [copiedTab, setCopiedTab] = useState<string | null>(null);
+  const [copiedUrl, setCopiedUrl] = useState(false);
+
+  const copyToClipboard = (text: string, tabName: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedTab(tabName);
+      setTimeout(() => setCopiedTab(null), 2000);
+    });
+  };
 
   return (
     <div className="flex flex-col h-screen min-h-[800px] bg-slate-50 dark:bg-slate-950">
@@ -281,11 +285,14 @@ export default function MobileUITestPage() {
           <button
             onClick={() => {
               const url = window.location.href
-              navigator.clipboard.writeText(url).then(() => alert('URL copied to clipboard!'))
+              navigator.clipboard.writeText(url).then(() => {
+                setCopiedUrl(true);
+                setTimeout(() => setCopiedUrl(false), 2000);
+              })
             }}
-            className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm shadow-indigo-200 dark:shadow-none"
+            className={`text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm shadow-indigo-200 dark:shadow-none ${copiedUrl ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
           >
-            Share
+            {copiedUrl ? 'Copied!' : 'Share'}
           </button>
         </div>
       </header>
