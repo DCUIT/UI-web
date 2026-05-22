@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Box, Layout, MessageSquare, Megaphone, Terminal, GraduationCap, Palette, Sparkles, Accessibility } from 'lucide-react';
+import { ChevronDown, Box, Layout, MessageSquare, Megaphone, Terminal, GraduationCap, Palette, Sparkles, Accessibility, Library } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './SidebarContext';
 
@@ -54,6 +54,7 @@ const sidebarGroups = [
     icon: Terminal,
     items: [
       { href: '/playground', label: 'Playground' },
+      { href: '/patterns', label: 'Patterns' },
       { href: '/test', label: 'Test UI' },
     ]
   }
