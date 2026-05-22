@@ -3,11 +3,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '@/components/ui/Button';
-import { Code2, Layout, FileCode, Check, Copy, Sliders, Type, ToggleLeft, Palette, RefreshCw, Package, Search, ChevronRight, Save, Share2, Download, Sparkles, Wand2, Loader2 } from 'lucide-react';
+import { Code2, Layout, FileCode, Check, Copy, Sliders, Type, ToggleLeft, Palette, RefreshCw, Package, Search, ChevronRight, Save, Share2, Download, Sparkles, Wand2, Loader2, Activity } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { SandpackProvider, SandpackPreview, SandpackConsole } from '@codesandbox/sandpack-react';
 import ComponentEncyclopedia from '@/components/common/ComponentEncyclopedia';
+import StateTracker from '@/components/playground/StateTracker';
+import { cn } from '@/lib/utils';
 import { COMPONENT_REGISTRY, ComponentRegistryItem, DEFAULT_TSX, DEFAULT_CSS } from '@/lib/registry';
 import { parsePropsFromSource, generateEntryPoint, Control } from '@/lib/props-parser';
 
@@ -30,6 +32,7 @@ export default function PlaygroundPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [editorTab, setEditorTab] = useState<'tsx' | 'css'>('tsx');
   const [controls, setControls] = useState<Control[]>(() => parsePropsFromSource(DEFAULT_TSX));
+  const [showStateTracker, setShowStateTracker] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -257,6 +260,17 @@ ${cssCode}`;
               {isExporting ? '...' : 'Export'}
             </Button>
             <ThemeToggle />
+            <button
+              onClick={() => setShowStateTracker(!showStateTracker)}
+              className={cn(
+                "flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-bold transition",
+                showStateTracker
+                  ? "bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-700"
+                  : "border-slate-200 text-slate-500 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              )}
+            >
+              <Activity className="w-3 h-3" /> Tracker
+            </button>
             <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 dark:border-slate-800 dark:bg-slate-950">
               <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Device</span>
               <button type="button" onClick={() => setDevice('desktop')} aria-pressed={device === 'desktop'} className={`rounded px-2 py-0.5 text-[10px] font-bold transition ${device === 'desktop' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}>Desktop</button>
@@ -624,6 +638,22 @@ ${propsString}
                 </pre>
               </div>
             </details>
+
+            {/* State Tracker */}
+            {showStateTracker && (
+              <StateTracker
+                states={{
+                  component: selectedComponent.id,
+                  device,
+                  orientation,
+                  theme,
+                  editorTab,
+                  controls: controls.map(c => ({ id: c.id, value: c.value })),
+                  saving: isSaving,
+                  aiGenerating: isGenerating,
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

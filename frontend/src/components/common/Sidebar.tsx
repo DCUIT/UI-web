@@ -2,18 +2,31 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Type, Square, Database, Layers, type LucideIcon } from 'lucide-react'
+import { LayoutGrid, Type, Square, Database, Layers, Code2, Palette, Accessibility, Library, Box, BookOpen, type LucideIcon } from 'lucide-react'
 
 type CategoryItem = { name: string; href: string; icon?: LucideIcon }
 type Category = { name: string; items: CategoryItem[] }
 
 const categories: Category[] = [
-  { name: 'Getting Started', items: [{ name: 'Introduction', href: '/' }, { name: 'Installation', href: '/docs' }] },
+  { name: 'Getting Started', items: [{ name: 'Introduction', href: '/', icon: Square }, { name: 'Error Wiki', href: '/errors', icon: BookOpen }] },
   { name: 'Components', items: [
     { name: 'Buttons', href: '/components/buttons', icon: Square },
     { name: 'Inputs', href: '/components/inputs', icon: Type },
     { name: 'Tables', href: '/components/tables', icon: Database },
     { name: 'Cards', href: '/components/cards', icon: LayoutGrid },
+  ]},
+  { name: 'Playgrounds', items: [
+    { name: 'Main Playground', href: '/playground', icon: Code2 },
+    { name: 'Tailwind Lab', href: '/playground/tailwind-lab', icon: Palette },
+    { name: 'Animation Studio', href: '/playground/animation-studio', icon: Layers },
+    { name: 'A11y Auditor', href: '/playground/a11y-auditor', icon: Accessibility },
+  ]},
+  { name: 'Patterns', items: [
+    { name: 'Gallery & Snippets', href: '/patterns', icon: Library },
+  ]},
+  { name: 'System', items: [
+    { name: 'Architecture Map', href: '/architecture', icon: Box },
+    { name: 'Error Wiki', href: '/errors', icon: BookOpen },
   ]},
   { name: 'Testing', items: [
     { name: 'Web Sandbox', href: '/test/web', icon: Layers },
