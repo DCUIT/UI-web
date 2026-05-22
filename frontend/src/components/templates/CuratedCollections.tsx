@@ -58,7 +58,9 @@ export default function CuratedCollections() {
               "text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border",
               collection.difficulty === 'Hard' 
                 ? "border-amber-200 text-amber-700 bg-amber-50 dark:border-amber-900/50 dark:text-amber-400 dark:bg-amber-900/20"
-                : "border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-400 dark:bg-emerald-900/20"
+                : collection.difficulty === 'Medium'
+                  ? "border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:bg-blue-900/20"
+                  : "border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-400 dark:bg-emerald-900/20"
             )}>
               {collection.difficulty}
             </span>

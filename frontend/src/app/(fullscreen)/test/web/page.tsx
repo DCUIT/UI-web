@@ -114,9 +114,8 @@ export default function WebUITestPage() {
             Web Sandbox
           </div>
           <nav className="hidden md:flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-4 text-sm font-medium">
-             <Link href="/playground" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Playground</Link>
-             <Link href="/components" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Components</Link>
-             <Link href="/test/mobile" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Mobile</Link>
+             <Link href="/test/web" className="px-3 py-1 rounded-md bg-white/80 dark:bg-slate-700/50 text-slate-900 dark:text-slate-100 transition-colors">Web Sandbox</Link>
+             <Link href="/test/mobile" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Mobile Sandbox</Link>
           </nav>
         </div>
         <div className="flex items-center gap-3">

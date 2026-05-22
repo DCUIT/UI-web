@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
@@ -264,9 +264,8 @@ export default function MobileUITestPage() {
             Mobile Sandbox
           </div>
           <nav className="hidden md:flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-4 text-sm font-medium">
-             <Link href="/playground" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Playground</Link>
-             <Link href="/components" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Components</Link>
-             <Link href="/test" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Test UI</Link>
+             <Link href="/test/web" className="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">Web Sandbox</Link>
+             <Link href="/test/mobile" className="px-3 py-1 rounded-md bg-white/80 dark:bg-slate-700/50 text-slate-900 dark:text-slate-100 transition-colors">Mobile Sandbox</Link>
           </nav>
         </div>
         <div className="flex items-center gap-3">
@@ -295,7 +294,8 @@ export default function MobileUITestPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-50/50 dark:bg-slate-950">
-          <SandpackProvider 
+          <SandpackProvider
+            key={appState}
             template="react-ts" 
             theme={theme === 'dark' ? 'dark' : 'light'}
             files={{
@@ -339,7 +339,7 @@ root.render(
               <div className="flex-1 w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] min-h-[500px]">
                 <Editor
                   height="100%"
-                  language={activeTab === 'styles.css' ? 'css' : 'typescript'}
+                  language={activeTab === 'styles.css' ? 'css' : 'typescriptreact'}
                   theme={theme === 'dark' ? 'vs-dark' : 'light'}
                   value={activeTab === 'App.tsx' ? appTsx : stylesCss}
                   onChange={(value?: string) => {
