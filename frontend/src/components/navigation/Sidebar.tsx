@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Box, Layout, MessageSquare, Megaphone, Terminal } from 'lucide-react';
+import { ChevronDown, Box, Layout, MessageSquare, Megaphone, Terminal, GraduationCap, Palette, Sparkles, Accessibility } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './SidebarContext';
 
@@ -38,6 +38,15 @@ const sidebarGroups = [
     icon: Megaphone,
     items: [
       { href: '/components?category=Dashboard', label: 'Dashboard' },
+    ]
+  },
+  {
+    title: "Learning Labs",
+    icon: GraduationCap,
+    items: [
+      { href: '/playground/tailwind-lab', label: 'Tailwind Lab' },
+      { href: '/playground/animation-studio', label: 'Animation Studio' },
+      { href: '/playground/a11y-auditor', label: 'A11y Auditor' },
     ]
   },
   {
