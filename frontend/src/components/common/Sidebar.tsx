@@ -8,12 +8,24 @@ import { COMPONENT_REGISTRY, getAllCategories } from '@/lib/registry'
 type CategoryItem = { name: string; href: string; icon?: LucideIcon }
 type Category = { name: string; items: CategoryItem[] }
 
-const registryCategories = getAllCategories().map(cat => ({
-  name: cat,
-  items: COMPONENT_REGISTRY
-    .filter(c => c.category === cat)
-    .map(c => ({ name: c.name, href: `/test/mobile?id=${c.id}`, icon: FlaskConical }))
-}))
+const categoryIcons: Record<string, LucideIcon> = {
+  'Atoms': Square,
+  'Molecules': Box,
+  'Forms': Type,
+  'Data': Database,
+  'Overlays': Layers,
+  'Screens': LayoutGrid,
+};
+
+const registryCategories = getAllCategories().map(cat => {
+  const Icon = categoryIcons[cat] || FlaskConical;
+  return {
+    name: cat,
+    items: COMPONENT_REGISTRY
+      .filter(c => c.category === cat)
+      .map(c => ({ name: c.name, href: `/test/mobile?id=${c.id}`, icon: Icon }))
+  };
+});
 
 const categories: Category[] = [
   { name: 'Getting Started', items: [{ name: 'Introduction', href: '/', icon: Square }] },
