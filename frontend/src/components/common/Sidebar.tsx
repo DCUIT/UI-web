@@ -2,19 +2,22 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Type, Square, Database, Layers, Code2, Palette, Accessibility, Library, Box, BookOpen, type LucideIcon } from 'lucide-react'
+import { LayoutGrid, Type, Square, Database, Layers, Code2, Palette, Accessibility, Library, Box, BookOpen, FlaskConical, type LucideIcon } from 'lucide-react'
+import { COMPONENT_REGISTRY, getAllCategories } from '@/lib/registry'
 
 type CategoryItem = { name: string; href: string; icon?: LucideIcon }
 type Category = { name: string; items: CategoryItem[] }
 
+const registryCategories = getAllCategories().map(cat => ({
+  name: cat,
+  items: COMPONENT_REGISTRY
+    .filter(c => c.category === cat)
+    .map(c => ({ name: c.name, href: `/test/mobile?id=${c.id}`, icon: FlaskConical }))
+}))
+
 const categories: Category[] = [
   { name: 'Getting Started', items: [{ name: 'Introduction', href: '/', icon: Square }] },
-  { name: 'Components', items: [
-    { name: 'Buttons', href: '/components/buttons', icon: Square },
-    { name: 'Inputs', href: '/components/inputs', icon: Type },
-    { name: 'Tables', href: '/components/tables', icon: Database },
-    { name: 'Cards', href: '/components/cards', icon: LayoutGrid },
-  ]},
+  ...registryCategories,
   { name: 'Playgrounds', items: [
     { name: 'Main Playground', href: '/playground', icon: Code2 },
     { name: 'Tailwind Lab', href: '/playground/tailwind-lab', icon: Palette },

@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import PhoneFrame, { DeviceType } from '@/components/mobile-playground/devices/PhoneFrame'
 import Editor from '@monaco-editor/react'
@@ -14,9 +15,13 @@ import type { ComponentRegistryItem } from '@/lib/registry'
 const IMPORTS = `import React, { useState } from 'react';
 import './styles.css';
 
+/**
+ * @param {{ simulatedState: 'normal' | 'loading' | 'empty' | 'error' }} props
+ */
 `;
 
 function getEditorCode(component: ComponentRegistryItem): string {
+  if (component.tsx.includes('import ')) return component.tsx;
   const body = component.tsx.startsWith('export') ? component.tsx : `export default ${component.tsx}`;
   return IMPORTS + body;
 }
@@ -30,6 +35,17 @@ const defaultAppTsx = getEditorCode(initialComponent);
 const defaultStylesCss = getCssCode(initialComponent);
 
 export default function MobileUITestPage() {
+  return (
+    <Suspense fallback={<div>Loading Sandbox...</div>}>
+      <MobileSandboxContent />
+    </Suspense>
+  )
+}
+
+function MobileSandboxContent() {
+  const searchParams = useSearchParams()
+  const componentIdFromUrl = searchParams.get('id')
+
   const [appTsx, setAppTsx] = useState(defaultAppTsx)
   const [stylesCss, setStylesCss] = useState(defaultStylesCss)
 
@@ -45,6 +61,28 @@ export default function MobileUITestPage() {
   const [encyclopediaCompId, setEncyclopediaCompId] = useState(COMPONENT_REGISTRY[0].id)
   const encyclopediaComponent = COMPONENT_REGISTRY.find(c => c.id === encyclopediaCompId) || COMPONENT_REGISTRY[0]
   const isCodeModified = appTsx !== getEditorCode(encyclopediaComponent) || stylesCss !== getCssCode(encyclopediaComponent)
+
+  // Load saved code from localStorage for current component
+  useEffect(() => {
+    const savedApp = localStorage.getItem(`sandbox-app-${encyclopediaCompId}`)
+    const savedStyle = localStorage.getItem(`sandbox-style-${encyclopediaCompId}`)
+    if (savedApp) setAppTsx(savedApp)
+    if (savedStyle) setStylesCss(savedStyle)
+  }, [encyclopediaCompId])
+
+  // Persist code to localStorage on change
+  useEffect(() => {
+    if (!isCodeModified) return
+    localStorage.setItem(`sandbox-app-${encyclopediaCompId}`, appTsx)
+    localStorage.setItem(`sandbox-style-${encyclopediaCompId}`, stylesCss)
+  }, [appTsx, stylesCss, encyclopediaCompId, isCodeModified])
+
+  // Handle component from URL query param
+  useEffect(() => {
+    if (componentIdFromUrl && COMPONENT_REGISTRY.some(c => c.id === componentIdFromUrl)) {
+      setEncyclopediaCompId(componentIdFromUrl)
+    }
+  }, [])
 
   const handleComponentChange = useCallback((newId: string) => {
     if (newId === encyclopediaCompId) return;
